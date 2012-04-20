@@ -1,6 +1,22 @@
 ﻿var app = require('http').createServer(handler)
   , io = require('socket.io').listen(app)
+  , gts = require('./gameTest.js')
   , fs = require('fs');
+
+console.log('aaa');
+
+global.askQuestion = function (user, question, answers, cardGame) {
+    console.log(user.name + ": " + question + "  ");
+    for (var i = 0; i < answers.length; i++) {
+        var answ = answers[i];
+        console.log(answ + " \r\n");
+    }
+    return 1;
+};
+
+var d = gts.Sevens();
+d.constructor();
+d.runGame();
 
 app.listen(1337);
 
