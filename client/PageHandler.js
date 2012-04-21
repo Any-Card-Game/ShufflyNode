@@ -4,6 +4,48 @@ window.DEBUGLABELS = [];
 function PageHandler() {
 
     var self = this;
+    window.PageHandler = this;
+
+
+
+    window.PageHandler.socket = io.connect('http://li428-241.members.linode.com:80');
+
+    window.PageHandler.socket.on('Area.Main.LoginResult', function (data) {
+        if (data.access) {
+            alert('allowed');
+            window.PageHandler.socket.emit('Area.Lobby.ListRooms', {});
+        } else {
+            alert('disallowed');
+        }
+    });
+    window.PageHandler.socket.on('Area.Lobby.ListRoomsResult', function (rooms) {
+        for (var i = 0; i < rooms.length; i++) {
+
+            UIManager.genericArea.roomList.addControl(new Button(0, 0, 0, 0, rooms[i].name + " (" + rooms[i].players.length + "/" + rooms[i].maxUsers + ")", "10pt Arial", "rgb(50,190,90)", (function (room) {
+                return function () {
+                    window.PageHandler.socket.emit('Area.Lobby.JoinRoom', room);
+                };
+            })(rooms[i])));
+        }
+        console.log(rooms);
+    });
+    window.PageHandler.socket.on('Area.Lobby.JoinRoomResult', function (room) {
+        alert(_H.stringify(room));
+
+    });
+    window.PageHandler.socket.on('Area.Room.RecieveChat', function (data) {
+        console.log(data);
+    });
+    window.PageHandler.socket.on('Area.Room.GameStarted', function (data) {
+        console.log(data);
+    });
+    window.PageHandler.socket.on('Area.Room.PiecePlaced', function (data) {
+        console.log(data);
+    });
+
+
+
+
     var uiCanvas;
     
     $('body').append(uiCanvas=document.createElement('canvas'));
@@ -41,7 +83,7 @@ function PageHandler() {
     window.setInterval(self.draw.bind(self), 1000 / 60);
 
     $(document).keydown(function (e) {
-        uiManager.onKeyDown(e);
+        self.uiManager.onKeyDown(e);
     });
 
     return this;
@@ -67,7 +109,7 @@ PageHandler.prototype.canvasMouseUp = function(e) {
 PageHandler.prototype.handleScroll = function(e) {
     e.preventDefault();
 
-    if (uiManager.onMouseScroll(e)) return false;
+    if (this.uiManager.onMouseScroll(e)) return false;
 
     return e.preventDefault() && false;
 };

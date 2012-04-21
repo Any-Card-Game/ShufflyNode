@@ -1,5 +1,5 @@
 ﻿var utils = require('./gameUtils.js');
-
+shuf = { };
 
 CardGame = function(numberOfCards, numberOfJokers) {
     this.users = [];
@@ -122,7 +122,7 @@ Randomizer = function(seed) {
     };
 };
 
-Math = function(pi) {
+shuf.Math = function (pi) {
     this.pi = pi;
     this.sin = function(s) {
 
@@ -130,7 +130,10 @@ Math = function(pi) {
     this.cos = function(s) {
 
     };
-    this.tan = function(s) {
+    this.tan = function (s) {
+
+    };
+    this.ceil = function (s) {
 
     };
 };

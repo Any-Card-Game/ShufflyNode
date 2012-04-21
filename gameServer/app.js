@@ -1,24 +1,39 @@
 ﻿var app = require('http').createServer(handler)
   , io = require('socket.io').listen(app)
-  , gts = require('./gameTest.js')
-  , fs = require('fs');
+  , fs = require('fs')
+  , child_process = require('child_process');
 
-console.log('aaa');
 
-global.askQuestion = function (user, question, answers, cardGame) {
-    console.log(user.name + ": " + question + "  ");
-    for (var i = 0; i < answers.length; i++) {
-        var answ = answers[i];
-        console.log(answ + " \r\n");
-    }
-    return 1;
-};
 
-var d = gts.Sevens();
+
+require('fibers');
+
+    var shuf = { };
+
+    var jm=Fiber(function() {
+        console.log('wait... ' + new Date);
+require('./gameTest.js');
+        
+        var sev = Sevens();
+        sev.constructor();
+        sev.runGame();
+
+        console.log('gameover ' + new Date);
+
+
+    });
+    jm.run();
+
+   
+  
+console.log('setup'); 
+
+/*var d = gts.Sevens();
 d.constructor();
 d.runGame();
+*/
 
-app.listen(1337);
+app.listen(80);
 
 function handler(req, res) {
     /*fs.readFile(__dirname + '/index.html',
@@ -40,6 +55,20 @@ rooms.push({ name: "main room", maxUsers: 10, roomID: 0, players: [] }); //make 
 
 io.sockets.on('connection', function (socket) {
     socket.on('Area.Main.Login', function (data) {
+        console.log('aa')
+        var answ;
+        var anw = { value: 1 };
+        answ = jm.run(anw);
+        console.log(JSON.stringify(answ));
+
+
+        console.log(answ.user.userName + ": " + answ.question + "   ");
+        for (var i = 0; i < answ.answers.length; i++) {
+            console.log("     " + i + ": " + answ.answers[i]);
+        }
+
+
+
         var verified = false;
         data.user = data.user.toLowerCase();
         if (data.user == "dested" || data.user == "kenny") {
