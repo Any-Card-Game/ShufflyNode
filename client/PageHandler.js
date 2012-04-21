@@ -10,28 +10,14 @@ function PageHandler() {
 
     window.PageHandler.socket = io.connect('http://li428-241.members.linode.com:80');
 
-    window.PageHandler.socket.on('Area.Main.LoginResult', function (data) {
-        if (data.access) {
-            alert('allowed');
-            window.PageHandler.socket.emit('Area.Lobby.ListRooms', {});
-        } else {
-            alert('disallowed');
-        }
+    window.PageHandler.socket.emit('Area.Game.StartGame', {}); 
+     
+    window.PageHandler.socket.on('Area.Game.GameStarted', function (data) { 
     });
-    window.PageHandler.socket.on('Area.Lobby.ListRoomsResult', function (rooms) {
-        for (var i = 0; i < rooms.length; i++) {
+    window.PageHandler.socket.on('Area.Game.AskQuestion.dested', function (question) {
+        alert(JSON.stringify(question));
 
-            UIManager.genericArea.roomList.addControl(new Button(0, 0, 0, 0, rooms[i].name + " (" + rooms[i].players.length + "/" + rooms[i].maxUsers + ")", "10pt Arial", "rgb(50,190,90)", (function (room) {
-                return function () {
-                    window.PageHandler.socket.emit('Area.Lobby.JoinRoom', room);
-                };
-            })(rooms[i])));
-        }
-        console.log(rooms);
-    });
-    window.PageHandler.socket.on('Area.Lobby.JoinRoomResult', function (room) {
-        alert(_H.stringify(room));
-
+        window.PageHandler.socket.emit('Area.Game.AnswerQuestion', { value: 1 });
     });
     window.PageHandler.socket.on('Area.Room.RecieveChat', function (data) {
         console.log(data);

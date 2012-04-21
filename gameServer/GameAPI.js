@@ -37,6 +37,88 @@ Pile = function (name) {
     };
 };
 
+/*
+
+class CardGameManager
+	users=type User[]
+	deck=type Card[]
+	piles=type Pile[]
+	mainArea=create TableArea()
+	userAreas=type TableArea[]
+	def ()
+		[1>>4]=>|(am)
+			[1>>13]=>|(ab)
+				deck.add(create Card(ab,am))
+
+		populateUsers()=>|(n,ind)
+			this.users.add({Name=n,Cards=create Pile("User"+ind)})
+		write(this.users.length())
+
+class CardLayoutManager
+	pilePaths=type LayoutPilePath[]
+
+
+class LayoutManager
+	images=type ScreenImage[]
+	textAreas=type LayoutTextArea[]
+
+
+
+template ScreenImage
+	effect=type Effect[]
+	x=0
+	y=0
+	image=""
+		rotation=0
+
+
+
+class CardImage : ScreenImage
+		card=type Card
+	def() 
+
+template Effect
+	effectType=type EffectType
+
+class RotateEffect : Effect
+	RotateAmount=0
+	relative=false
+
+class MoveEffect : Effect
+	X=0
+	Y=0
+	relative=false
+
+class HighlightEffect : Effect
+	width=0
+	color=type Color
+
+enum EffectType
+	Rotate=1
+	Highlight=2
+	Move=3
+
+class LayoutPilePath
+	visible=true
+	stackCards=false
+	drawCardsBent=false
+	points=type PathPoints[]
+	pile=type Pile
+	effects=type Effect[]
+
+class PathPoints
+	x=0
+	y=0
+	offsetRotation=0
+
+class LayoutTextArea
+	name=""
+	xPosition=0
+	yPosition=0
+	rotateAngle=0
+	text=""
+*/
+
 Card = function (value, type, state) {
     this.value = value;
     this.type = type;
@@ -131,9 +213,6 @@ shuf.Math = function (pi) {
 
     };
     this.tan = function (s) {
-
-    };
-    this.ceil = function (s) {
 
     };
 };

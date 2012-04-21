@@ -1,39 +1,34 @@
-﻿var app = require('http').createServer(handler)
-  , io = require('socket.io').listen(app)
-  , fs = require('fs')
-  , child_process = require('child_process');
+﻿var app = require('http').createServer(handler),
+  io = require('socket.io').listen(app),
+  fs = require('fs'),
+  child_process = require('child_process'),
+  _und = require("underscore");
 
-
-
+global._und = _und;
 
 require('fibers');
 
-    var shuf = { };
+var shuf = {};
 
-    var jm=Fiber(function() {
-        console.log('wait... ' + new Date);
-require('./gameTest.js');
-        
-        var sev = Sevens();
-        sev.constructor();
-        sev.runGame();
+shuf.jm = Fiber(function () {
+    console.log('wait... ' + new Date);
+    require('./gameTest.js');
+    var sev = Sevens();
+    sev.constructor();
+    sev.runGame();
+    console.log('gameover ' + new Date);
+});
 
-        console.log('gameover ' + new Date);
 
 
-    });
-    jm.run();
-
-   
-  
-console.log('setup'); 
+console.log('setup');
 
 /*var d = gts.Sevens();
 d.constructor();
 d.runGame();
 */
 
-app.listen(80);
+app.listen(81);
 
 function handler(req, res) {
     /*fs.readFile(__dirname + '/index.html',
@@ -54,52 +49,32 @@ var rooms = [];
 rooms.push({ name: "main room", maxUsers: 10, roomID: 0, players: [] }); //make a model
 
 io.sockets.on('connection', function (socket) {
-    socket.on('Area.Main.Login', function (data) {
-        console.log('aa')
-        var answ;
-        var anw = { value: 1 };
-        answ = jm.run(anw);
+    socket.on('Area.Game.StartGame', function (data) {
+        socket.emit('Area.Game.GameStarted');
+        console.log('start');
+
+        var answ = shuf.jm.run();
+
+
+        socket.emit('Area.Game.AskQuestion.' + answ.user.userName, answ); //write new emit to send to specific user
         console.log(JSON.stringify(answ));
-
-
         console.log(answ.user.userName + ": " + answ.question + "   ");
         for (var i = 0; i < answ.answers.length; i++) {
             console.log("     " + i + ": " + answ.answers[i]);
         }
+    });
 
 
-
-        var verified = false;
-        data.user = data.user.toLowerCase();
-        if (data.user == "dested" || data.user == "kenny") {
-            verified = true;
-            socket.player = { name: data.user }; //to model
+    socket.on('Area.Game.AnswerQuestion', function (data) {
+        console.log('aa')
+        var answ;
+        var anw = { value: data.value };
+        answ = shuf.jm.run(anw);
+        socket.emit('Area.Game.AskQuestion', { user: answ.user, question: answ }); //write new emit to send to specific user
+        console.log(JSON.stringify(answ));
+        console.log(answ.user.userName + ": " + answ.question + "   ");
+        for (var i = 0; i < answ.answers.length; i++) {
+            console.log("     " + i + ": " + answ.answers[i]);
         }
-        socket.emit('Area.Main.LoginResult', { access: verified });
-    });
-    socket.on('Area.Lobby.ListRooms', function (data) {
-        socket.emit('Area.Lobby.ListRoomsResult', rooms);
-    });
-    socket.on('Area.Lobby.JoinRoom', function (data) {
-        for (var i = 0; i < rooms.length; i++) {
-            if (rooms[i].name == data.name) {
-                if (rooms[i].players.length >= rooms[i].maxUsers) {
-                    socket.emit('Area.Lobby.JoinRoomResult', { error: "full" }); //to model
-                }
-                rooms[i].players.push(socket.player);
-
-                socket.emit('Area.Lobby.JoinRoomResult', rooms[i]); //to model
-            }
-        }
-        socket.emit('Area.Lobby.JoinRoomResult', { error: "not found" }); //to model
-    });
-    socket.on('Area.Room.SendChat', function (data) {
-        console.log(data);
-    });
-    socket.on('Area.Room.StartGame', function (data) {
-        console.log(data);
-    });
-    socket.on('Area.Room.PlacePiece', function (data) {
-        console.log(data);
     });
 });

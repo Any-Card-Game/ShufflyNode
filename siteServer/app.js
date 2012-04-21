@@ -2,7 +2,7 @@
   , io = require('socket.io').listen(app)
   , fs = require('fs');
 
-app.listen(1337);
+app.listen(80);
 
 function handler(req, res) {
     /*fs.readFile(__dirname + '/index.html',
@@ -19,7 +19,8 @@ function handler(req, res) {
     res.end();
 }
 
-var rooms = [];
+var cardGames = [];
+cardGames.push({ name: "main room", maxUsers: 10, roomID: 0, players: [] }); //make a model
 rooms.push({ name: "main room", maxUsers: 10, roomID: 0, players: [] }); //make a model
 
 io.sockets.on('connection', function (socket) {
@@ -35,19 +36,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('Area.Lobby.ListRooms', function (data) {
         socket.emit('Area.Lobby.ListRoomsResult', rooms);
     });
-    socket.on('Area.Lobby.JoinRoom', function (data) {
-        for (var i = 0; i < rooms.length; i++) {
-            if (rooms[i].name == data.name) {
-                if (rooms[i].players.length >= rooms[i].maxUsers) {
-                    socket.emit('Area.Lobby.JoinRoomResult', { error: "full" }); //to model
-                }
-                rooms[i].players.push(socket.player);
-
-                socket.emit('Area.Lobby.JoinRoomResult', rooms[i]); //to model
-            }
-        }
-        socket.emit('Area.Lobby.JoinRoomResult', { error: "not found" }); //to model
-    });
+     
     socket.on('Area.Room.SendChat', function (data) {
         console.log(data);
     });
