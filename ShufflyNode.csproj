@@ -31,6 +31,39 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="gameServer\npm-debug.log" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="client\ClientHelp.js" />
+    <Content Include="client\lib\FunctionWorker.js" />
+    <Content Include="client\lib\jquery.js" />
+    <Content Include="client\lib\keyboardjs.js" />
+    <Content Include="client\lib\linq.js" />
+    <Content Include="client\lib\socket.io.js" />
+    <Content Include="client\lib\socket.io.min.js" />
+    <Content Include="client\lib\Stats.js" />
+    <Content Include="client\lib\WebSocketMain.swf" />
+    <Content Include="client\lib\WebSocketMainInsecure.swf" />
+    <Content Include="client\lib\WorkerConsole.js" />
+    <Content Include="client\PageHandler.js" />
+    <Content Include="client\UIArea.js" />
+    <Content Include="client\UIManager.js" />
+    <Content Include="client\uis\genericArea.js" />
+    <Content Include="ArrayUtils.js" />
+    <Content Include="gameServer\app.js" />
+    <Content Include="gameServer\GameAPI.js" />
+    <Content Include="gameServer\gameTest.js" />
+    <Content Include="gameServer\gameUtils.js" />
+    <Content Include="gameServer\shuff.js" />
+    <Content Include="Help.js" />
+    <Content Include="implementation\rooms.js" />
+    <Content Include="index.html" />
+    <Content Include="models\Card.js" />
+    <Content Include="siteServer\app.js" />
+    <Content Include="siteServer\sHelp.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>

@@ -1,6 +1,8 @@
 ﻿var app = require('http').createServer(handler)
   , io = require('socket.io').listen(app)
-  , fs = require('fs');
+  , fs = require('fs')
+  , s = require('./sHelp.js')
+  , models = require('../models/Card.js');
 
 app.listen(80);
 
@@ -20,23 +22,37 @@ function handler(req, res) {
 }
 
 var cardGames = [];
-cardGames.push({ name: "main room", maxUsers: 10, roomID: 0, players: [] }); //make a model
-rooms.push({ name: "main room", maxUsers: 10, roomID: 0, players: [] }); //make a model
+cardGames.push(new CardGame('sevens'));
+cardGames[0].addRoom('mamama', 3);
+
+var players = [];
 
 io.sockets.on('connection', function (socket) {
-    socket.on('Area.Main.Login', function (data) {
+    var me;
+    players.push(me = new Player());
+    socket.on('Area.Main.Login.Request', function (data) {
         var verified = false;
         data.user = data.user.toLowerCase();
         if (data.user == "dested" || data.user == "kenny") {
             verified = true;
-            socket.player = { name: data.user }; //to model
+
+            me.name = data.user;
+            me._socket = socket;
+            socket.player = me;
         }
-        socket.emit('Area.Main.LoginResult', { access: verified });
+
+        socket.emit('Area.Main.Login.Response', { access: verified });
     });
-    socket.on('Area.Lobby.ListRooms', function (data) {
-        socket.emit('Area.Lobby.ListRoomsResult', rooms);
+
+    socket.on('Area.Lobby.ListCardGames.Request', function (data) {
+        socket.emit('Area.Lobby.ListCardGames.Response', cardGames.arrayExceptPrivate());
     });
-     
+    socket.on('Area.Lobby.ListRooms.Request', function (data) {
+        var cardGame = cardGames.where(function (J) { return J.name == data.name; });
+        socket.emit('Area.Lobby.ListRooms.Response', cardGame.rooms.arrayExceptPrivate());
+    });
+    
+
     socket.on('Area.Room.SendChat', function (data) {
         console.log(data);
     });

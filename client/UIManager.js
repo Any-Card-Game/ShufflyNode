@@ -1,15 +1,12 @@
-﻿function UIManager(mainCanvas) {
+﻿function UIManager(mainCanvas, scale) {
     this.UIAreas = [];
-    this.debugMessages = [];
-    window.UIManager = this;
-
+    this.messages = [];
+    window.uiManager = this;
     var textFont = this.textFont = "18pt Calibri ";
     this.smallTextFont = "12pt Calibri ";
     this.buttonFont = "13pt Arial bold";
     this.smallButtonFont = "11pt Arial bold";
     mainCanvas.font = textFont;
-
-    this.indexes = { tpIndex: 0, modifyIndex: 0, modifyTPIndex: 0 };
 
     this.draw = function (canvas) {
 
@@ -26,8 +23,8 @@
         }
 
         if (DEBUGs) {
-            for (var i = 0; i < this.debugMessages.length; i++) {
-                canvas.fillText(this.debugMessages[i], 10, 25 + i * 30);
+            for (var i = 0; i < this.messages.length; i++) {
+                canvas.fillText(this.messages[i], 10, 25 + i * 30);
             }
         }
         canvas.restore();
@@ -42,19 +39,19 @@
             var are = this.UIAreas[ij];
             if (are.visible && are.y <= evt.y && are.y + are.height > evt.y && are.x <= evt.x && are.x + are.width > evt.x) {
                 evt = {
-                    x: evt.x - are.x - 10,
-                    y: evt.y - are.y - 10,
+                    x: evt.x - are.x,
+                    y: evt.y - are.y,
                     delta: delta
                 };
-                return are.scroll(evt);
+                return are.onScroll(evt);
             }
         }
         return false;
     };
+
     this.onClick = function (e) {
         var cell = cHelp.getCursorPosition(e);
-        cell.x -= 10;
-        cell.y -= 10;
+
         var goodArea = null;
         var are;
         var ij;
@@ -63,10 +60,20 @@
         });
         for (var ij = 0; ij < cl.items.length; ij++) {
             are = cl.items[ij];
-            if (are.visible && are.y <= cell.y && are.y + are.height > cell.y && are.x <= cell.x && are.x + are.width > cell.x) {
+            if (are.visible &&
+                (are.isEditMode() ?
+                    are.y - are.editorEngine.maxSize() <= cell.y &&
+                        are.y + are.editorEngine.maxSize() + are.height > cell.y &&
+                            are.x - are.editorEngine.maxSize() <= cell.x &&
+                                are.x + are.editorEngine.maxSize() + are.width > cell.x
+                    :
+                    are.y <= cell.y &&
+                        are.y + are.height > cell.y &&
+                            are.x <= cell.x &&
+                                are.x + are.width > cell.x)) {
                 goodArea = are;
                 var ec = { x: cell.x - are.x, y: cell.y - are.y };
-                are.click(ec);
+                are.onClick(ec);
                 break;
             }
         }
@@ -101,8 +108,7 @@
 
     this.onMouseMove = function (e) {
         var cell = cHelp.getCursorPosition(e);
-        cell.x -= 10;
-        cell.y -= 10;
+
 
         var cl = JSLINQ(this.UIAreas).OrderBy(function (f) {
             return -f.depth;
@@ -110,28 +116,29 @@
 
         for (var ij = 0; ij < cl.items.length; ij++) {
             var are = cl.items[ij];
-            if (are.dragging || (are.visible && are.y <= cell.y &&
+            if (are.dragging || are.isEditMode() || (are.visible && are.y <= cell.y &&
                 are.y + are.height > cell.y &&
                     are.x <= cell.x &&
                         are.x + are.width > cell.x)) {
                 cell = { x: cell.x - are.x, y: cell.y - are.y };
-                return are.mouseMove(cell);
+                return are.onMouseOver(cell);
 
             }
         }
+
         return false;
 
     };
+
     this.onMouseUp = function (e) {
         var cell = cHelp.getCursorPosition(e, true);
-        cell.x -= 10;
-        cell.y -= 10;
 
         for (var ij = 0; ij < this.UIAreas.length; ij++) {
             var are = this.UIAreas[ij];
             var ec = { x: cell.x - are.x, y: cell.y - are.y };
-            are.mouseUp(ec);
+            are.onMouseUp(ec);
         }
+
     };
     this.onKeyDown = function (e) {
 
@@ -139,14 +146,8 @@
             var are = this.UIAreas[ij];
             are.onKeyDown(e);
         }
-    };
+    }; 
+    window.genericArea(); 
 
-
-
-    this.updateTitle = function (str) {
-        document.title = str + " | Blockade";
-    };
-
-    //call for all the created windows
-    window.genericArea();
 }
+  

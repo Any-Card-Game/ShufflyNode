@@ -187,7 +187,7 @@
 })();
 
 
-jQuery.fn.rotate = function (angle, whence) {
+jQuery.fn.rotate = function(angle, whence) {
     var p = this.get(0);
 
     // we store the angle inside the image tag for persistence
@@ -226,7 +226,8 @@ jQuery.fn.rotate = function (angle, whence) {
         canvas.style.height = canvas.height = Math.abs(costheta * canvas.oImage.height) + Math.abs(sintheta * canvas.oImage.width);
 
         var context = canvas.getContext('2d');
-        _H.save(context); ;
+        context.save();
+        ;
         if (rotation <= Math.PI / 2) {
             context.translate(sintheta * canvas.oImage.height, 0);
         } else if (rotation <= Math.PI) {
@@ -238,17 +239,17 @@ jQuery.fn.rotate = function (angle, whence) {
         }
         context.rotate(rotation);
         context.drawImage(canvas.oImage, 0, 0, canvas.oImage.width, canvas.oImage.height);
-        _H.restore(context);
+        context.restore();
     }
     canvas.id = p.id;
     canvas.angle = p.angle;
     p.parentNode.replaceChild(canvas, p);
-}
+};
 
-jQuery.fn.rotateRight = function (angle) {
+jQuery.fn.rotateRight = function(angle) {
     this.rotate(angle == undefined ? 90 : angle);
-}
+};
 
-jQuery.fn.rotateLeft = function (angle) {
+jQuery.fn.rotateLeft = function(angle) {
     this.rotate(angle == undefined ? -90 : -angle);
-}
+};

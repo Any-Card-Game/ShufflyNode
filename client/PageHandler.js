@@ -3,6 +3,12 @@ window.DEBUGLABELS = [];
 
 function PageHandler() {
 
+
+
+
+
+
+
     var self = this;
     window.PageHandler = this;
 
@@ -10,33 +16,25 @@ function PageHandler() {
 
     window.PageHandler.socket = io.connect('http://li428-241.members.linode.com:80');
 
-    window.PageHandler.socket.emit('Area.Game.StartGame', {}); 
-     
-    window.PageHandler.socket.on('Area.Game.GameStarted', function (data) { 
-    });
-    window.PageHandler.socket.on('Area.Game.AskQuestion.dested', function (question) {
-        alert(JSON.stringify(question));
 
+    window.PageHandler.socket.on('Area.Main.Login.Response', function (data) {
+    });
+    window.PageHandler.socket.on('Area.Lobby.ListCardGames.Response', function (question) {
         window.PageHandler.socket.emit('Area.Game.AnswerQuestion', { value: 1 });
     });
-    window.PageHandler.socket.on('Area.Room.RecieveChat', function (data) {
+    window.PageHandler.socket.on('Area.Lobby.ListRooms.Response', function (data) {
         console.log(data);
     });
-    window.PageHandler.socket.on('Area.Room.GameStarted', function (data) {
-        console.log(data);
-    });
-    window.PageHandler.socket.on('Area.Room.PiecePlaced', function (data) {
-        console.log(data);
-    });
+
 
 
 
 
     var uiCanvas;
-    
-    $('body').append(uiCanvas=document.createElement('canvas'));
+
+    $('body').append(uiCanvas = document.createElement('canvas'));
     $(uiCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: '0px', 'z-index': 0 });
-    
+
     self.uiContext = uiCanvas.getContext("2d");
     self.uiContext.canvas = uiCanvas;
     self.uiContext.$canvas = $(uiCanvas);
@@ -65,7 +63,7 @@ function PageHandler() {
     $(window).resize(self.resizeCanvas);
     self.uiManager = new UIManager(self.uiContext);
     self.resizeCanvas();
-    
+
     window.setInterval(self.draw.bind(self), 1000 / 60);
 
     $(document).keydown(function (e) {
@@ -75,24 +73,24 @@ function PageHandler() {
     return this;
 }
 
-PageHandler.prototype.canvasOnClick = function(e) {
+PageHandler.prototype.canvasOnClick = function (e) {
     e.preventDefault();
     if (this.uiManager.onClick(e)) return false;
     return false;
 };
-PageHandler.prototype.canvasMouseMove = function(e) {
-        e.preventDefault();
-        document.body.style.cursor = "default";
-        this.lastMouseMove = e;
-        if (this.uiManager.onMouseMove(e)) return false;
+PageHandler.prototype.canvasMouseMove = function (e) {
+    e.preventDefault();
+    document.body.style.cursor = "default";
+    this.lastMouseMove = e;
+    if (this.uiManager.onMouseMove(e)) return false;
     return false;
 };
-PageHandler.prototype.canvasMouseUp = function(e) {
-        e.preventDefault();
-        this.uiManager.onMouseUp(this.lastMouseMove);
-        return false;
+PageHandler.prototype.canvasMouseUp = function (e) {
+    e.preventDefault();
+    this.uiManager.onMouseUp(this.lastMouseMove);
+    return false;
 };
-PageHandler.prototype.handleScroll = function(e) {
+PageHandler.prototype.handleScroll = function (e) {
     e.preventDefault();
 
     if (this.uiManager.onMouseScroll(e)) return false;
@@ -101,12 +99,12 @@ PageHandler.prototype.handleScroll = function(e) {
 };
 
 
-PageHandler.prototype.resizeCanvas = function() {
+PageHandler.prototype.resizeCanvas = function () {
     this.uiContext.$canvas.attr("width", $(window).width());
     this.uiContext.$canvas.attr("height", $(window).height());
 };
 
-PageHandler.prototype.draw = function() {
+PageHandler.prototype.draw = function () {
     cHelp.clearCanvas(this.uiContext.canvas);
     this.uiManager.draw(this.uiContext);
 
