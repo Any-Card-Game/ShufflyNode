@@ -235,6 +235,7 @@
         return this.editing;
     };
     this.draw = function (canv) {
+        canv.save();
         var size = 0;
         canv.strokeStyle = canv.fillStyle = 'white';
         canv.lineWidth = 3;
@@ -254,6 +255,7 @@
         }
 
 
+        canv.restore();
 
     };
 };
@@ -471,6 +473,8 @@ UiArea.prototype.draw = function (canv) {
     var good;
     var t;
     var j;
+    canv.save();
+
     if (!this.cachedDrawing) {
 
         var cg = document.createElement("canvas");
@@ -519,7 +523,6 @@ UiArea.prototype.draw = function (canv) {
     if (this.cachedDrawing.width != this.width || this.cachedDrawing.height != this.height)
         this.cachedDrawing = null;
 
-    canv.save();
     for (j = 0; j < this.controls.length; j++) {
         t = this.controls[j];
         good = t.forceDrawing();
@@ -529,7 +532,6 @@ UiArea.prototype.draw = function (canv) {
             this.cachedDrawing = null;
     }
     canv.restore();
-
 
 };
 Help.extend(Element, UiArea);
@@ -559,6 +561,8 @@ TextArea.prototype.forceDrawing = function () {
 TextArea.prototype.draw = function (canv) {
 
     if (!this.visible) return;
+
+    canv.save();
     var txt = Help.isFunction(this.text) ? this.text() : this.text;
     if (canv.font != this.font)
         canv.font = this.font;
@@ -575,6 +579,7 @@ TextArea.prototype.draw = function (canv) {
     canv.fillStyle = this.color;
 
     canv.fillText(txt, this.parent.x + this.x, this.parent.y + this.y + h);
+    canv.restore();
 
 };
 
@@ -626,6 +631,8 @@ ImageButton.prototype.draw = function (canv) {
 
     if (!this.visible) return;
 
+    canv.save();
+
     if (!this.created) {
         this.created = true;
         this.button1Grad = canv.createLinearGradient(0, 0, 0, 1);
@@ -667,6 +674,9 @@ ImageButton.prototype.draw = function (canv) {
     this.image(canv, this.parent.x + this.x, this.parent.y + this.y);
 
     canv.fillText(txt, this.parent.x + this.x + ((this.width / 2) - (canv.measureText(txt).width / 2)), this.parent.y + this.y + this.height - 3);
+
+    canv.restore();
+
 };
 Help.extend(Element, ImageButton);
 
@@ -711,6 +721,7 @@ Button.prototype.onMouseOver = function (e) {
 Button.prototype.draw = function (canv) {
 
     if (!this.visible) return;
+    canv.save();
 
     if (!this.created) {
         this.created = true;
@@ -749,6 +760,7 @@ Button.prototype.draw = function (canv) {
     canv.fillStyle = "#000000";
     var txt = (Help.isFunction(this.text) ? this.text() : this.text);
     canv.fillText(txt, this.parent.x + this.x + ((this.width / 2) - (canv.measureText(txt).width / 2)), this.parent.y + this.y + (this.height / 3) * 2);
+    canv.restore();
 
 };
 
@@ -794,6 +806,8 @@ PropertyButton.prototype.onMouseOver = function (e) {
 PropertyButton.prototype.draw = function (canv) {
 
     if (!this.visible) return;
+    canv.save();
+
     var w2 = Math.floor(this.width / 2);
     this.button.width = w2;
     this.textbox.width = w2;
@@ -812,6 +826,7 @@ PropertyButton.prototype.draw = function (canv) {
 
     this.button.draw(canv);
     this.textbox.draw(canv);
+    canv.restore();
 };
 
 Help.extend(Element, PropertyButton);
@@ -943,6 +958,7 @@ TextBox.prototype.onClick = function (e) {
     if (!this.visible) return;
     this.clicking = true;
     this.focused = true;
+    can.save();
     if (can.font != this.font)
         can.font = this.font;
     for (var i = 0; i < this.text.length; i++) {
@@ -962,6 +978,8 @@ TextBox.prototype.onClick = function (e) {
         this.selectWord();
     }
     this.lastClickTick = this.drawTicks;
+    can.restore();
+
 };
 TextBox.prototype.selectWord = function () {
     var j = this.text.split(' ');
@@ -997,6 +1015,8 @@ TextBox.prototype.onMouseOver = function (e) {
         if (this.dragPosition == -1) {
             this.dragPosition = this.cursorPosition;
         }
+        can.save();
+
         if (can.font != this.font)
             can.font = this.font;
         for (var i = 0; i < this.text.length; i++) {
@@ -1006,6 +1026,8 @@ TextBox.prototype.onMouseOver = function (e) {
                 return;
             }
         }
+        can.restore();
+
         this.cursorPosition = this.text.length;
     }
     if (this.mouseOver) this.mouseOver();
@@ -1018,7 +1040,7 @@ TextBox.prototype.draw = function (canv) {
         this.cursorPosition = -1;
         this.dragPosition = -1;
     }
-    this.drawTicks++
+    this.drawTicks++;
     can = canv;
     if (!this.created) {
         this.created = true;
@@ -1189,6 +1211,7 @@ Panel.prototype.draw = function (canv) {
     var j;
     var _x = this.x;
     var _y = this.y;
+    canv.save();
 
     this.x += this.parent.x;
     this.y += this.parent.y;
@@ -1213,6 +1236,8 @@ Panel.prototype.draw = function (canv) {
     }
     this.x = _x;
     this.y = _y;
+    canv.restore();
+
 };
 Help.extend(Element, Panel);
 
@@ -1346,6 +1371,9 @@ HScrollBox.prototype.onScroll = function (e) {
 HScrollBox.prototype.draw = function (canv) {
 
     if (!this.visible) return;
+
+    canv.save();
+
     canv.fillStyle = this.backColor;
 
     var i;
@@ -1380,6 +1408,9 @@ HScrollBox.prototype.draw = function (canv) {
         curX += this.itemWidth + this.jWidth;
         this.controls[i].draw(canv);
     }
+
+    canv.restore();
+
 
 
 };
@@ -1455,6 +1486,7 @@ PaletteArea.prototype.draw = function (canv) {
 
     if (!this.visible) return;
     if (!this.palette) return;
+    canv.save();
 
 
     canv.strokeStyle = "#000";
@@ -1491,6 +1523,9 @@ PaletteArea.prototype.draw = function (canv) {
             canv.strokeRect(pos.x, pos.y + f * this.scale.y, this.scale.x * 2, this.scale.y * 2);
         }
     }
+
+    canv.restore();
+
 
 };
 
@@ -1655,6 +1690,9 @@ ScrollBox.prototype.draw = function (canv) {
 
 
     if (!this.visible) return;
+
+    canv.save();
+
     canv.fillStyle = this.backColor;
 
     var i;
@@ -1689,6 +1727,7 @@ ScrollBox.prototype.draw = function (canv) {
         curY += this.itemHeight + this.jHeight;
         this.controls[i].draw(canv);
     }
+    canv.restore();
 
 };
 
@@ -1697,6 +1736,7 @@ Help.extend(Element, ScrollBox);
 
 
 function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+    ctx.save();
     if (typeof stroke == "undefined") {
         stroke = true;
     }
@@ -1721,4 +1761,11 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
     if (fill) {
         ctx.fill();
     }
-} 
+    ctx.restore();
+}
+
+
+
+
+
+

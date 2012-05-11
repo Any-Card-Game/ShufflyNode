@@ -13,7 +13,8 @@ window.genericArea = function () {
         color: "red",
         click: function (e) {
             propUtils.animateTo(uiManager.genericArea, 'height', uiManager.genericArea.height + 200, 200);
-            //window.PageHandler.socket.emit('Area.Main.Login.Request', { user: uiManager.genericArea.txtUserName.text }); //NO EMIT'ING OUTSIDE OF PageHandler
+            window.PageHandler.socket.emit('Area.Main.Login.Request', 
+                { user: uiManager.genericArea.txtUserName.text }); //NO EMIT'ING OUTSIDE OF PageHandler
         }
     }));
     uiManager.genericArea.addControl(uiManager.genericArea.txtUserName = new TextBox(140, 53, { width: 130, height: 20, text: "dested", font: cHelp.makeText(11, 'arial'), color: "Blue" }));
