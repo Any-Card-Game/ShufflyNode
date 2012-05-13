@@ -32,8 +32,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="gameServer\npm-debug.log" />
     <None Include="README.md" />
+    <Content Include="gameServer\cJSON.js" />
+    <Content Include="gameServer\guid.js" />
+    <Content Include="siteServer\cJSON.js" />
+    <Content Include="web.config" />
+    <Content Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </Content>
+    <Content Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="client\ClientHelp.js" />
@@ -54,7 +63,7 @@
     <Content Include="ArrayUtils.js" />
     <Content Include="gameServer\app.js" />
     <Content Include="gameServer\GameAPI.js" />
-    <Content Include="gameServer\gameTest.js" />
+    <Content Include="gameServer\Sevens.js" />
     <Content Include="gameServer\gameUtils.js" />
     <Content Include="gameServer\shuff.js" />
     <Content Include="Help.js" />

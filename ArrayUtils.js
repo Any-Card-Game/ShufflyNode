@@ -1,10 +1,14 @@
-﻿
-Array.prototype.foreach = (function (does) {
+﻿var ar = {};
+ar.foreach = Array.prototype.foreach = (function (does) {
     for (var i = 0; i < this.length; i++) {
-        does(this[i], i);
+        var df;
+        if (df = does(this[i], i)) {
+            return df;
+        }
     }
+    return false;
 });
-Array.prototype.where = (function (does) {
+ar.where = Array.prototype.where = (function (does) {
     var jf = [];
     for (var i = 0; i < this.length; i++) {
         if (does(this[i]))
@@ -12,7 +16,14 @@ Array.prototype.where = (function (does) {
     }
     return jf;
 });
-Array.prototype.any = (function (does) {
+ar.first = Array.prototype.first = (function (does) {
+    for (var i = 0; i < this.length; i++) {
+        if (does(this[i], i))
+            return this[i];
+    }
+    return undefined;
+});
+ar.any = Array.prototype.any = (function (does) {
     for (var i = 0; i < this.length; i++) {
         if (does(this[i]))
             return true;
@@ -20,7 +31,7 @@ Array.prototype.any = (function (does) {
     return false;
 });
 
-Array.prototype.sort = (function (sorter) {
+ar.sort = Array.prototype.sort = (function (sorter) {
     return this;
     for (var i = 0; i < this.length; i++) {
         if (does(this[i]))
@@ -29,7 +40,9 @@ Array.prototype.sort = (function (sorter) {
     return false;
 });
 
-Array.prototype.remove = (function (item) {
+ar.remove = Array.prototype.remove = (function (item) {
     this.splice(this.indexOf(item), 1);
     return true;
 });
+
+module.exports = ar;

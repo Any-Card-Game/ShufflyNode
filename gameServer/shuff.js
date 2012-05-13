@@ -1,13 +1,15 @@
 ﻿require('./gameUtils.js');
 require('./GameAPI.js');
 
-
-shuf.askQuestion = function (user, question, answers, cardGame) {
+var shuff = { };
+shuff.askQuestion = function (user, question, answers, cardGame) {
     var m = { user: user, question: question, answers: answers, cardGame: cardGame };
     var answer = yield(m);
     return answer.value;
 };
-shuf.declareWinner = function (user) {
+shuff.declareWinner = function (user) {
     yield(null);
 };
+
+module.exports = shuff;
 

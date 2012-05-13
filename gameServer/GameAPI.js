@@ -1,8 +1,7 @@
-﻿var utils = require('./gameUtils.js');
-shuf = { };
-
+﻿
 CardGame = function(numberOfCards, numberOfJokers) {
     this.users = [];
+
     this.deck = new Pile();
     var i;
     for (i = 0; i < numberOfCards; i++) {
@@ -21,10 +20,17 @@ CardGame = function(numberOfCards, numberOfJokers) {
     this.dealCards = function(numberOfCards, state) {
 
     };
-};
+    this.setPlayers = function(players) {
+        this.users = [];
+        for (var j = 0; j < players.length; j++) {
+            this.users.push(new User(players[j].name));
+        }
+    };
 
+
+};
 User = function (name) {
-    this.userName = name;
+    this.name = name;
     this.playerDealingOrder = 0;
     this.cards = new Pile(name);
 };
@@ -36,7 +42,6 @@ Pile = function (name) {
 
     };
 };
-
 /*
 
 class CardGameManager
@@ -204,17 +209,17 @@ Randomizer = function(seed) {
     };
 };
 
-shuf.Math = function (pi) {
-    this.pi = pi;
-    this.sin = function(s) {
+//shuf.Math = function (pi) {
+//    this.pi = pi;
+//    this.sin = function(s) {
 
-    };
-    this.cos = function(s) {
+//    };
+//    this.cos = function(s) {
 
-    };
-    this.tan = function (s) {
+//    };
+//    this.tan = function (s) {
 
-    };
-};
+//    };
+//};
 
 Order = { NoOrder: 0, Ascending: 1, Descending: 2 };

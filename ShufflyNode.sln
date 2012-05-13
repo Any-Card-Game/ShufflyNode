@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShufflyNode", "ShufflyNode.csproj", "{71AF39A0-1A8E-416D-919D-829A41FA06A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShuffleSlam", "ShuffleSlam\ShuffleSlam\ShuffleSlam.csproj", "{56B1CA3C-FDC3-49F8-827C-473DB4D83804}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShuffleSlam", "..\ShuffleSlam\ShuffleSlam.csproj", "{56B1CA3C-FDC3-49F8-827C-473DB4D83804}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
