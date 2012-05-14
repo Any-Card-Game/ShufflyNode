@@ -4,7 +4,7 @@
   , s = require('./sHelp.js')
   , models = require('../models/Card.js');
 
-app.listen(80);
+app.listen(82);
 
 function handler(req, res) {
     /*fs.readFile(__dirname + '/index.html',

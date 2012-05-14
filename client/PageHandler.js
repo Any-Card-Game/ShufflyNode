@@ -14,10 +14,14 @@ function PageHandler() {
 
 
 
-    window.PageHandler.socket = io.connect('http://li428-241.members.linode.com:80');
+    window.PageHandler.socket = io.connect('http://li428-241.members.linode.com:82');
+    window.PageHandler.socket2 = io.connect('http://li428-241.members.linode.com:81');
 
 
     window.PageHandler.socket.on('Area.Main.Login.Response', function (data) {
+        alert(JSON.stringify(data));
+        debugger;
+
     });
     window.PageHandler.socket.on('Area.Lobby.ListCardGames.Response', function (question) {
         window.PageHandler.socket.emit('Area.Game.AnswerQuestion', { value: 1 });
@@ -26,10 +30,15 @@ function PageHandler() {
         console.log(data);
     });
 
+    window.PageHandler.socket.emit('Area.Main.Login.Request', { user: 'dested' });
 
 
-
-
+    window.PageHandler.socket2.on('Area.Game.RoomInfo', function (data) {
+        alert(JSON.stringify(data));
+        debugger;
+    });
+    window.PageHandler.socket2.emit('Area.Game.Create', { user: { name: 'dested' } });
+    
     var uiCanvas;
 
     $('body').append(uiCanvas = document.createElement('canvas'));

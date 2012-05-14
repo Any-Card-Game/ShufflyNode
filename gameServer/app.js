@@ -7,23 +7,19 @@ var cJSON = require("./cJSON.js");
 var guid = require("./guid.js");
 var arrayUtils = require('../ArrayUtils.js');
 
-
-var zlib = require('zlib');
+//var profiler = require('v8-profiler');
 
 global._und = _und;
 
 require('fibers');
-
-
-
+ 
 /*var d = gts.Sevens();
 d.constructor();
 d.runGame();
 */
 
 app.listen(81);
-io.set('log level', 1);
-io.set('browser client gzip', true);
+io.set('log level', 1); 
 
 var verbose = false;
 function handler(req, res) {
@@ -126,6 +122,7 @@ io.sockets.on('connection', function (socket) {
 
         emitAll(room, 'Area.Game.Started', cJSON.stringify(room, ['socket']));
 
+      //  profiler.takeSnapshot('game started ' + room.roomID);
 
         var answ = room.fiber.run(room.players);
         askQuestion(answ, room);
@@ -146,6 +143,7 @@ io.sockets.on('connection', function (socket) {
         if (!answ) {
             room.fiber.run();
             emitAll(room, 'Area.Game.GameOver', '');
+       //     profiler.takeSnapshot('game over ' + room.roomID);
             return;
         }
         askQuestion(answ, room);
