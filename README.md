@@ -16,4 +16,6 @@ Dependencies
 *Nodejs v0.6.18+
 *Fibers 
 
- 
+Google Document
+--------------- 
+ *https://docs.google.com/document/d/1awwLCyOkEkVUFXiO8jueHF6jiD1iQatxTnlLi_FXkbM/edit
