@@ -33,6 +33,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <Content Include="client\lib\jquery-1.7.2.min.js" />
+    <Content Include="client\lib\jquery-ui-1.8.20.custom.min.js" />
+    <Content Include="client\ShuffUIManager.js" />
+    <Content Include="index-newUI.html" />
     <Content Include="gameServer\cJSON.js" />
     <Content Include="gameServer\guid.js" />
     <Content Include="siteServer\cJSON.js" />
@@ -47,7 +51,6 @@
   <ItemGroup>
     <Content Include="client\ClientHelp.js" />
     <Content Include="client\lib\FunctionWorker.js" />
-    <Content Include="client\lib\jquery.js" />
     <Content Include="client\lib\keyboardjs.js" />
     <Content Include="client\lib\linq.js" />
     <Content Include="client\lib\socket.io.js" />
