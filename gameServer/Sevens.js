@@ -1,4 +1,4 @@
-﻿var shuff=require('./shuff.js');
+﻿var shuff = require('./shuff.js');
 
 module.exports = Sevens = function () {
     var self = this;
@@ -12,10 +12,11 @@ module.exports = Sevens = function () {
     self.constructor = function () {
         shuff.fiber = self.fiber;
 
-        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Clubs', xPosition: 0, yPosition: 0, width: 0, height: 13, rotateAngle: -90, pile: self.clubs }));
-        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Hearts', xPosition: 0, yPosition: 1, width: 0, height: 13, rotateAngle: -90, pile: self.hearts }));
-        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Diamonds', xPosition: 0, yPosition: 2, width: 0, height: 13, rotateAngle: -90, pile: self.diamonds }));
-        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Spades', xPosition: 0, yPosition: 3, width: 0, height: 13, rotateAngle: -90, pile: self.spades }));
+        self.cardGame.mainArea.dimensions = new Rectangle(150, 150, 300, 350);
+        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Clubs', xPosition: 0, yPosition: 0, width: 0, height: 13, rotateAngle: -90, pile: self.clubs, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Hearts', xPosition: 0, yPosition: 1, width: 0, height: 13, rotateAngle: -90, pile: self.hearts, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Diamonds', xPosition: 0, yPosition: 2, width: 0, height: 13, rotateAngle: -90, pile: self.diamonds, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.mainArea.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Spades', xPosition: 0, yPosition: 3, width: 0, height: 13, rotateAngle: -90, pile: self.spades, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
 
         self.cardGame.mainArea.textAreas.push(new TableTextArea({ name: 'SpadesText', xPosition: 0, yPosition: 0, text: 'Clubs', rotateAngle: -90 }));
         self.cardGame.mainArea.textAreas.push(new TableTextArea({ name: 'HeartsText', xPosition: 1, yPosition: 0, text: 'Hearts', rotateAngle: -90 }));
@@ -106,8 +107,8 @@ module.exports = Sevens = function () {
                     }
                 }
                 return false;
-            }); 
-            if (result) {  
+            });
+            if (result) {
                 return true;
             }
 

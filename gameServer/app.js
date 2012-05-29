@@ -12,14 +12,14 @@ var arrayUtils = require('../ArrayUtils.js');
 global._und = _und;
 
 require('fibers');
- 
+
 /*var d = gts.Sevens();
 d.constructor();
 d.runGame();
 */
 
 app.listen(81);
-io.set('log level', 1); 
+io.set('log level', 1);
 
 var verbose = false;
 function handler(req, res) {
@@ -40,7 +40,7 @@ function handler(req, res) {
 var gameData = {
     totalGames: 0,
     finishedGames: 0,
-    totalPlayers:0,
+    totalPlayers: 0,
     totalQuestionsAnswered: 0,
     toString: function () {
         return "Total: " + this.totalGames + "\n Running: " + this.runningGames() + "\n Total Players: " + this.totalPlayers + "\n Answered: " + this.totalQuestionsAnswered;
@@ -56,9 +56,16 @@ var rooms = [];
 function askQuestion(answ, room) {
 
     var user = arrayUtils.first.call(room.players, (function (u) { return u.name == answ.user.name; }));
-    user.socket.emit('Area.Game.AskQuestion', cJSON.stringify({ question: answ.question, answers: answ.answers }, ['socket']));
+    user.socket.emit('Area.Game.AskQuestion',
+        JSON.parse(JSON.stringify({ question: answ.question, answers: answ.answers }, function (key, value) {
+            if ('socket' == (key)) return undefined;
+            else return value;
+        })));
 
-    emitAll(room, 'Area.Game.UpdateState', cJSON.stringify(answ.cardGame, ['socket']));
+    emitAll(room, 'Area.Game.UpdateState', JSON.parse(JSON.stringify(answ.cardGame, function (key, value) {
+        if ('socket' == (key)) return undefined;
+        else return value;
+    })));
 
 
     if (verbose) {
@@ -68,9 +75,8 @@ function askQuestion(answ, room) {
         }
     }
 }
+
 function emitAll(room, message, value) {
-
-
     for (var j = 0; j < room.players.length; j++) {
         room.players[j].socket.emit(message, value);
     }
@@ -83,12 +89,11 @@ io.sockets.on('connection', function (socket) {
     socket.on('Area.Game.Create', function (data) {
         var room;
         rooms.push(room = { name: "main room", maxUsers: 6, roomID: guid(), players: [], started: false }); //make a model 
-        room.players.push({ name: data.user.name, socket: socket }); //make a model
+        room.players.push({ name: data.user.name, socket: socket, debuggable: data.debuggable }); //make a model
         room.fiber = Fiber(function (players) {
             var Sevens = require('./Sevens.js');
             var sev = new Sevens();
             sev.cardGame.setPlayers(players);
-
             gameData.totalGames++;
             gameData.totalPlayers += players.length;
             room.fiber.sevens = sev;
@@ -103,7 +108,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('Area.Game.Join', function (data) {
 
-        var room = arrayUtils.first.call(rooms, (function (j, ind) { return ind == data.roomID; }))
+        var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
         if (!room) {
             return;
         }
@@ -113,16 +118,34 @@ io.sockets.on('connection', function (socket) {
 
     });
 
+    socket.on('Area.Game.GetGames', function (data) {
+        socket.emit('Area.Game.RoomInfos', JSON.parse(JSON.stringify(rooms, function (name, value) { if (name != 'socket') return value; })));
+    });
+
+    socket.on('Area.Game.DebuggerJoin', function (data) {
+
+        var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
+        if (!room) {
+            return;
+        }
+        if (room.debuggable) {
+
+        }
+        room.players.push({ name: data.user.name, socket: socket }); //make a model
+        emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, function (name, value) { if (name != 'socket') return value; })));
+    });
+
+
     socket.on('Area.Game.Start', function (data) {
-        var room = arrayUtils.first.call(rooms, (function (j, ind) { return ind == data.roomID; }))
+        var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
 
         if (!room) {
             return;
         }
 
-        emitAll(room, 'Area.Game.Started', cJSON.stringify(room, ['socket']));
+        emitAll(room, 'Area.Game.Started', JSON.parse(JSON.stringify(room, function (name, value) { if (name != 'socket') return value; })));
 
-      //  profiler.takeSnapshot('game started ' + room.roomID);
+        //  profiler.takeSnapshot('game started ' + room.roomID);
 
         var answ = room.fiber.run(room.players);
         askQuestion(answ, room);
@@ -131,7 +154,7 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('Area.Game.AnswerQuestion', function (data) {
-        var room = arrayUtils.first.call(rooms, (function (j, ind) { return ind == data.roomID; }))
+        var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
 
         if (!room) {
             return;
@@ -143,7 +166,7 @@ io.sockets.on('connection', function (socket) {
         if (!answ) {
             room.fiber.run();
             emitAll(room, 'Area.Game.GameOver', '');
-       //     profiler.takeSnapshot('game over ' + room.roomID);
+            //     profiler.takeSnapshot('game over ' + room.roomID);
             return;
         }
         askQuestion(answ, room);

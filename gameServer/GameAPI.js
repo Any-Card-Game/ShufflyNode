@@ -1,5 +1,5 @@
 ﻿
-CardGame = function(numberOfCards, numberOfJokers) {
+CardGame = function (numberOfCards, numberOfJokers) {
     this.users = [];
 
     this.deck = new Pile();
@@ -11,16 +11,16 @@ CardGame = function(numberOfCards, numberOfJokers) {
         this.deck.cards.push(new Card(0, 0));
     }
 
-    this.mainArea = new TableArea();
+    this.mainArea = new TableArea({ numberOfCardsHorizontal: 4, numberOfCardsVertical: -1 });
     this.userAreas = [];
 
     //arg0: cards per player
     //arg1: CardState
     //return undefined
-    this.dealCards = function(numberOfCards, state) {
+    this.dealCards = function (numberOfCards, state) {
 
     };
-    this.setPlayers = function(players) {
+    this.setPlayers = function (players) {
         this.users = [];
         for (var j = 0; j < players.length; j++) {
             this.users.push(new User(players[j].name));
@@ -45,83 +45,83 @@ Pile = function (name) {
 /*
 
 class CardGameManager
-	users=type User[]
-	deck=type Card[]
-	piles=type Pile[]
-	mainArea=create TableArea()
-	userAreas=type TableArea[]
-	def ()
-		[1>>4]=>|(am)
-			[1>>13]=>|(ab)
-				deck.add(create Card(ab,am))
+users=type User[]
+deck=type Card[]
+piles=type Pile[]
+mainArea=create TableArea()
+userAreas=type TableArea[]
+def ()
+[1>>4]=>|(am)
+[1>>13]=>|(ab)
+deck.add(create Card(ab,am))
 
-		populateUsers()=>|(n,ind)
-			this.users.add({Name=n,Cards=create Pile("User"+ind)})
-		write(this.users.length())
+populateUsers()=>|(n,ind)
+this.users.add({Name=n,Cards=create Pile("User"+ind)})
+write(this.users.length())
 
 class CardLayoutManager
-	pilePaths=type LayoutPilePath[]
+pilePaths=type LayoutPilePath[]
 
 
 class LayoutManager
-	images=type ScreenImage[]
-	textAreas=type LayoutTextArea[]
+images=type ScreenImage[]
+textAreas=type LayoutTextArea[]
 
 
 
 template ScreenImage
-	effect=type Effect[]
-	x=0
-	y=0
-	image=""
-		rotation=0
+effect=type Effect[]
+x=0
+y=0
+image=""
+rotation=0
 
 
 
 class CardImage : ScreenImage
-		card=type Card
-	def() 
+card=type Card
+def() 
 
 template Effect
-	effectType=type EffectType
+effectType=type EffectType
 
 class RotateEffect : Effect
-	RotateAmount=0
-	relative=false
+RotateAmount=0
+relative=false
 
 class MoveEffect : Effect
-	X=0
-	Y=0
-	relative=false
+X=0
+Y=0
+relative=false
 
 class HighlightEffect : Effect
-	width=0
-	color=type Color
+width=0
+color=type Color
 
 enum EffectType
-	Rotate=1
-	Highlight=2
-	Move=3
+Rotate=1
+Highlight=2
+Move=3
 
 class LayoutPilePath
-	visible=true
-	stackCards=false
-	drawCardsBent=false
-	points=type PathPoints[]
-	pile=type Pile
-	effects=type Effect[]
+visible=true
+stackCards=false
+drawCardsBent=false
+points=type PathPoints[]
+pile=type Pile
+effects=type Effect[]
 
 class PathPoints
-	x=0
-	y=0
-	offsetRotation=0
+x=0
+y=0
+offsetRotation=0
 
 class LayoutTextArea
-	name=""
-	xPosition=0
-	yPosition=0
-	rotateAngle=0
-	text=""
+name=""
+xPosition=0
+yPosition=0
+rotateAngle=0
+text=""
 */
 
 Card = function (value, type, state) {
@@ -134,7 +134,7 @@ Card = function (value, type, state) {
     this.getValueName = function () {
 
     };
-    this.getTypeName = function() {
+    this.getTypeName = function () {
 
     };
 };
@@ -142,69 +142,69 @@ Card = function (value, type, state) {
 CardState = { faceUp: 0, faceDown: 1, faceUpIfOwned: 2 };
 CardType = { heart: 0, diamond: 1, spade: 2, club: 3 };
 
-PokerRules = function() {
+PokerRules = function () {
 
     //arg0:   2 to 52 cards
     //return: PokerResult[]
-    this.evaluatePoker = function(cards) {
+    this.evaluatePoker = function (cards) {
 
     };
 };
 
-PokerResult = function(cards, type, weight) {
+PokerResult = function (cards, type, weight) {
     this.cards = cards || [];
     this.type = type || 0;
     this.weight = weight || 0;
 };
 
-PokerWinType = { Straight:1,Flush:2,Pair:3,ThreeOfAKind:4,FourOfAKind:5,StraightFlush:6};
+PokerWinType = { Straight: 1, Flush: 2, Pair: 3, ThreeOfAKind: 4, FourOfAKind: 5, StraightFlush: 6 };
 
 TableArea = function (setter) {
-    setter = setter || { };
-    this.numberOfCardsHorizontal = setter["numberOfCardsHorizontal"] || 1;
-    this.numberOfCardsVertical = setter["numberOfCardsVertical"] || 1;
-    this.dimensions = setter["dimensions"] || new Rectangle(0, 0, 0, 0);
-    this.spaces = setter["spaces"] || [];
-    this.textAreas = setter["textAreas"] || [];
+    setter = setter || {};
+    this.numberOfCardsHorizontal = setter["numberOfCardsHorizontal"] === undefined ? 1 : setter["numberOfCardsHorizontal"];
+    this.numberOfCardsVertical = setter["numberOfCardsVertical"] === undefined ? 1 : setter["numberOfCardsVertical"];
+    this.dimensions = setter["dimensions"] === undefined ? new Rectangle(0, 0, 0, 0) : setter["dimensions"];
+    this.spaces = setter["spaces"] === undefined ? [] : setter["spaces"];
+    this.textAreas = setter["textAreas"] === undefined ? [] : setter["textAreas"];
     return this;
 };
 
-TableSpace = function(setter) {
+TableSpace = function (setter) {
     setter = setter || {};
-    this.visible = setter["visible"] || true;
-    this.stackCards = setter["stackCards"] || false;
-    this.drawCardsBent = setter["drawCardsBent"] || false;
-    this.name = setter["name"] || "TableSpace";
-    this.pile = setter["pile"] || null;
-    this.xPosition = setter["xPosition"] || 0;
-    this.yPosition = setter["yPosition"] || 0;
-    this.width = setter["width"] || 100;
-    this.height = setter["height"] || 100;
-    this.sortOrder = setter["sortOrder"] || Order.NoOrder;
+    this.visible = setter["visible"] === undefined ? true : setter["visible"];
+    this.stackCards = setter["stackCards"] === undefined ? false : setter["stackCards"];
+    this.drawCardsBent = setter["drawCardsBent"] === undefined ? false : setter["drawCardsBent"];
+    this.name = setter["name"] === undefined ? "TableSpace" : setter["name"];
+    this.pile = setter["pile"] === undefined ? null : setter["pile"];
+    this.xPosition = setter["xPosition"] === undefined ? 0 : setter["xPosition"];
+    this.yPosition = setter["yPosition"] === undefined ? 0 : setter["yPosition"];
+    this.width = setter["width"] === undefined ? 100 : setter["width"];
+    this.height = setter["height"] === undefined ? 100 : setter["height"];
+    this.sortOrder = setter["sortOrder"] === undefined ? Order.NoOrder : setter["numberOfCardsHorizontal"];
     return this;
 };
 
-TableTextArea = function(setter) {
+TableTextArea = function (setter) {
     setter = setter || {};
-    this.name = setter["name"] || "Text Area";
-    this.xPosition = setter["xPosition"] || 0;
-    this.yPosition = setter["yPosition"] || 0;
-    this.text = setter["text"] || "Text";
+    this.name = setter["name"] === undefined ? "Text Area" : setter["name"];
+    this.xPosition = setter["xPosition"] === undefined ? 0 : setter["xPosition"];
+    this.yPosition = setter["yPosition"] === undefined ? 0 : setter["yPosition"];
+    this.text = setter["text"] === undefined ? "Text" : setter["text"];
 };
 
-Rectangle = function(x, y, width, height) {
+Rectangle = function (x, y, width, height) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
 };
 
-Randomizer = function(seed) {
+Randomizer = function (seed) {
     this.seed = seed;
-    this.next = function() {
+    this.next = function () {
 
     };
-    this.nextBetween = function(left, right) {
+    this.nextBetween = function (left, right) {
 
     };
 };
