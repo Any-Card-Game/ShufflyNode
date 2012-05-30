@@ -31,6 +31,7 @@ List to demo
 		* animations 
 		* gestures
 	* player stuff
+		* forgot password
 		* guest accounts
 		* friends
 		* elaborate tracking
@@ -63,7 +64,7 @@ List to demo
 		* see flowchart
 * **Finalize game site**
 	* skinnable question window
-		* editor?s
+		* editor?
 	* canvas drawing
 		* question location
 		* proper scaled game drawing
@@ -85,31 +86,53 @@ List to demo
 * **Finalize chat server**
 	* simple chat
 	* player list
-	* has running rooms
-		* each game
-			* pre game
-		* each room
-		* proper room load balancing
+	* has rooms
+		* pre game
+		* game
+		* room
+	* proper room load balancing
 	* log everything
 * **Finish debugging area**
+	* debugger.log
+	* debugger.pause
 	* Code Mirror
-		* Intelisense
+		* tabs?
+		* Intellisense
 		* control+w?
 		* skinning
 	* Console
+		* variable lookup
+	* watch
+	* immeditate window
+		* safely.......
+	* documentation window
 	* playing all players at once
 	* saving responses
 	* log everything
+* **Admin tool**
+	* web based, easy phone usage
+	* approve games
+		* approve assets
+		* approve ad codes
+	* ad views stuff
+	* server statistics
+	* game / room statistics
+	* player stats
+	* player lookup
 * **Proper database solution**
+	* define schema
 	* nosql options 
 		* mongo
 	* log everything
 	* clustering
 * **Finalize game framework**
 	* game layout editor
+		* drag and drop/resize for spaces on the grid
+		* properties window
+		* outputs json? in real time
 	* asking questions
 		* to one person
-			* hang on request
+			* wait for one reply
 		* to multiple people
 			* wait for all replies
 			* wait for single reply, potentially in a contant loop
@@ -128,6 +151,8 @@ List to demo
 			* absolute position
 			* card flow
 				* vert/horz
+	* images
+		* at xy, scale
 	* premade boards/spaces
 		* simple player flowing
 		* simple cards cascading in both directions
@@ -157,11 +182,11 @@ List to demo
 					* rect area on main grid
 * **Finalize effect framework**
 	* Where
-		* On Cards
-		* On Spaces
-		* On Players
-		* On Mouse?
-		* At xy on boardgrid
+		* Card
+		* Space
+		* Player
+		* Mouse
+		* At rect on boardgrid
 	* Types
 		* Glow
 		* Rotate
@@ -183,8 +208,10 @@ List to demo
 		* casino war?
 	* rummy
 	* spit
-		* constant running loop
+		* hard
 	* thirtyone
+* **Learn about facebook**
+	* how can i support ads?
 * **Learn about ads**
 	* text based
 		* adsense 
