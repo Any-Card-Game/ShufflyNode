@@ -26,53 +26,70 @@ List to demo
 ------------
 
 * Finalize site framework
-	* html5 preliminary windows
+	* html5 skinnable draggable windows 
 		* Minimized/maximized/tiled/fancy
 		* animations 
+		* gestures
 	* player stuff
-	* storing elaborate cookies
+		* guest accounts
+		* friends
+		* elaborate tracking
+			* favorite games
+			* number of fish gotten
+		* storing elaborate layout location cookies
+	* chat
 * Finalize site server
 	* Finalize site api
 		* see flowchart
 	* load balancing
+	* properly measuring max concurrent load
+	* properly serving chat server information
 * Finalize main site
 	* constant playing game in the background
+		* load cost of this
 	* making all calls
-	* switching loadbalance
+		* see flowchart
+	* seemless loadbalance
+		* can no one miss their friends?
 * Finalize game server
 	* stress test with web
 		* automate
+		* determine concurrent game limit per instance
 	* different servers for development
+		* ratio?
 	* switching loadbalance
 	* log everything
 	* Finalize game api
 		* see flowchart
 * Finalize game site
-	* proper scaled game drawing
-		* phone browser support?
-	* question location
-	* skinnable question area
-		* editor?
+	* skinnable question window
+		* editor?s
+	* canvas drawing
+		* question location
+		* proper scaled game drawing
+			* phone browser support?
 * Finalize developer site
 	* development area
-		*upload content
-			*name 
-			*images
-			*card fronts
-			*card back
-			*advertising code
+		* upload content
+			* name 
+			* images
+			* card fronts
+			* card back
+			* advertising code
 		* debugging area
 	* see game stuff
 		* track custom elaborate statistics
 			* how many fish have been gotten
-	* ad views	
+	* ad views
+		* update ad codes
 * Finalize chat server
 	* simple chat
+	* player list
 	* has running rooms
 		* each game
 			* pre game
 		* each room
-		* proper room syncing
+		* proper room load balancing
 	* log everything
 * Finish debugging area
 	* Code Mirror
@@ -90,7 +107,13 @@ List to demo
 	* clustering
 * Finalize game framework
 	* game layout editor
-	* asking question to multiple people, obtaining responses as they come
+	* asking questions
+		* to one person
+			* hang on request
+		* to multiple people
+			* wait for all replies
+			* wait for single reply, potentially in a contant loop
+	* debugging
 * Finalize layout framework
 	* one board grid
 		* xy widthheight
@@ -108,20 +131,30 @@ List to demo
 	* premade boards/spaces
 		* simple player flowing
 		* simple cards cascading in both directions
+		* advanced pyramid shape
 * Finalize question framework
-	* Show in popup
-		* fancy custom css?
-			* editor??
-		* simple question answer
-	* Show on gameboard
-		* x,y location on what grid?
-		* show question in popup still?
-		* button answers
+	* Custom css 
+		* for question popup
+		* for answer buttons on grid
+		* Editor?
+	* Question
+		* Show in popup
+		* Show at xy on main grid
+	* Answer
+		* Show in popup 
+			* as checkbuttons
+				* with submit
+			* as radio buttons
+		* floating button answers
+			* x,y location on main grid
+			* check button
+				* with submit
+			* radio button
 		* card answers
 			* allow dragging
 				* define allowable dragend
 					* spaces
-					* rect area on grid?
+					* rect area on main grid
 * Finalize effect framework
 	* Where
 		* On Cards
@@ -142,6 +175,7 @@ List to demo
 	* blackjack
 		* dealer
 	* go fish
+		* two player
 	* 7 card no peek
 		* poker rules
 	* war
@@ -149,7 +183,7 @@ List to demo
 		* casino war?
 	* rummy
 	* spit
-		* hard
+		* constant running loop
 	* thirtyone
 * Learn about ads
 	* text based
