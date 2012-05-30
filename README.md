@@ -25,7 +25,7 @@ Google Document
 List to demo
 ------------
 
-* Finalize site framework
+* **Finalize site framework**
 	* html5 skinnable draggable windows 
 		* Minimized/maximized/tiled/fancy
 		* animations 
@@ -38,20 +38,20 @@ List to demo
 			* number of fish gotten
 		* storing elaborate layout location cookies
 	* chat
-* Finalize site server
+* **Finalize site server**
 	* Finalize site api
 		* see flowchart
 	* load balancing
 	* properly measuring max concurrent load
 	* properly serving chat server information
-* Finalize main site
+* **Finalize main site**
 	* constant playing game in the background
 		* load cost of this
 	* making all calls
 		* see flowchart
 	* seemless loadbalance
 		* can no one miss their friends?
-* Finalize game server
+* **Finalize game server**
 	* stress test with web
 		* automate
 		* determine concurrent game limit per instance
@@ -61,14 +61,14 @@ List to demo
 	* log everything
 	* Finalize game api
 		* see flowchart
-* Finalize game site
+* **Finalize game site**
 	* skinnable question window
 		* editor?s
 	* canvas drawing
 		* question location
 		* proper scaled game drawing
 			* phone browser support?
-* Finalize developer site
+* **Finalize developer site**
 	* development area
 		* upload content
 			* name 
@@ -82,7 +82,7 @@ List to demo
 			* how many fish have been gotten
 	* ad views
 		* update ad codes
-* Finalize chat server
+* **Finalize chat server**
 	* simple chat
 	* player list
 	* has running rooms
@@ -91,7 +91,7 @@ List to demo
 		* each room
 		* proper room load balancing
 	* log everything
-* Finish debugging area
+* **Finish debugging area**
 	* Code Mirror
 		* Intelisense
 		* control+w?
@@ -100,12 +100,12 @@ List to demo
 	* playing all players at once
 	* saving responses
 	* log everything
-* Proper database solution
+* **Proper database solution**
 	* nosql options 
 		* mongo
 	* log everything
 	* clustering
-* Finalize game framework
+* **Finalize game framework**
 	* game layout editor
 	* asking questions
 		* to one person
@@ -114,7 +114,7 @@ List to demo
 			* wait for all replies
 			* wait for single reply, potentially in a contant loop
 	* debugging
-* Finalize layout framework
+* **Finalize layout framework**
 	* one board grid
 		* xy widthheight
 	* player table spaces
@@ -132,7 +132,7 @@ List to demo
 		* simple player flowing
 		* simple cards cascading in both directions
 		* advanced pyramid shape
-* Finalize question framework
+* **Finalize question framework**
 	* Custom css 
 		* for question popup
 		* for answer buttons on grid
@@ -155,7 +155,7 @@ List to demo
 				* define allowable dragend
 					* spaces
 					* rect area on main grid
-* Finalize effect framework
+* **Finalize effect framework**
 	* Where
 		* On Cards
 		* On Spaces
@@ -170,7 +170,7 @@ List to demo
 		* Fade?
 	* Duration
 	* Chaining Effects
-* Build games
+* **Build games**
 	* sevens
 	* blackjack
 		* dealer
@@ -185,7 +185,7 @@ List to demo
 	* spit
 		* constant running loop
 	* thirtyone
-* Learn about ads
+* **Learn about ads**
 	* text based
 		* adsense 
 		* options
@@ -193,10 +193,10 @@ List to demo
 		* duration
 		* options
 	* sharing text based codes
-* Learn about bringing linode servers on quick
+* **Learn about bringing linode servers on quick**
 	* options (remember xss)
 	* proper magic load balancing
-* Learn about amazon hosting/options
+* **Learn about amazon hosting/options**
 	* serving index.html?
 	* serve all js and css
 
