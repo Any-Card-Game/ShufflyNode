@@ -151,6 +151,7 @@ List to demo
 			* absolute position
 			* card flow
 				* vert/horz
+				* sticky card position? (sevems)
 	* images
 		* at xy, scale
 	* premade boards/spaces
@@ -227,3 +228,38 @@ List to demo
 	* serving index.html?
 	* serve all js and css
 
+
+
+* **Thoughts**
+	* game config items
+		* players can drop
+	* playbacks
+		* queue every 100ms
+	* determine static list of categories
+	* mark game as interesting
+	* movable resizable ads?
+		* cant go off page, can be smushed
+	* rooms
+		* starred 1-3
+		* name
+		* simulate irc
+			* /me
+			* channel operators
+			* topic
+			* colors?
+		* list of games
+		* list of chatters/ingame users
+	* public user statistics
+		* image
+			* gravatar
+			* upload
+			* is offensive?
+	* submit a site skin?
+		* editor?
+	* window drift
+	* scrollable with locks main window
+		* up is user
+		* the left bar is games?
+	* chat in the developer area
+		* developer channel
+			* mark people as helpful
