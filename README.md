@@ -104,7 +104,7 @@ List to demo
 		* variable lookup
 	* watch
 	* immeditate window
-		* safely.......
+		* safely execute javascript...
 	* documentation window
 	* playing all players at once
 	* saving responses
@@ -213,6 +213,7 @@ List to demo
 	* thirtyone
 * **Learn about facebook**
 	* how can i support ads?
+	* fullscreen??
 * **Learn about ads**
 	* text based
 		* adsense 
@@ -228,18 +229,91 @@ List to demo
 	* serving index.html?
 	* serve all js and css
 
+* **Flow**
+	* Users goes to url.com
+	* **Head Server* serves index.html 
+		* very small (under 1k?)
+		* javascript files are pointed to the cloud
+			* amazon ec2 instance?
+		* **Site Server** ip will be embed in the html
+	* user connects to the appropriate site server
+		* receives live playing game
+		* receives last couple of games waiting to start
+	* user searches for rooms
+		* search criterea
+			* games (multiselect)
+			* name
+			* player number
+			* friends?
+	* user enters room
+		* connects to chat server
+		* receives list of games waiting to start and running
+	* user joins game 
+		* connects to new room in chat server, if server is different swap socket
+	* game starts
+	* windows swing away, cards are dealt
+	* questions are asked
+	* game concludes
+	* rejoin room which the game was initial created
+	* $
+		
+
+* ***Server***
+	* **Logic Servers**
+		* **Head Server**
+			* nodejs http server
+			* Initial request to url.com
+			* has socket connection to all **Site Servers**
+			* determines **Site Server** with least load
+			* serves index.html with that **Site Server** specified
+		* **Site Server**
+			* nodejs socketio server
+			* connects to **mongos**
+			* handles all user and room based transactions
+			* has connection to **Head Game Server**
+		* **Head Game Server**
+			* nodejs socketio server
+			* maintains connection with all game servers and site servers
+			* handles creation of games
+			* connects to **mongos**
+		* **Game Server**
+			* nodejs socketio server
+			* has connection to users currently playing games
+			* handles game logic execution
+			* connects to **mongos**
+		* **Chat Server**
+			* nodejs socketio server
+			* handles all chat transactions
+			* maintains connection to all users who are in chat. 
+				* if a player is in multiple rooms at once, only one connection will be made
+		* **Ad Server**
+			* nodejs restful http service
+			* serves the proper ad based on the users current game 
+			* handles developer ad percentage switching			
+	* **Database Servers**
+		* **mongos**
+		* **config server**
+			* 3
+		* **shards**
+			* 2
+		* **backup**
+			* needs research
+	
 
 
 * **Thoughts**
 	* game config items
 		* players can drop
-	* playbacks
-		* queue every 100ms
+		* join in the middle
+			* game.acceptNewPlayers() returns array of new players?
+	* game playbacks
+		* queue every 100ms due to server/database to recreate game
 	* determine static list of categories
 	* mark game as interesting
-	* movable resizable ads?
+		* rank
+	* movable resizable ads
 		* cant go off page, can be smushed
-	* rooms
+	* chat rooms
 		* starred 1-3
 		* name
 		* simulate irc
@@ -249,17 +323,18 @@ List to demo
 			* colors?
 		* list of games
 		* list of chatters/ingame users
+	* chat in the developer area
+		* developer channel
+			* mark people as helpful
 	* public user statistics
 		* image
 			* gravatar
 			* upload
 			* is offensive?
-	* submit a site skin?
-		* editor?
+	* create/submit a site skin
+		* editor
 	* window drift
-	* scrollable with locks main window
-		* up is user
-		* the left bar is games?
-	* chat in the developer area
-		* developer channel
-			* mark people as helpful
+
+* **UI Layouts**
+	* Main window
+		* scrollable with locks 
