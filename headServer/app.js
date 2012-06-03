@@ -1,5 +1,5 @@
 ﻿var fs = require('fs');
-   
+
 var __dirname = '/usr/local/src/headServer';
 var indexPageData;
 
@@ -22,9 +22,6 @@ fs.readFile(__dirname + '/index.html',
         require('http').createServer(handler).listen(80); ;
 
     });
-
-
-
 
 function handler(req, res) {
     res.writeHead(200, { 'Content-Type': "text/html" });

@@ -4,7 +4,7 @@ var fs = require('fs');
 var child_process = require('child_process'); 
 var cJSON = require("./cJSON.js");
 var guid = require("./guid.js");
-var arrayUtils = require('../ArrayUtils.js');
+var arrayUtils = require('../common/ArrayUtils.js');
 
 //var profiler = require('v8-profiler');
  
@@ -157,6 +157,7 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('Area.Game.AnswerQuestion', function (data) {
+        var now = new Date().getMilliseconds();
         var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
 
         if (!room) {
@@ -174,6 +175,9 @@ io.sockets.on('connection', function (socket) {
         }
         askQuestion(answ, room);
         console.log(gameData.toString());
+        var then = new Date().getMilliseconds();
+        console.log(then-now+" Milliseconds");
+        
     });
 });
 

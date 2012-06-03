@@ -65,33 +65,32 @@
 
         window.topLevel = url;
 
-        scriptLoader.loadSync([url + 'client/lib/jquery-1.7.2.min.js', url + 'client/lib/jquery-ui-1.8.20.custom.min.js'], function () {
-            scriptLoader.loadSync([url + 'client/lib/jqwidgets/scripts/gettheme.js',
-                            url + 'client/lib/jqwidgets/jqxcore.js'], function () {
-                                scriptLoader.load([
-                                        url + 'client/lib/jqwidgets/jqxbuttons.js',
-                                        url + 'client/lib/jqwidgets/jqxscrollbar.js',
-                                        url + 'client/lib/jqwidgets/jqxlistbox.js'], function () {
-                                            scriptLoader.load([url + 'client/ClientHelp.js',
-                                                    url + 'Help.js',
-                                                    url + 'client/lib/linq.js',
-                                                    url + 'client/lib/socket.io.js',
-                                                    url + 'client/lib/WorkerConsole.js',
-                                                    url + 'client/lib/FunctionWorker.js',
-                                                    url + 'client/lib/Stats.js',
-                                                    url + 'client/lib/keyboardjs.js',
-                                                    url + 'client/UIManager.js',
-                                                    url + 'client/UIArea.js',
-                                                    url + 'client/PageHandler.js',
-                                                    url + 'client/uis/genericArea.js',
-                                                    url + 'client/ShuffUIManager.js',
-                                                    url + 'client/lib/Dialog.js',
-                                                ], ready);
-                                        });
-
-
+        scriptLoader.loadSync([url + 'client/lib/jquery-1.7.2.min.js',
+                url + 'client/lib/jquery-ui-1.8.20.custom.min.js',
+                url + 'client/lib/jqwidgets/scripts/gettheme.js',
+                url + 'client/lib/jqwidgets/jqxcore.js'], function () {
+                    scriptLoader.load([
+                            url + 'client/lib/jqwidgets/jqxbuttons.js',
+                            url + 'client/lib/jqwidgets/jqxscrollbar.js',
+                            url + 'client/lib/jqwidgets/jqxlistbox.js'], function () {
+                                scriptLoader.load([url + 'client/ClientHelp.js',
+                                        url + 'common/Help.js',
+                                        url + 'client/lib/linq.js',
+                                        url + 'client/lib/socket.io.js',
+                                        url + 'client/lib/WorkerConsole.js',
+                                        url + 'client/lib/FunctionWorker.js',
+                                        url + 'client/lib/Stats.js',
+                                        url + 'client/lib/keyboardjs.js',
+                                        url + 'client/UIManager.js',
+                                        url + 'client/UIArea.js',
+                                        url + 'client/PageHandler.js',
+                                        url + 'client/uis/genericArea.js',
+                                        url + 'client/ShuffUIManager.js',
+                                        url + 'client/lib/Dialog.js',
+                                    ], ready);
                             });
-        });
+
+                });
 
 
 
@@ -267,7 +266,7 @@
 
 
             window.shuffUIManager.questionArea = questionArea;
-             
+
 
             window.shuffUIManager.questionArea.question = questionArea.addLabel({
                 x: 20,
@@ -312,7 +311,7 @@
                 y: 65,
                 width: 215,
                 height: 25 * 5,
-                label: 'Answers', 
+                label: 'Answers',
                 click: function (item) {
                     window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: item.index, roomID: window.PageHandler.gameStuff.roomID });
                     window.shuffUIManager.questionArea.visible = false;

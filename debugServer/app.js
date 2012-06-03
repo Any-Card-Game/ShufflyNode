@@ -1,5 +1,5 @@
 ﻿var fs = require('fs'); 
-var arrayUtils = require('../ArrayUtils.js');
+var arrayUtils = require('../common/ArrayUtils.js');
 
 var cIO = require('socket.io-node-client');
 

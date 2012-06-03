@@ -539,19 +539,12 @@
     <Content Include="headServer\app.js" />
     <Content Include="debugServer\app.js" />
     <Content Include="headServer\index.html" />
-    <Content Include="index-newUI.html" />
     <Content Include="gameServer\cJSON.js" />
     <Content Include="gameServer\guid.js" />
     <Content Include="mockups\flowchart.png" />
     <Content Include="mockups\main site.png" />
+    <Content Include="serverAdmin\admin.js" />
     <Content Include="siteServer\cJSON.js" />
-    <Content Include="web.config" />
-    <Content Include="web.Debug.config">
-      <DependentUpon>web.config</DependentUpon>
-    </Content>
-    <Content Include="web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="client\ClientHelp.js" />
@@ -568,15 +561,14 @@
     <Content Include="client\UIArea.js" />
     <Content Include="client\UIManager.js" />
     <Content Include="client\uis\genericArea.js" />
-    <Content Include="ArrayUtils.js" />
+    <Content Include="common\ArrayUtils.js" />
     <Content Include="gameServer\app.js" />
     <Content Include="gameServer\GameAPI.js" />
     <Content Include="gameServer\Sevens.js" />
     <Content Include="gameServer\gameUtils.js" />
     <Content Include="gameServer\shuff.js" />
-    <Content Include="Help.js" />
+    <Content Include="common\Help.js" />
     <Content Include="implementation\rooms.js" />
-    <Content Include="index.html" />
     <Content Include="models\Card.js" />
     <Content Include="siteServer\app.js" />
     <Content Include="siteServer\sHelp.js" />
