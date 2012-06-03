@@ -545,6 +545,12 @@
     <Content Include="mockups\main site.png" />
     <Content Include="serverAdmin\admin.js" />
     <Content Include="siteServer\cJSON.js" />
+    <None Include="upload\client.bat" />
+    <None Include="upload\all.bat" />
+    <None Include="upload\start.bat" />
+    <None Include="upload\gameServer.bat" />
+    <None Include="upload\headServer.bat" />
+    <None Include="upload\serverAdmin.bat" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="client\ClientHelp.js" />
@@ -572,6 +578,9 @@
     <Content Include="models\Card.js" />
     <Content Include="siteServer\app.js" />
     <Content Include="siteServer\sHelp.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

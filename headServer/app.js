@@ -10,7 +10,6 @@ var gameServer = 'http://li428-241.members.linode.com:81';
 
 var indexForSites = [];
 
-
 fs.readFile(__dirname + '/index.html',
     function (err, data) {
         indexPageData = data;
@@ -19,8 +18,7 @@ fs.readFile(__dirname + '/index.html',
             indexForSites.push(indexPageData.toString().replace('{{siteServer}}', siteServer[i]).replace('{{gameServer}}', gameServer));
         }
 
-        require('http').createServer(handler).listen(80); ;
-
+        require('http').createServer(handler).listen(80);
     });
 
 function handler(req, res) {

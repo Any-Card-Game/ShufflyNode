@@ -81,6 +81,8 @@ function emitAll(room, message, value) {
 
 }
 
+var Sevens = require('./Sevens.js');
+
 io.sockets.on('connection', function (socket) {
 
 
@@ -89,7 +91,6 @@ io.sockets.on('connection', function (socket) {
         rooms.push(room = { name: "main room", maxUsers: 6, roomID: guid(), players: [], started: false }); //make a model 
         room.players.push({ name: data.user.name, socket: socket, debuggable: data.debuggable }); //make a model
         room.fiber = Fiber(function (players) {
-            var Sevens = require('./Sevens.js');
             var sev = new Sevens();
             sev.cardGame.setPlayers(players);
             gameData.totalGames++;

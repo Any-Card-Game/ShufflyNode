@@ -13,7 +13,7 @@ var indexPageData;
     function(err, data) {
 
     });*/
-var head, sites, games;
+var head, sites, games, nodeInspector;
 
 var debug = false;
 
@@ -30,6 +30,8 @@ function loop() {
                 games = [];
 
                 head = runProcess('node', [__dirname + 'headServer/app.js']);
+                console.log('Head Started');
+                nodeInspector = runProcess('node-inspector', []);
                 console.log('Head Started');
                 sites.push(runProcess('node', [__dirname + 'siteServer/app.js']));
                 console.log(sites.length + ' Sites Started');
@@ -48,7 +50,7 @@ function loop() {
 
                 }
                 break;
-            case 'k': 
+            case 'k':
                 if (rest.length == 0) {
                     if (head) {
                         head.kill();
@@ -59,6 +61,8 @@ function loop() {
                     for (var i = 0; i < sites.length; i++) {
                         sites[i].kill();
                     }
+                    if(!nodeInspector.killed)
+                        nodeInspector.kill();
                     console.log('All killed');
                 } else {
                     restartProcs(rest[0]);
