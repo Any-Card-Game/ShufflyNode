@@ -1,7 +1,7 @@
 ﻿window.DEBUGs = true;
 window.DEBUGLABELS = [];
 
-function PageHandler(siteServer,gameServer) {
+function PageHandler(siteServer, gameServer) {
 
     var self = this;
     window.PageHandler = this;
@@ -60,7 +60,7 @@ function PageHandler(siteServer,gameServer) {
     var cardImages = {};
     for (var i = 101; i < 153; i++) {
         var img = new Image();
-        var domain = window.topLevel+'client/assets';
+        var domain = window.topLevel + 'client/assets';
         var src = domain + '/cards/' + i;
         var jm;
         img.src = jm = src + ".gif";
@@ -93,7 +93,7 @@ function PageHandler(siteServer,gameServer) {
 
                 var xx = Math.floor((space.xPosition + xOff) * xMultiply + dim.x);
                 var yy = Math.floor((space.yPosition + yOff) * yMultiply + dim.y);
-                   
+
 
                 gameboard.drawImage(cardImages[drawCard(card)], xx, yy);
 
@@ -117,10 +117,10 @@ function PageHandler(siteServer,gameServer) {
 
     function drawCard(card) {
         var src = '';
-        var domain = window.topLevel+'client/assets';
+        var domain = window.topLevel + 'client/assets';
 
 
-        src = domain + '/cards/' + (100+(card.value + 1) + (card.type) * 13);
+        src = domain + '/cards/' + (100 + (card.value + 1) + (card.type) * 13);
 
         return src + ".gif";
     }
@@ -135,14 +135,14 @@ function PageHandler(siteServer,gameServer) {
     var gameCanvas;
     $('body').append(gameCanvas = document.createElement('canvas'));
 
-    
-    $(gameCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: '0px', 'z-index': -50 }); 
+
+    $(gameCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: '0px', 'z-index': -50 });
 
 
     self.gameContext = gameCanvas.getContext("2d");
     self.gameContext.canvas = gameCanvas;
     self.gameContext.$canvas = $(gameCanvas);
-         
+
     self.gameContext.canvas.width = $(window).width();
     self.gameContext.canvas.height = $(window).height();
 
@@ -164,31 +164,31 @@ function PageHandler(siteServer,gameServer) {
         //special right click menu;
     }, false);
 
-    $(window).resize(self.resizeCanvas);
-    
+    $(window).resize(self.resizeCanvas.bind(self));
+
     self.resizeCanvas();
 
     window.setInterval(self.draw.bind(self), 1000 / 60);
-     
+
 
     return this;
 }
 
 PageHandler.prototype.canvasOnClick = function (e) {
     e.preventDefault();
-    
+
     return false;
 };
 PageHandler.prototype.canvasMouseMove = function (e) {
     e.preventDefault();
     document.body.style.cursor = "default";
     this.lastMouseMove = e;
-    
+
     return false;
 };
 PageHandler.prototype.canvasMouseUp = function (e) {
     e.preventDefault();
-    
+
     return false;
 };
 PageHandler.prototype.handleScroll = function (e) {
@@ -201,11 +201,13 @@ PageHandler.prototype.handleScroll = function (e) {
 
 
 PageHandler.prototype.resizeCanvas = function () {
-    this.gameContext.$canvas.attr("width", $(window).width());
-    this.gameContext.$canvas.attr("height", $(window).height());
+    if (window.PageHandler.gameContext.$canvas.attr("width") != $(window).width())
+        window.PageHandler.gameContext.$canvas.attr("width", $(window).width());
+    if (window.PageHandler.gameContext.$canvas.attr("height") != $(window).height())
+        window.PageHandler.gameContext.$canvas.attr("height", $(window).height());
 };
 
 PageHandler.prototype.draw = function () {
-   // cHelp.clearCanvas(this.gameContext.canvas); 
-      
+    // cHelp.clearCanvas(this.gameContext.canvas); 
+
 };

@@ -20,18 +20,15 @@
         outer.css('height', options.height + "px");
         outer.css('di', options.height + "px");
 
-        outer.css('display', options.visible === false ? 'hidden' : 'block');
+        outer.css('display', options.visible === false ? 'none' : 'block');
 
-        outer.visible = function (val) {
-            outer.css('display', val ? 'block' : 'hidden');
-        };
-        
+
 
 
         var top = $("<div style='width:100%; text-align:center; font-size:25px; position:absolute; top:0px;left:-2px;  '></div>");
         outer.append(top);
 
-      /*  var left = $("<div  style='width:20px;  height:100%; position:absolute; top:0px;left:3px; '></div>");
+        /*  var left = $("<div  style='width:20px;  height:100%; position:absolute; top:0px;left:3px; '></div>");
         outer.append(left);
 
         var leftInner = $("<div class='rounded'  style='width:15px; vertical-align:middle; position:absolute;top:0;bottom:0;margin:auto;  height:50%; background-color:white; text-align:center; font-size:25px; position:absolute; top:0px;left:3px; opacity:0.2;  '></div>");
@@ -69,9 +66,15 @@
             cancel: '.window-inner',
             containment: "window", animate: true
         });
-        outer.resizable({ ghost: true, handles: "n, e, s, w, ne, se, sw, nw" });
+        outer.resizable({ handles: "n, e, s, w, ne, se, sw, nw" });
         $(document.body).append(outer);
-        return new ShuffWindow($("#window" + windowID));
+        var shuf = new ShuffWindow($("#window" + windowID));
+
+        shuf.visible = function (val) {
+            outer.css('display', val ? 'block' : 'none');
+        };
+
+        return shuf;
     };
 }
 
@@ -93,10 +96,10 @@ function ShuffWindow(item) {
         but.button(); 
         but.click(options.click);
         but.disableSelection();
-        but.css('display', options.visible === false ? 'hidden' : 'block');
+        but.css('display', options.visible === false ? 'none' : 'block');
         
         but.visible = function (val) {
-            but.css('display', val ? 'block' : 'hidden');
+            but.css('display', val ? 'block' : none);
         };
         return but;
     };

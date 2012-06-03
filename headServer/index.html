@@ -139,7 +139,7 @@
                 height: 25,
                 text: 'Create Game',
                 click: function (e) {
-                    window.PageHandler.gameSocket.emit('Area.Game.Create', { user: { name: genericArea.txtUserName.text()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gameSocket.emit('Area.Game.Create', { user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
 
                 }
             });
@@ -182,7 +182,7 @@
                 height: 25 * 6,
                 label: 'Rooms',
                 click: function () {
-                    window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: id, user: { name: genericArea.txtUserName.text()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: id, user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
             });
             genericArea.userList = home.addListBox({
@@ -239,7 +239,7 @@
                     label: 'Rooms',
                     items: rooms,
                     click: function (item) {
-                        window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: item.value, user: { name: genericArea.txtUserName.text()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                        window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: item.value, user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
                     }
                 });
             };
@@ -283,7 +283,7 @@
 
 
             window.shuffUIManager.questionArea.load = function (question) {
-                window.shuffUIManager.questionArea.visible = true;
+                window.shuffUIManager.questionArea.visible(true);
                 window.shuffUIManager.questionArea.question.text = question.question;
                 window.shuffUIManager.questionArea.answerBox.remove();
 
@@ -300,7 +300,7 @@
                     items: answers,
                     click: function (item) {
                         window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: item.value, roomID: window.PageHandler.gameStuff.roomID });
-                        window.shuffUIManager.questionArea.visible = false;
+                        window.shuffUIManager.questionArea.visible(false);
 
                     }
                 });
