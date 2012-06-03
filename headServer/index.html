@@ -1,0 +1,391 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Shuffly</title>
+    <link type="text/css" href="https://s3.amazonaws.com/anycardgame/client/lib/jquery-ui-1.8.20.custom.css"
+        rel="stylesheet" />
+    <link type="text/css" href="https://s3.amazonaws.com/anycardgame/client/lib/site.css"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://s3.amazonaws.com/anycardgame/client/lib/jqwidgets/styles/jqx.base.css"
+        type="text/css" />
+    <script type="text/javascript">
+        /**
+        *
+        *  Chainable external javascript file loading
+        *  http://www.webtoolkit.info/
+        *
+        **/
+        var scriptLoader = {
+            _loadScript: function (url, callback) {
+                var head = document.getElementsByTagName('head')[0];
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url; // +"?" + (Math.floor(Math.random() * 10000)); //caching
+                if (callback) {
+                    script.onreadystatechange = function () {
+                        if (this.readyState == 'loaded') callback();
+                    };
+                    script.onload = callback;
+                }
+                head.appendChild(script);
+            },
+
+            load: function (items, done) {
+                var counter = 0;
+                for (var i = 0; i < items.length; i++) {
+                    scriptLoader._loadScript(items[i], function () {
+                        counter++;
+                        if (counter >= items.length) {
+                            done();
+                        }
+                    });
+                }
+            },
+            loadSync: function (items, done) {
+                var counter = 0;
+                var i = 0;
+                var nextOne = function () {
+                    counter++;
+                    if (counter >= items.length) {
+                        done();
+                    } else {
+                        scriptLoader._loadScript(items[counter], nextOne);
+                    }
+                };
+
+
+
+                scriptLoader._loadScript(items[0], nextOne);
+            }
+
+        };
+
+        var url = 'https://s3.amazonaws.com/anycardgame/';
+        var url = 'http://50.116.22.241:8881/';
+
+        window.topLevel = url;
+
+        scriptLoader.loadSync([url + 'client/lib/jquery-1.7.2.min.js', url + 'client/lib/jquery-ui-1.8.20.custom.min.js'], function () {
+            scriptLoader.loadSync([url + 'client/lib/jqwidgets/scripts/gettheme.js',
+                            url + 'client/lib/jqwidgets/jqxcore.js'], function () {
+                                scriptLoader.load([
+                                        url + 'client/lib/jqwidgets/jqxbuttons.js',
+                                        url + 'client/lib/jqwidgets/jqxscrollbar.js',
+                                        url + 'client/lib/jqwidgets/jqxlistbox.js'], function () {
+                                            scriptLoader.load([url + 'client/ClientHelp.js',
+                                                    url + 'Help.js',
+                                                    url + 'client/lib/linq.js',
+                                                    url + 'client/lib/socket.io.js',
+                                                    url + 'client/lib/WorkerConsole.js',
+                                                    url + 'client/lib/FunctionWorker.js',
+                                                    url + 'client/lib/Stats.js',
+                                                    url + 'client/lib/keyboardjs.js',
+                                                    url + 'client/UIManager.js',
+                                                    url + 'client/UIArea.js',
+                                                    url + 'client/PageHandler.js',
+                                                    url + 'client/uis/genericArea.js',
+                                                    url + 'client/ShuffUIManager.js',
+                                                    url + 'client/lib/Dialog.js',
+                                                ], ready);
+                                        });
+
+
+                            });
+        });
+
+
+
+        function ready() {
+            var stats = new xStats;
+            document.body.appendChild(stats.element);
+            var pageHandler = new PageHandler('{{siteServer}}', '{{gameServer}}');
+
+
+            var shuffUIManager = new ShuffUIManager();
+            window.shuffUIManager = shuffUIManager;
+
+            var genericArea = {};
+
+            window.shuffUIManager.genericArea = genericArea;
+
+            var home = shuffUIManager.createWindow({
+                title: "CardGame",
+                x: 100,
+                y: 100,
+                width: 420,
+                height: 450,
+                allowClose: true,
+                allowMinimize: true
+
+            });
+
+
+            home.addButton({
+                x: 280,
+                y: 54,
+                width: 150,
+                height: 25,
+                text: 'Update Game List',
+                click: function (e) {
+                    window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+
+                }
+            });
+
+            home.addButton({
+                x: 280,
+                y: 84,
+                width: 150,
+                height: 25,
+                text: 'Create Game',
+                click: function (e) {
+                    window.PageHandler.gameSocket.emit('Area.Game.Create', { user: { name: genericArea.txtUserName.text()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+
+                }
+            });
+            genericArea.btnStartGame = home.addButton({
+                x: 280,
+                y: 164,
+                width: 150,
+                height: 25,
+                text: 'Start Game',
+                click: function (e) {
+                    window.PageHandler.gameSocket.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                },
+                visible: false
+            });
+
+            home.addButton({
+                x: 280,
+                y: 164,
+                width: 120,
+                height: 25,
+                text: 'Start Game',
+                click: function (e) {
+                    window.PageHandler.gameSocket.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+
+                }
+            });
+
+            genericArea.txtUserName = home.addTextbox({
+                x: 130,
+                y: 43,
+                width: 130,
+                height: 20,
+                text: 'dested',
+                label: 'Username:'
+            });
+            genericArea.gameList = home.addListBox({
+                x: 30,
+                y: 85,
+                width: 215,
+                height: 25 * 6,
+                label: 'Rooms',
+                click: function () {
+                    window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: id, user: { name: genericArea.txtUserName.text()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                }
+            });
+            genericArea.userList = home.addListBox({
+                x: 30,
+                y: 280,
+                width: 215,
+                height: 25 * 5,
+                label: 'Users'
+            });
+
+
+
+            genericArea.loadRoomInfo = function (room) {
+
+
+                genericArea.userList.remove();
+                genericArea.btnStartGame.visible(true);
+
+                var users = [];
+
+                for (var i = 0; i < room.players.length; i++) {
+
+                    users.push(room.players[i].name);
+
+                }
+
+
+                genericArea.userList = home.addListBox({
+                    x: 30,
+                    y: 280,
+                    width: 215,
+                    height: 25 * 5,
+                    label: 'Users',
+                    items: users
+                });
+
+            };
+
+            genericArea.loadRoomInfos = function (room) {
+                genericArea.gameList.remove();
+
+                var rooms = [];
+
+                for (var i = 0; i < room.length; i++) {
+                    rooms.push({ label: room[i].name, value: room[i].roomID });
+                }
+
+
+                genericArea.gameList = home.addListBox({
+                    x: 30,
+                    y: 85,
+                    width: 215,
+                    height: 25 * 6,
+                    label: 'Rooms',
+                    items: rooms,
+                    click: function (item) {
+                        window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: item.value, user: { name: genericArea.txtUserName.text()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    }
+                });
+            };
+
+
+
+
+
+
+
+
+
+            var questionArea = shuffUIManager.createWindow({
+                title: "Question",
+                x: 600,
+                y: 100,
+                width: 300,
+                height: 275,
+                allowClose: true,
+                allowMinimize: true,
+                visible: false
+
+            });
+
+
+
+            window.shuffUIManager.questionArea = questionArea;
+             
+
+            window.shuffUIManager.questionArea.question = questionArea.addLabel({
+                x: 20,
+                y: 5,
+                width: 150,
+                height: 25,
+                text: '',
+                click: function (e) {
+                    window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+
+                }
+            });
+
+
+            window.shuffUIManager.questionArea.load = function (question) {
+                window.shuffUIManager.questionArea.visible = true;
+                window.shuffUIManager.questionArea.question.text = question.question;
+                window.shuffUIManager.questionArea.answerBox.remove();
+
+                var answers = [];
+                for (var i = 0; i < question.answers.length; i++) {
+                    answers.push({ label: question.answers[i], value: i });
+                }
+                window.shuffUIManager.questionArea.answerBox = questionArea.addListBox({
+                    x: 30,
+                    y: 65,
+                    width: 215,
+                    height: 25 * 5,
+                    label: 'Answers',
+                    items: answers,
+                    click: function (item) {
+                        window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: item.value, roomID: window.PageHandler.gameStuff.roomID });
+                        window.shuffUIManager.questionArea.visible = false;
+
+                    }
+                });
+
+            };
+
+            window.shuffUIManager.questionArea.answerBox = questionArea.addListBox({
+                x: 30,
+                y: 65,
+                width: 215,
+                height: 25 * 5,
+                label: 'Answers', 
+                click: function (item) {
+                    window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: item.index, roomID: window.PageHandler.gameStuff.roomID });
+                    window.shuffUIManager.questionArea.visible = false;
+
+                }
+            });
+
+
+
+
+
+
+            window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+
+
+
+            /*
+
+
+
+
+
+            var main = shuffUIManager.createWindow({
+            title: "Main",
+            x: 200,
+            y: 100,
+            width: 600,
+            height: 450,
+            allowClose: true,
+            allowMinimize: true
+            });
+            main.addButton({
+            x: 80,
+            y: 90,
+            width: 100,
+            height: 24,
+            text: 'football'
+            });
+            main.addTextbox({
+            x: 80,
+            y: 140,
+            width: 100,
+            height: 24,
+            text: 'football',
+            label: 'name'
+            });
+            main.addListBox({
+            x: 220,
+            y: 140,
+            width: 180,
+            height: 80,
+            label: 'name',
+            items: ["Affogato", "Americano", "Bicerin", "Breve", "Café Bombón", "Café au lait", "Caffé Corretto", "Café Crema", "Caffé Latte", "Caffé macchiato", "Café mélange", "Coffee milk", "Cafe mocha", "Cappuccino", "Carajillo", "Cortado", "Cuban espresso", "Espresso", "Eiskaffee", "The Flat White", "Frappuccino", "Galao", "Greek frappé coffee", "Iced Coffee﻿", "Indian filter coffee", "Instant coffee", "Irish coffee", "Liqueur coffee"]
+            });
+            var adWindow = shuffUIManager.createWindow({
+            title: "Ad",
+            x: document.width - 400,
+            y: 200,
+            width: 160,
+            height: 700,
+            allowClose: true,
+            allowMinimize: true
+            });
+            */
+        }
+    </script>
+    <style type="text/css">
+        body
+        {
+            background-color: cadetblue;
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>

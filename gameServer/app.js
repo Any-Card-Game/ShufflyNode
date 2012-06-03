@@ -1,15 +1,13 @@
 ﻿var app = require('http').createServer(handler);
 var io = require('socket.io').listen(app);
 var fs = require('fs');
-var child_process = require('child_process');
-var _und = require("underscore");
+var child_process = require('child_process'); 
 var cJSON = require("./cJSON.js");
 var guid = require("./guid.js");
 var arrayUtils = require('../ArrayUtils.js');
 
 //var profiler = require('v8-profiler');
-
-global._und = _und;
+ 
 
 require('fibers');
 
@@ -144,12 +142,17 @@ io.sockets.on('connection', function (socket) {
         }
 
         emitAll(room, 'Area.Game.Started', JSON.parse(JSON.stringify(room, function (name, value) { if (name != 'socket') return value; })));
-
+        room.started = true;
         //  profiler.takeSnapshot('game started ' + room.roomID);
 
         var answ = room.fiber.run(room.players);
         askQuestion(answ, room);
         console.log(gameData.toString());
+    });
+
+
+    socket.on('Area.Game.GetRooms', function (data) {
+        socket.emit('Area.Game.GetRoomsResponse', JSON.parse(JSON.stringify(rooms, function (name, value) { if (name != 'socket') return value; })));
     });
 
 

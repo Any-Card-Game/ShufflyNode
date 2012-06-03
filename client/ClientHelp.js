@@ -87,41 +87,6 @@ window.cHelp = {
 
 
 
-/**
-*
-*  Chainable external javascript file loading
-*  http://www.webtoolkit.info/
-*
-**/
-var scriptLoader = {
-    _loadScript: function (url, callback) {
-        var head = document.getElementsByTagName('head')[0];
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = url; // +"?" + (Math.floor(Math.random() * 10000)); //caching
-        if (callback) {
-            script.onreadystatechange = function () {
-                if (this.readyState == 'loaded') callback();
-            };
-            script.onload = callback;
-        }
-        head.appendChild(script);
-    },
-
-    load: function (items, done) {
-        var counter = 0;
-        for (var i = 0; i < items.length; i++) {
-            scriptLoader._loadScript(items[i], function () {
-                counter++;
-                if (counter >= items.length) {
-                    done();
-                }
-            });
-        }
-    }
-};
-
-
 window.requestAnimFrame = (function (ff) {
     if (window.requestAnimationFrame)
         return window.requestAnimationFrame(ff);

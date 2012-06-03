@@ -1,7 +1,7 @@
 ﻿window.DEBUGs = true;
 window.DEBUGLABELS = [];
 
-function PageHandler() {
+function PageHandler(siteServer,gameServer) {
 
     var self = this;
     window.PageHandler = this;
@@ -9,8 +9,8 @@ function PageHandler() {
 
 
 
-    window.PageHandler.siteSocket = io.connect('http://li428-241.members.linode.com:82');
-    window.PageHandler.gameSocket = io.connect('http://li428-241.members.linode.com:81');
+    window.PageHandler.siteSocket = io.connect(siteServer);
+    window.PageHandler.gameSocket = io.connect(gameServer);
     self.gameStuff = {
         roomID: -1
     };
@@ -32,14 +32,14 @@ function PageHandler() {
     window.PageHandler.gameSocket.on('Area.Game.RoomInfo', function (data) {
         self.gameStuff.roomID = data.roomID;
 
-        uiManager.genericArea.loadRoomInfo(data);
+        window.shuffUIManager.genericArea.loadRoomInfo(data);
     });
     window.PageHandler.gameSocket.on('Area.Game.RoomInfos', function (data) {
-        uiManager.genericArea.loadRoomInfos(data);
+        window.shuffUIManager.genericArea.loadRoomInfos(data);
     });
 
     window.PageHandler.gameSocket.on('Area.Game.AskQuestion', function (data) {
-        uiManager.questionArea.load(data);
+        window.shuffUIManager.questionArea.load(data);
         //alert(JSON.stringify(data));
         //  socket.Emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
     });
@@ -60,7 +60,7 @@ function PageHandler() {
     var cardImages = {};
     for (var i = 101; i < 153; i++) {
         var img = new Image();
-        var domain = '/client/assets';
+        var domain = window.topLevel+'client/assets';
         var src = domain + '/cards/' + i;
         var jm;
         img.src = jm = src + ".gif";
@@ -117,7 +117,7 @@ function PageHandler() {
 
     function drawCard(card) {
         var src = '';
-        var domain = '/client/assets';
+        var domain = window.topLevel+'client/assets';
 
 
         src = domain + '/cards/' + (100+(card.value + 1) + (card.type) * 13);
@@ -132,19 +132,11 @@ function PageHandler() {
     });
 
 
-    var uiCanvas, gameCanvas;
+    var gameCanvas;
     $('body').append(gameCanvas = document.createElement('canvas'));
 
-    $('body').append(uiCanvas = document.createElement('canvas'));
-    $(uiCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: '0px', 'z-index': 0 });
-    $(gameCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: '0px', 'z-index': 0 });
-
-    self.uiContext = uiCanvas.getContext("2d");
-    self.uiContext.canvas = uiCanvas;
-    self.uiContext.$canvas = $(uiCanvas);
-
-    self.uiContext.canvas.width = $(window).width();
-    self.uiContext.canvas.height = $(window).height();
+    
+    $(gameCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: '0px', 'z-index': -50 }); 
 
 
     self.gameContext = gameCanvas.getContext("2d");
@@ -156,77 +148,64 @@ function PageHandler() {
 
     this.lastMouseMove = false;
 
-    uiCanvas.addEventListener('DOMMouseScroll', self.handleScroll.bind(self), false);
-    uiCanvas.addEventListener('mousewheel', self.handleScroll.bind(self), false);
+    gameCanvas.addEventListener('DOMMouseScroll', self.handleScroll.bind(self), false);
+    gameCanvas.addEventListener('mousewheel', self.handleScroll.bind(self), false);
 
-    uiCanvas.addEventListener('touchmove', self.canvasMouseMove.bind(self));
-    uiCanvas.addEventListener('touchstart', self.canvasOnClick.bind(self));
-    uiCanvas.addEventListener('touchend', self.canvasMouseUp.bind(self));
+    gameCanvas.addEventListener('touchmove', self.canvasMouseMove.bind(self));
+    gameCanvas.addEventListener('touchstart', self.canvasOnClick.bind(self));
+    gameCanvas.addEventListener('touchend', self.canvasMouseUp.bind(self));
 
-    uiCanvas.addEventListener('mousedown', self.canvasOnClick.bind(self));
-    uiCanvas.addEventListener('mouseup', self.canvasMouseUp.bind(self));
-    uiCanvas.addEventListener('mousemove', self.canvasMouseMove.bind(self));
+    gameCanvas.addEventListener('mousedown', self.canvasOnClick.bind(self));
+    gameCanvas.addEventListener('mouseup', self.canvasMouseUp.bind(self));
+    gameCanvas.addEventListener('mousemove', self.canvasMouseMove.bind(self));
 
-    uiCanvas.addEventListener('contextmenu', function (evt) {
+    gameCanvas.addEventListener('contextmenu', function (evt) {
         evt.preventDefault();
         //special right click menu;
     }, false);
 
     $(window).resize(self.resizeCanvas);
-    self.uiManager = new UIManager(self.uiContext);
+    
     self.resizeCanvas();
 
     window.setInterval(self.draw.bind(self), 1000 / 60);
-
-    $(document).keydown(function (e) {
-        self.uiManager.onKeyDown(e);
-    });
+     
 
     return this;
 }
 
 PageHandler.prototype.canvasOnClick = function (e) {
     e.preventDefault();
-    if (this.uiManager.onClick(e)) return false;
+    
     return false;
 };
 PageHandler.prototype.canvasMouseMove = function (e) {
     e.preventDefault();
     document.body.style.cursor = "default";
     this.lastMouseMove = e;
-    if (this.uiManager.onMouseMove(e)) return false;
+    
     return false;
 };
 PageHandler.prototype.canvasMouseUp = function (e) {
     e.preventDefault();
-    this.uiManager.onMouseUp(this.lastMouseMove);
+    
     return false;
 };
 PageHandler.prototype.handleScroll = function (e) {
     e.preventDefault();
 
-    if (this.uiManager.onMouseScroll(e)) return false;
+
 
     return e.preventDefault() && false;
 };
 
 
 PageHandler.prototype.resizeCanvas = function () {
-    this.uiContext.$canvas.attr("width", $(window).width());
-    this.uiContext.$canvas.attr("height", $(window).height());
+    this.gameContext.$canvas.attr("width", $(window).width());
+    this.gameContext.$canvas.attr("height", $(window).height());
 };
 
 PageHandler.prototype.draw = function () {
-    cHelp.clearCanvas(this.uiContext.canvas);
-    this.uiManager.draw(this.uiContext);
-
-    this.uiContext.save();
-    for (var i = 0; i < window.DEBUGLABELS.length; i++) {
-        this.uiContext.fillStyle = "#ffffff";
-        this.uiContext.font = "16pt Arial bold";
-        this.uiContext.fillText(window.DEBUGLABELS[i], 200, i * 30 + 100);
-    }
-
-    this.uiContext.restore();
-
+   // cHelp.clearCanvas(this.gameContext.canvas); 
+      
 };
