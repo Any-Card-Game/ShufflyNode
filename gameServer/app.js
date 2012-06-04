@@ -52,8 +52,14 @@ var gameData = {
 var rooms = [];
 
 function askQuestion(answ, room) {
+    if (!room.players || !room.players.length || !answ.user) return;
+    
+    var user = arrayUtils.first.call(room.players, (function (u) {
 
-    var user = arrayUtils.first.call(room.players, (function (u) { return u.name == answ.user.name; }));
+        if (!u ) return;
+
+        return u.name == answ.user.name;
+    }));
     user.socket.emit('Area.Game.AskQuestion',
         JSON.parse(JSON.stringify({ question: answ.question, answers: answ.answers }, function (key, value) {
             if ('socket' == (key)) return undefined;
@@ -91,7 +97,11 @@ io.sockets.on('connection', function (socket) {
         rooms.push(room = { name: "main room", maxUsers: 6, roomID: guid(), players: [], started: false }); //make a model 
         room.players.push({ name: data.user.name, socket: socket, debuggable: data.debuggable }); //make a model
         room.fiber = Fiber(function (players) {
+            if (!players || !players.length) return true;
+
+            console.log('game started');
             var sev = new Sevens();
+
             sev.cardGame.setPlayers(players);
             gameData.totalGames++;
             gameData.totalPlayers += players.length;
@@ -99,6 +109,8 @@ io.sockets.on('connection', function (socket) {
             sev.constructor();
             sev.runGame();
             gameData.finishedGames++;
+            console.log('------game finished');
+
             //gameData.totalPlayers -= players.length;
         });
 
@@ -141,12 +153,22 @@ io.sockets.on('connection', function (socket) {
         if (!room) {
             return;
         }
+        if (!room.players || !room.players.length) {
+            console.log('baaaaxxaaaaaaaaaaaaaaad');
+            return true;
+        }
+
 
         emitAll(room, 'Area.Game.Started', JSON.parse(JSON.stringify(room, function (name, value) { if (name != 'socket') return value; })));
         room.started = true;
         //  profiler.takeSnapshot('game started ' + room.roomID);
 
         var answ = room.fiber.run(room.players);
+        if (!answ) {
+            emitAll(room, 'Area.Game.GameOver', '');
+            //     profiler.takeSnapshot('game over ' + room.roomID);
+            return;
+        }
         askQuestion(answ, room);
         console.log(gameData.toString());
     });
@@ -164,8 +186,9 @@ io.sockets.on('connection', function (socket) {
         if (!room) {
             return;
         }
+        console.log('----game question asked');
         var answ = room.fiber.run({ value: data.answer });
-
+        console.log('----game question answered');
 
         gameData.totalQuestionsAnswered++;
         if (!answ) {
@@ -174,11 +197,14 @@ io.sockets.on('connection', function (socket) {
             //     profiler.takeSnapshot('game over ' + room.roomID);
             return;
         }
+        console.log('----game question before sent');
+
         askQuestion(answ, room);
         console.log(gameData.toString());
         var then = new Date().getMilliseconds();
-        console.log(then-now+" Milliseconds");
-        
+        console.log(then - now + " Milliseconds");
+        console.log('----game question sent');
+
     });
 });
 

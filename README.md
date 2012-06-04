@@ -79,6 +79,7 @@ List to demo
 			* card back
 			* advertising code
 		* debugging area
+		* proper app crash support
 	* see game stuff
 		* track custom elaborate statistics
 			* how many fish have been gotten

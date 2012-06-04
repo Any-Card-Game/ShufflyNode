@@ -44,16 +44,8 @@ function PageHandler(siteServer, gameServer) {
         //  socket.Emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
     });
     window.PageHandler.gameSocket.on('Area.Game.UpdateState', function (data) {
-        if (data.mainArea) {
-            self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
-
-            var mainArea = data.mainArea;
-            drawArea(mainArea);
-
-            for (var a = 0; a < data.userAreas.length; a++) {
-                drawArea(data.userAreas[a]);
-            }
-        }
+        self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
+        drawArea(data);
     });
 
 
@@ -69,40 +61,33 @@ function PageHandler(siteServer, gameServer) {
 
     function drawArea(mainArea) {
         var gameboard = self.gameContext;
-        var dim = mainArea.dimensions;
+
+        var scale = { x: self.gameContext.canvas.width / mainArea.size.width, y: self.gameContext.canvas.height / mainArea.size.height };
+
         gameboard.fillStyle = "rgba(0, 0, 200, 0.5)";
-        gameboard.fillRect(dim.x, dim.y, dim.width, dim.height);
-        var cardCount = 0;
+
         var space;
-        var i;
-        for (i = 0; i < mainArea.spaces.length; i++) {
-            space = mainArea.spaces[i];
-            cardCount += space.pile.cards.length;
-        }
-
-
-        var xMultiply = dim.width / (mainArea.numberOfCardsHorizontal == -1 ? cardCount : mainArea.numberOfCardsHorizontal);
-        var yMultiply = dim.height / (mainArea.numberOfCardsVertical == -1 ? cardCount : mainArea.numberOfCardsVertical);
-
         for (i = 0; i < mainArea.spaces.length; i++) {
             space = mainArea.spaces[i];
             var xOff = 0;
             var yOff = 0;
+
+            gameboard.fillRect(space.x * scale.x, space.y * scale.y, space.width * scale.x, space.height * scale.y);
+
             for (j = 0; j < space.pile.cards.length; j++) {
                 var card = space.pile.cards[j];
 
-                var xx = Math.floor((space.xPosition + xOff) * xMultiply + dim.x);
-                var yy = Math.floor((space.yPosition + yOff) * yMultiply + dim.y);
-
+                var xx = Math.floor((space.x + xOff) * scale.x);
+                var yy = Math.floor((space.y + yOff) * scale.y);
 
                 gameboard.drawImage(cardImages[drawCard(card)], xx, yy);
 
                 xOff++;
-                if (xOff > (space.width == -1 ? space.pile.cards.length : space.width)) {
+                if (xOff > space.pile.cards.length) {
                     xOff = 0;
                     yOff++;
                 }
-                if (yOff > (space.height == -1 ? space.pile.cards.length : space.height)) {
+                if (yOff > space.pile.cards.length) {
                     alert('error');
                 }
             }
@@ -110,7 +95,7 @@ function PageHandler(siteServer, gameServer) {
         for (i = 0; i < mainArea.textAreas.length; i++) {
             var ta = mainArea.textAreas[i];
             gameboard.fillStyle = "rgba(200, 0, 200, 0.5)";
-            gameboard.fillText(ta.text, Math.floor((ta.x) * xMultiply + dim.x), Math.floor((ta.y) * yMultiply + dim.y));
+            gameboard.fillText(ta.text, ta.x * scale.x, ta.y * scale.y);
         }
     }
 

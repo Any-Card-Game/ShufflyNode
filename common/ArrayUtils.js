@@ -1,4 +1,5 @@
 ﻿var ar = {};
+
 ar.foreach = Array.prototype.foreach = (function (does) {
     for (var i = 0; i < this.length; i++) {
         var df;
@@ -8,6 +9,7 @@ ar.foreach = Array.prototype.foreach = (function (does) {
     }
     return false;
 });
+
 ar.where = Array.prototype.where = (function (does) {
     var jf = [];
     for (var i = 0; i < this.length; i++) {
@@ -16,6 +18,7 @@ ar.where = Array.prototype.where = (function (does) {
     }
     return jf;
 });
+
 ar.first = Array.prototype.first = (function (does) {
     for (var i = 0; i < this.length; i++) {
         if (does(this[i], i))
@@ -23,6 +26,11 @@ ar.first = Array.prototype.first = (function (does) {
     }
     return undefined;
 });
+
+ar.last = Array.prototype.last = (function () {
+    return this[this.length - 1];
+});
+
 ar.any = Array.prototype.any = (function (does) {
     for (var i = 0; i < this.length; i++) {
         if (does(this[i]))
