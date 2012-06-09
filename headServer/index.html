@@ -5,7 +5,12 @@
     <link type="text/css" href="https://s3.amazonaws.com/anycardgame/client/lib/jquery-ui-1.8.20.custom.css"
         rel="stylesheet" />
     <link type="text/css" href="https://s3.amazonaws.com/anycardgame/client/lib/site.css"
-        rel="stylesheet" />
+          rel="stylesheet" />
+          
+    <link type="text/css" href="https://s3.amazonaws.com/anycardgame/client/lib/codemirror/theme/night.css"
+          rel="stylesheet" />
+
+    <link type="text/css" href="https://s3.amazonaws.com/anycardgame/client/lib/codemirror/codemirror.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://s3.amazonaws.com/anycardgame/client/lib/jqwidgets/styles/jqx.base.css"
         type="text/css" />
     <script type="text/javascript">
@@ -22,7 +27,7 @@
                 script.type = 'text/javascript';
                 script.src = url; // +"?" + (Math.floor(Math.random() * 10000)); //caching
                 if (callback) {
-                    script.onreadystatechange = function () {
+                    script.onreadystatechange = function () {   
                         if (this.readyState == 'loaded') callback();
                     };
                     script.onload = callback;
@@ -51,14 +56,14 @@
                     } else {
                         scriptLoader._loadScript(items[counter], nextOne);
                     }
-                }; 
+                };
                 scriptLoader._loadScript(items[0], nextOne);
             }
 
         };
 
         var url = 'https://s3.amazonaws.com/anycardgame/';
-        var url = 'http://50.116.22.241:8881/';
+//        var url = 'http://50.116.22.241:8881/';
 
         window.topLevel = url;
 
@@ -69,11 +74,14 @@
                     scriptLoader.load([
                             url + 'client/lib/jqwidgets/jqxbuttons.js',
                             url + 'client/lib/jqwidgets/jqxscrollbar.js',
-                            url + 'client/lib/jqwidgets/jqxlistbox.js'], function () {
-                                scriptLoader.load([url + 'client/ClientHelp.js',
-                                        url + 'common/Help.js',
                                         url + 'client/lib/linq.js',
                                         url + 'client/lib/socket.io.js',
+                                        url + 'client/lib/codemirror/codemirror.js',
+                            url + 'client/lib/jqwidgets/jqxlistbox.js'], function () {
+                                
+                                scriptLoader.load([url + 'client/ClientHelp.js',
+                                        url + 'common/Help.js',
+                                        url + 'client/lib/codemirror/mode/javascript/javascript.js',
                                         url + 'client/lib/WorkerConsole.js',
                                         url + 'client/lib/FunctionWorker.js',
                                         url + 'client/lib/Stats.js',
@@ -106,10 +114,10 @@
 
             var home = shuffUIManager.createWindow({
                 title: "CardGame",
-                x: 100,
+                x: $('body').innerWidth() -500,
                 y: 100,
                 width: 420,
-                height: 450,
+                height: 850,
                 allowClose: true,
                 allowMinimize: true
 
@@ -239,6 +247,82 @@
                     }
                 });
             };
+
+
+
+
+
+
+
+
+
+
+
+
+
+            var devArea = shuffUIManager.createWindow({
+                title: "Developer",
+                x: 600,
+                y: 100,
+                width: 450,
+                height: 480,
+                allowClose: true,
+                allowMinimize: true,
+                visible: true
+
+            });
+
+
+
+            window.shuffUIManager.devArea = devArea;
+
+            
+
+
+
+            devArea.element.append('<textarea id="code" name="code" style="position:absolute;width:485px;height:485px;"></textarea>');
+
+            var codeMirror = document.getElementById("code");
+            codeMirror.value = 'if(true==44)\n{\nfor(var i=0;i<10;i++){}\n}';
+            var editor = CodeMirror.fromTextArea(codeMirror, {
+                lineNumbers: true,
+                matchBrackets: true,
+                extraKeys: {
+                    "Ctrl-Space": function (cm) {
+                        CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+                    },
+                    "Ctrl-I": function (cm) {
+                        var pos = cm.getCursor();
+                        cm.setValue(window.fjs.format(cm.getValue()));
+                        cm.setCursor(pos);
+
+                    }
+
+                },
+
+                onCursorActivity: function () {
+                    editor.setLineClass(hlLine, null);
+                    hlLine = editor.setLineClass(editor.getCursor().line, "activeline");
+                },
+                onFocus: function (editor) {
+
+                },
+                onBlur: function (editor) {
+                }
+
+            });
+            editor.setOption("theme", "night");
+
+            var hlLine = editor.setLineClass(0, "activeline");
+
+            var scroller = editor.getScrollerElement();
+            scroller.style.top = "25px";
+            scroller.style.height = "460px";
+            scroller.style.width = "440px";
+            editor.refresh();
+
+
+
 
 
 

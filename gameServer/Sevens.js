@@ -13,15 +13,15 @@ module.exports = Sevens = function () {
 
         shuff.fiber = self.fiber;
 
-        self.cardGame.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Clubs', x: 2, y: 4, width: 1, height: 4, pile: self.clubs, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
-        self.cardGame.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Hearts', x: 6, y: 4, width: 1, height: 4, pile: self.hearts, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
-        self.cardGame.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Diamonds', x: 10, y: 4, width: 1, height: 4, pile: self.diamonds, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
-        self.cardGame.spaces.push(new TableSpace({ visible: true, stack: false, name: 'Spades', x: 14, y: 4, width: 1, height: 4, pile: self.spades, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Clubs', x: 4, y: 4, width: 1, height: 4, pile: self.clubs, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Hearts', x: 6, y: 4, width: 1, height: 4, pile: self.hearts, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Diamonds', x: 8, y: 4, width: 1, height: 4, pile: self.diamonds, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Spades', x: 10, y: 4, width: 1, height: 4, pile: self.spades, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
 
-        self.cardGame.textAreas.push(new TableTextArea({ name: 'SpadesText', x: 2, y: 4, text: 'Clubs' }));
+        self.cardGame.textAreas.push(new TableTextArea({ name: 'SpadesText', x: 4, y: 4, text: 'Clubs' }));
         self.cardGame.textAreas.push(new TableTextArea({ name: 'HeartsText', x: 6, y: 4, text: 'Hearts' }));
-        self.cardGame.textAreas.push(new TableTextArea({ name: 'DiamondsText', x: 10, y: 4, text: 'Diamonds' }));
-        self.cardGame.textAreas.push(new TableTextArea({ name: 'SpadesText', x: 14, y: 4, text: 'Spades' }));
+        self.cardGame.textAreas.push(new TableTextArea({ name: 'DiamondsText', x: 8, y: 4, text: 'Diamonds' }));
+        self.cardGame.textAreas.push(new TableTextArea({ name: 'SpadesText', x: 10, y: 4, text: 'Spades' }));
     };
     self.createUser = function (userIndex, text) {
         var sp;
@@ -32,7 +32,7 @@ module.exports = Sevens = function () {
             case 1:
             case 3:
             case 4:
-                self.cardGame.spaces.push(sp = new TableSpace({ visible: true, stack: false, name: 'User' + userIndex, width: 4, height: 1, bend: true }));
+                self.cardGame.spaces.push(sp = new TableSpace({ vertical: false, visible: true, stack: false, name: 'User' + userIndex, width: 4, height: 1, bend: true }));
                 self.cardGame.textAreas.push(tta = new TableTextArea({ name: 'Text' + userIndex, text: text }));
                 break;
             case 2:
@@ -43,35 +43,35 @@ module.exports = Sevens = function () {
                 } else {
                     rotate = -90;
                 }
-                self.cardGame.spaces.push(sp = new TableSpace({ visible: true, stack: false, name: 'User' + userIndex, width: 1, height: 4, bend: true }));
+                self.cardGame.spaces.push(sp = new TableSpace({ vertical: true, visible: true, stack: false, name: 'User' + userIndex, width: 1, height: 4, bend: true }));
                 self.cardGame.textAreas.push(tta = new TableTextArea({ name: 'Text' + userIndex, text: text }));
                 break;
         }
         var space = sp;
         switch (userIndex) {
             case 0:
-                space.x = 2;
+                space.x = 3;
                 space.y = 1;
                 break;
             case 1:
-                space.x = 8;
+                space.x = 9;
                 space.y = 1;
                 break;
             case 2:
-                space.x = 10;
-                space.y = 6;
+                space.x = 13;
+                space.y = 4;
                 break;
             case 3:
-                space.x = 8;
+                space.x = 9;
                 space.y = 10;
                 break;
             case 4:
-                space.x = 2;
+                space.x = 3;
                 space.y = 10;
                 break;
             case 5:
-                space.x = 2;
-                space.y = 6;
+                space.x = 1;
+                space.y = 4;
                 break;
         }
         var textArea = tta;
@@ -95,7 +95,7 @@ module.exports = Sevens = function () {
             sp.pile = u.cards;
         });
 
-    
+
         while (self.cardGame.deck.cards.length > 0) {
             self.cardGame.users.foreach(function (u) {
                 if (self.cardGame.deck.cards.length > 0) {
@@ -107,7 +107,7 @@ module.exports = Sevens = function () {
 
 
         self.cardGame.users.foreach(function (u) {
-            u.cards.cards.sort(self.sorter);
+            u.cards.cards.sortCards();
         });
 
         var CardTypes = ['Diamonds', 'Clubs', 'Hearts', 'Spades'];
@@ -131,7 +131,7 @@ module.exports = Sevens = function () {
                 });
                 var answers = [];
                 answers.push('Skip');
-                usable.sort(self.sorter).foreach(function (card) {
+                usable.sortCards().foreach(function (card) {
                     answers.push(CardNames[card.value] + ' Of ' + CardTypes[card.type]);
                 });
                 var de = shuff.askQuestion(u, 'Which card would you like to play?', answers, self.cardGame);
@@ -143,26 +143,28 @@ module.exports = Sevens = function () {
                         case 3:
                             u.cards.cards.remove(rm);
                             self.spades.cards.push(rm);
-                            self.spades.cards.sort(self.sorter);
+                            self.spades.cards.sortCards();
                             break;
                         case 1:
                             u.cards.cards.remove(rm);
                             self.clubs.cards.push(rm);
-                            self.clubs.cards.sort(self.sorter);
+                            self.clubs.cards.sortCards();
                             break;
                         case 2:
                             u.cards.cards.remove(rm);
                             self.hearts.cards.push(rm);
-                            self.hearts.cards.sort(self.sorter);
+                            self.hearts.cards.sortCards();
                             break;
                         case 0:
                             u.cards.cards.remove(rm);
                             self.diamonds.cards.push(rm);
-                            self.diamonds.cards.sort(self.sorter);
+                            self.diamonds.cards.sortCards();
                             break;
                     }
                     if (u.cards.cards.length == 0) {
                         shuff.declareWinner(u);
+                        self.fiber = shuff.fiber = null;
+                        
                         return true;
                     }
                 }
@@ -178,9 +180,6 @@ module.exports = Sevens = function () {
     };
 
 
-    self.sorter = function (left, right) {
-        return left.Value > right.Value;
-    };
     self.shuffle = function (arbs) {
         var indes = 0;
         var vafb = _.clone(arbs);

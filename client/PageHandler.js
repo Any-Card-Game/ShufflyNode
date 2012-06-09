@@ -41,11 +41,14 @@ function PageHandler(siteServer, gameServer) {
     window.PageHandler.gameSocket.on('Area.Game.AskQuestion', function (data) {
         window.shuffUIManager.questionArea.load(data);
         //alert(JSON.stringify(data));
-        //  socket.Emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
+
+        setTimeout(function () {
+            window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
+        }, 1);
     });
     window.PageHandler.gameSocket.on('Area.Game.UpdateState', function (data) {
         self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
-        drawArea(data);
+        self.drawArea(data);
     });
 
 
@@ -58,10 +61,11 @@ function PageHandler(siteServer, gameServer) {
         img.src = jm = src + ".gif";
         cardImages[jm] = img;
     }
+    this.lastMainArea = undefined;
 
-    function drawArea(mainArea) {
+    this.drawArea = function (mainArea) {
         var gameboard = self.gameContext;
-
+        this.lastMainArea = mainArea;
         var scale = { x: self.gameContext.canvas.width / mainArea.size.width, y: self.gameContext.canvas.height / mainArea.size.height };
 
         gameboard.fillStyle = "rgba(0, 0, 200, 0.5)";
@@ -69,27 +73,18 @@ function PageHandler(siteServer, gameServer) {
         var space;
         for (i = 0; i < mainArea.spaces.length; i++) {
             space = mainArea.spaces[i];
-            var xOff = 0;
-            var yOff = 0;
-
+            var vertical = space.vertical;
             gameboard.fillRect(space.x * scale.x, space.y * scale.y, space.width * scale.x, space.height * scale.y);
+            var spaceScale = { x: space.width / space.pile.cards.length, y: space.height / space.pile.cards.length };
 
             for (j = 0; j < space.pile.cards.length; j++) {
                 var card = space.pile.cards[j];
+                var xx = Math.floor((space.x) * scale.x) + (!vertical ? j * (spaceScale.x * scale.x) : 0);
+                var yy = Math.floor((space.y) * scale.y) + (vertical ? j * (spaceScale.x * scale.x) : 0);
 
-                var xx = Math.floor((space.x + xOff) * scale.x);
-                var yy = Math.floor((space.y + yOff) * scale.y);
+                var cardImage = cardImages[drawCard(card)];
+                gameboard.drawImage(cardImage, xx - (vertical ? (space.width / 2 - cardImage.width / 2) : 0), yy - (!vertical ? (space.height / 2 - cardImage.height / 2) : 0));
 
-                gameboard.drawImage(cardImages[drawCard(card)], xx, yy);
-
-                xOff++;
-                if (xOff > space.pile.cards.length) {
-                    xOff = 0;
-                    yOff++;
-                }
-                if (yOff > space.pile.cards.length) {
-                    alert('error');
-                }
             }
         }
         for (i = 0; i < mainArea.textAreas.length; i++) {
@@ -113,7 +108,10 @@ function PageHandler(siteServer, gameServer) {
         //alert(JSON.stringify(data));
     });
     window.PageHandler.gameSocket.on('Area.Game.GameOver', function (data) {
-        alert(JSON.stringify(data));
+        setTimeout(function () {
+            window.PageHandler.gameSocket.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+
+        }, 1)
     });
 
 
@@ -190,6 +188,8 @@ PageHandler.prototype.resizeCanvas = function () {
         window.PageHandler.gameContext.$canvas.attr("width", $(window).width());
     if (window.PageHandler.gameContext.$canvas.attr("height") != $(window).height())
         window.PageHandler.gameContext.$canvas.attr("height", $(window).height());
+    if (this.drawArea && this.lastMainArea)
+        this.drawArea(this.lastMainArea);
 };
 
 PageHandler.prototype.draw = function () {

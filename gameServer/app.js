@@ -1,14 +1,16 @@
 ﻿var app = require('http').createServer(handler);
 var io = require('socket.io').listen(app);
 var fs = require('fs');
-var child_process = require('child_process'); 
+var child_process = require('child_process');
 var cJSON = require("./cJSON.js");
 var guid = require("./guid.js");
 var arrayUtils = require('../common/ArrayUtils.js');
 
-//var profiler = require('v8-profiler');
- 
+//var agent = require('webkit-devtools-agent');
 
+//var profiler = require('v8-profiler');
+var ajj = 0;
+ 
 require('fibers');
 
 /*var d = gts.Sevens();
@@ -48,18 +50,23 @@ var gameData = {
     }
 };
 
+process.on('exit', function () {
+    console.log('exiting '); 
+});
 
 var rooms = [];
+var startTime = new Date().getTime();
 
 function askQuestion(answ, room) {
     if (!room.players || !room.players.length || !answ.user) return;
-    
+
     var user = arrayUtils.first.call(room.players, (function (u) {
 
-        if (!u ) return;
+        if (!u) return;
 
         return u.name == answ.user.name;
     }));
+
     user.socket.emit('Area.Game.AskQuestion',
         JSON.parse(JSON.stringify({ question: answ.question, answers: answ.answers }, function (key, value) {
             if ('socket' == (key)) return undefined;
@@ -86,7 +93,6 @@ function emitAll(room, message, value) {
     }
 
 }
-
 var Sevens = require('./Sevens.js');
 
 io.sockets.on('connection', function (socket) {
@@ -98,7 +104,7 @@ io.sockets.on('connection', function (socket) {
         room.players.push({ name: data.user.name, socket: socket, debuggable: data.debuggable }); //make a model
         room.fiber = Fiber(function (players) {
             if (!players || !players.length) return true;
-
+            room.players = players;
             console.log('game started');
             var sev = new Sevens();
 
@@ -108,14 +114,29 @@ io.sockets.on('connection', function (socket) {
             room.fiber.sevens = sev;
             sev.constructor();
             sev.runGame();
-            gameData.finishedGames++;
-            console.log('------game finished');
 
+            room.unwind(players);
             //gameData.totalPlayers -= players.length;
         });
 
+        room.unwind = function (players) {
+
+            gameData.finishedGames++;
+            console.log('--game closed');
+            for (var i = 0; i < players.length; i++) {
+                players[i].socket.disconnect();
+            }
+
+
+
+        };
+        socket.room = room;
+
         emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, function (name, value) { if (name != 'socket') return value; })));
     });
+
+
+
 
     socket.on('Area.Game.Join', function (data) {
 
@@ -123,9 +144,22 @@ io.sockets.on('connection', function (socket) {
         if (!room) {
             return;
         }
-        room.players.push({ name: data.user.name, socket: socket }); //make a model
-
+        room.players.push(socket.player = { name: data.user.name, socket: socket }); //make a model
+        socket.room = room;
         emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, function (name, value) { if (name != 'socket') return value; })));
+
+    });
+
+    socket.on('disconnect', function (data) {
+        if (socket.room == null)
+            return;
+        socket.room.players.splice(socket.room.players.indexOf(socket.player), 1);
+
+        if (socket.room.players.length) {
+            rooms.splice(rooms.indexOf(socket.room), 1);
+        }
+        socket.room.unwind(socket.room.players);
+
 
     });
 
@@ -166,6 +200,7 @@ io.sockets.on('connection', function (socket) {
         var answ = room.fiber.run(room.players);
         if (!answ) {
             emitAll(room, 'Area.Game.GameOver', '');
+            room.fiber.run();
             //     profiler.takeSnapshot('game over ' + room.roomID);
             return;
         }
@@ -186,24 +221,28 @@ io.sockets.on('connection', function (socket) {
         if (!room) {
             return;
         }
-        console.log('----game question asked');
+        //        console.log('----game question asked');
         var answ = room.fiber.run({ value: data.answer });
-        console.log('----game question answered');
+        //        console.log('----game question answered');
 
         gameData.totalQuestionsAnswered++;
         if (!answ) {
-            room.fiber.run();
+
             emitAll(room, 'Area.Game.GameOver', '');
+            room.fiber.run();
+            //var snapshot = profiler.takeSnapshot('vava' + (ajj++));
             //     profiler.takeSnapshot('game over ' + room.roomID);
             return;
         }
-        console.log('----game question before sent');
+        //        console.log('----game question before sent');
 
         askQuestion(answ, room);
         console.log(gameData.toString());
-        var then = new Date().getMilliseconds();
+        var dt = new Date();
+        var then = dt.getMilliseconds();
         console.log(then - now + " Milliseconds");
-        console.log('----game question sent');
+        console.log(gameData.totalQuestionsAnswered / ((dt.getTime() - startTime) / 1000) + " Answers per seconds");
+        //        console.log('----game question sent');
 
     });
 });

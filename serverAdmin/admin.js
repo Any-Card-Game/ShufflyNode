@@ -1,12 +1,13 @@
 ﻿var fs = require('fs');
 
+var nonDebuggable = ['node-inspector', 'pkill'];
+
 var util = require('util'),
-    exec = require('child_process').exec;
-
-
+    exec = require('child_process').exec; 
 
 var __dirname = '/usr/local/src/';
 var indexPageData;
+
 
 
 /*fs.readFile(__dirname + '/index.html',
@@ -20,6 +21,14 @@ var debug = false;
 function loop() {
     ask('?: ', '', onAsk);
 }
+
+setInterval(function() {
+    console.log('keep alive ' + new Date().toString().substring(17, 24) );
+
+},10*1000);
+
+nodeInspector = runProcess('node-inspector', []);
+console.log('node-inspector Started');
 
 process.on('exit', function () {
     console.log('exiting ');
@@ -41,13 +50,14 @@ function onAsk(data) {
 
             head = runProcess('node', [__dirname + 'headServer/app.js'], 4100);
             console.log('Head Started');
-            nodeInspector = runProcess('node-inspector', []);
-            console.log('Head Started');
             sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4101));
             console.log(sites.length + ' Sites Started');
             games.push(runProcess('node', [__dirname + 'gameServer/app.js'], 4102));
             console.log(games.length + ' Games Started');
 
+            break;
+        case 'q':
+            process.exit();
             break;
         case 'r':
 
@@ -134,22 +144,26 @@ function ask(question, format, callback) {
     });
 }
 
-function runProcess(process, args, debugPort) {
-    console.log('start ' + process + ' ' + args.join());
 
-    if (process != 'node-inspector' && debug) {
+function runProcess(process, args, debugPort) {
+    if (nonDebuggable.indexOf(process) == -1 && debug) {
         args[0] = ' --debug=' + debugPort + " " + args[0];
-        console.log('debugging ' + process + ' ' + args.join());
     }
-    var dummy = exec(process + args.join());
-    dummy.stdout.on('data', function (data) {
-        util.print(process + ': ' + data);
-    });
-    dummy.stderr.on('data', function (data) {
-        util.print(process + ': error:  ' + data);
-    });
-    dummy.stdout.on('data', function (data) {
-        util.print(process + ': ' + data);
-    });
+    var dummy = exec(process + " " + args.join());
+
+    if (nonDebuggable.indexOf(process) == -1) {
+        dummy.stdout.on('data', function (data) {
+            if (data.indexOf('debug: ') == -1) {
+                util.print("    " + new Date().toString().substring(17,24) + "     " + data);
+ 
+                util.print("?: ");
+            }
+        });
+        dummy.stderr.on('data', function (data) {
+            util.print("    " +   new Date().toString().substring(17, 24) + "     " + data);
+            util.print("?: ");
+        });
+
+    }
     return dummy;
 }

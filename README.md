@@ -381,3 +381,134 @@ List to demo
 	* Area.Site.Room.GameStarted
 
 	
+
+
+
+
+
+
+
+
+
+
+
+**game/debug stuff
+
+	* Code Mirror
+		* tabs?
+		* Intellisense
+		* control+w?
+	* Console
+	* watch
+	* documentation window
+	* playing all players at once
+	* saving responses
+	* log everything
+	* debugger.log
+	* debugger.pause
+		* variable lookup when paused
+		* immeditate window
+			* safely execute javascript...
+	* skinnable question window
+	* game logic editor
+	* canvas drawing
+		* question location
+		* proper scaled game drawing
+			* phone browser support?
+	* game layout editor
+		* drag and drop/resize for spaces on the grid
+		* properties window
+		* outputs json? in real time
+	* asking questions
+		* to one person
+			* wait for one reply
+		* to multiple people
+			* wait for all replies
+			* wait for single reply, potentially in a constant loop
+	* player table spaces
+		* options for different layers for different num of players
+	* Table spaces
+		* own grid
+			* x,y on board grid
+			* width height on board grid
+		* types
+			* absolute position
+			* card flow
+				* vert/horz
+				* sticky card position? (sevems)
+	* images
+		* at xy, scale
+	* premade boards/spaces
+		* simple player flowing
+		* simple cards cascading in both directions
+		* advanced pyramid shape
+		* development area
+		* upload content
+			* name 
+			* images
+			* card fronts
+			* card back
+			* advertising code
+		* debugging area
+		* proper app crash support
+	* see game stuff
+		* track custom elaborate statistics
+			* how many fish have been gotten
+	* ad views
+		* update ad codes
+
+
+**site stuff
+	* define protocols		
+	* **Finalize site framework**
+		* html5 skinnable draggable windows 
+			* Minimized/maximized/tiled/fancy
+			* animations 
+			* gestures
+		* player stuff
+			* forgot password
+			* guest accounts
+			* friends
+			* elaborate tracking
+				* favorite games
+				* number of fish gotten
+			* storing elaborate layout location cookies
+		* chat
+	* **Finalize site server**
+		* Finalize site api
+			* see flowchart
+		* load balancing
+		* properly measuring max concurrent load
+		* properly serving chat server information
+	* **Finalize main site**
+		* constant playing game in the background
+			* load cost of this
+		* making all calls
+			* see flowchart
+		* seemless loadbalance
+			* can no one miss their friends?
+	* **Finalize game server**
+		* stress test with web
+			* automate
+			* determine concurrent game limit per instance
+		* different servers for development
+			* ratio?
+		* switching loadbalance
+		* log everything
+		* Finalize game api
+			* see flowchart
+	* **Finalize chat server**
+		* simple chat
+		* player list
+		* has rooms
+			* pre game
+			* game
+			* room
+		* proper room load balancing
+		* log everything
+	* **Proper database solution**
+		* define schema
+		* nosql options 
+			* mongo
+		* log everything
+		* clustering

@@ -35,7 +35,7 @@
         left.append(leftInner);
         leftInner.button();*/
 
-        var title = $("<div class='rounded' style='margin:auto; background-color:white; width:40%; text-align:center;opacity:0.4;'>title</div>");
+        var title = $("<div class='rounded' style='margin:auto; background-color:white; width:40%; text-align:center;opacity:0.4;'>"+options.title+"</div>");
         top.append(title);
 
         var rightSideBar = $("<div style='width:100%; text-align:center; font-size:25px; position:absolute; top:0px;left:-2px;'></div>");
@@ -69,7 +69,7 @@
         outer.resizable({ handles: "n, e, s, w, ne, se, sw, nw" });
         $(document.body).append(outer);
         var shuf = new ShuffWindow($("#window" + windowID));
-
+        
         shuf.visible = function (val) {
             outer.css('display', val ? 'block' : 'none');
         };
@@ -80,7 +80,7 @@
 
 function ShuffWindow(item) {
     var self = this;
-
+    self.element = item;
 
     self.addButton = function (options) {
         var but = $("<div></div>");

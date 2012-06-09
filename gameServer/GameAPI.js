@@ -1,6 +1,10 @@
 ﻿
 CardGame = function (setter) {
     this.users = [];
+    for (var j in setter) {
+        this[j] = setter[j];
+    }
+
     var numberOfCards = setter["numberOfCards"] === undefined ? 52 : setter["numberOfCards"];
     var numberOfJokers = setter["numberOfJokers"] === undefined ? 0 : setter["numberOfJokers"];
     this.deck = new Pile();
@@ -173,6 +177,9 @@ PokerWinType = { Straight: 1, Flush: 2, Pair: 3, ThreeOfAKind: 4, FourOfAKind: 5
 
 TableSpace = function (setter) {
     setter = setter || {};
+    for (var j in setter) {
+        this[j] = setter[j];
+    }
     this.visible = setter["visible"] === undefined ? true : setter["visible"];
     this.stackCards = setter["stackCards"] === undefined ? false : setter["stackCards"];
     this.drawCardsBent = setter["drawCardsBent"] === undefined ? false : setter["drawCardsBent"];
@@ -190,6 +197,9 @@ TableSpace = function (setter) {
 
 TableTextArea = function (setter) {
     setter = setter || {};
+    for (var j in setter) {
+        this[j] = setter[j];
+    }
     this.name = setter["name"] === undefined ? "Text Area" : setter["name"];
     this.x = setter["x"] === undefined ? 0 : setter["x"];
     this.y = setter["y"] === undefined ? 0 : setter["y"];
