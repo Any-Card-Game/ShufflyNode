@@ -391,8 +391,8 @@ List to demo
 
 
 
-
-****game/debug stuff****
+***game/debug stuff***
+--------
 
 * Code Mirror
 	* tabs?
@@ -458,7 +458,8 @@ List to demo
 	* update ad codes
 
 
-****site stuff****
+***site stuff***
+--------
 * define protocols		
 * **Finalize site framework**
 	* html5 skinnable draggable windows 
