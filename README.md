@@ -337,6 +337,25 @@ List to demo
 	* window drift
 	* plugins?
 		* youtube? 
+	* game editor
+		* property window 
+		* keys
+			* none
+				* left click: drag corner
+				* right click: context menu 
+			* shift
+				* left click: move space
+				* right click: 
+			* control
+				* left click: 
+				* right click: 
+			* alt
+				* left click: 
+				* right click: 
+			* tab
+				* cycle selected space
+
+
 * **UI Layouts**
 	* Main window
 		* scrollable with locks 

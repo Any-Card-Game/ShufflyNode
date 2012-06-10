@@ -1,0 +1,365 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script type="text/javascript">
+        var gameScale = 1;
+
+        //var url = 'https://s3.amazonaws.com/anycardgame/';
+        var url = 'http://50.116.22.241:8881/';
+        window.topLevel = url;
+
+        /**
+        *  Chainable external javascript file loading
+        *  http://www.webtoolkit.info/
+        **/
+        var scriptLoader = {
+            _loadScript: function (url, callback) {
+                var head = document.getElementsByTagName('head')[0];
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url; // +"?" + (Math.floor(Math.random() * 10000)); //caching
+                if (callback) {
+                    script.onreadystatechange = function () {
+                        if (this.readyState == 'loaded') callback();
+                    };
+                    script.onload = callback;
+                }
+                head.appendChild(script);
+            },
+
+            load: function (items, done) {
+                var counter = 0;
+                for (var i = 0; i < items.length; i++) {
+                    scriptLoader._loadScript(items[i], function () {
+                        counter++;
+                        if (counter >= items.length) {
+                            done();
+                        }
+                    });
+                }
+            },
+            loadSync: function (items, done) {
+                var counter = 0;
+                var i = 0;
+                var nextOne = function () {
+                    counter++;
+                    if (counter >= items.length) {
+                        done();
+                    } else {
+                        scriptLoader._loadScript(items[counter], nextOne);
+                    }
+                };
+                scriptLoader._loadScript(items[0], nextOne);
+            }
+
+        };
+
+
+        function PageHandler() {
+
+            var self = this;
+            window.PageHandler = this;
+            this.movingCorner = 0;
+
+
+            var cardImages = {};
+            for (var i = 101; i < 153; i++) {
+                var img = new Image();
+                var domain = window.topLevel + 'client/assets';
+                var src = domain + '/cards/' + i;
+                var jm;
+                img.src = jm = src + ".gif";
+                cardImages[jm] = img;
+            }
+            this.lastMainArea = undefined;
+            this.selectedPoint = { x: 0, y: 0 };
+            this.drawArea = function (mainArea) {
+                var gameboard = self.gameContext;
+                this.lastMainArea = mainArea;
+                var scale = { x: self.gameContext.canvas.width / mainArea.size.width, y: self.gameContext.canvas.height / mainArea.size.height };
+
+                gameboard.fillStyle = "rgba(0, 0, 200, 0.5)";
+                gameboard.save();
+                gameboard.lineWidth = 2;
+
+                for (var x = 0; x < mainArea.size.width; x++) {
+
+                    for (var y = 0; y < mainArea.size.height; y++) {
+                        var xx = Math.floor((x) * scale.x);
+                        var yy = Math.floor((y) * scale.y);
+                        //draw a circle
+
+                        if (this.selectedPoint.x == x && this.selectedPoint.y == y) {
+                            gameboard.fillStyle = "white";
+                            gameboard.strokeStyle = "#8935FF";
+                            gameboard.lineWidth = 6;
+                        }
+                        else if (this.selectedPoint.x == x) {
+                            gameboard.fillStyle = "white";
+                            gameboard.strokeStyle = "#FFA268";
+                            gameboard.lineWidth = 2;
+                        }
+                        else if (this.selectedPoint.y == y) {
+                            gameboard.fillStyle = "white";
+                            gameboard.strokeStyle = "#BBFF77";
+                            gameboard.lineWidth = 2;
+                        } else {
+                            gameboard.fillStyle = "white";
+                            gameboard.strokeStyle = "#447FFF";
+                            gameboard.lineWidth = 2;
+                        }
+
+                        gameboard.beginPath();
+                        gameboard.arc(xx, yy, 2, 0, Math.PI * 2, true);
+                        gameboard.closePath();
+                        gameboard.fill();
+                        gameboard.stroke();
+                    }
+                }
+                gameboard.restore();
+
+
+                var space;
+                for (i = 0; i < mainArea.spaces.length; i++) {
+                    space = mainArea.spaces[i];
+                    var vertical = space.vertical;
+                    gameboard.fillRect(space.x * scale.x, space.y * scale.y, space.width * scale.x, space.height * scale.y);
+                    var spaceScale = { x: space.width / space.pile.cards.length, y: space.height / space.pile.cards.length };
+
+                    for (j = 0; j < space.pile.cards.length; j++) {
+                        var card = space.pile.cards[j];
+                        var xx = Math.floor((space.x) * scale.x) + (!vertical ? j * (spaceScale.x * scale.x) : 0);
+                        var yy = Math.floor((space.y) * scale.y) + (vertical ? j * (spaceScale.x * scale.x) : 0);
+
+                        var cardImage = cardImages[drawCard(card)];
+                        gameboard.drawImage(cardImage, xx + (vertical ? (space.width / 2 - cardImage.width / 2) : 0), yy + (!vertical ? (space.height / 2 - cardImage.height / 2) : 0));
+
+                    }
+                }
+                for (i = 0; i < mainArea.textAreas.length; i++) {
+                    var ta = mainArea.textAreas[i];
+                    gameboard.fillStyle = "rgba(200, 0, 200, 0.5)";
+                    gameboard.fillText(ta.text, ta.x * scale.x, ta.y * scale.y);
+                }
+
+
+                {
+                    if (self.selectedSpace) {
+                        space = self.selectedSpace;
+                        gameboard.fillRect(space.x * scale.x, space.y * scale.y, space.width * scale.x, space.height * scale.y);
+                        /*var spaceScale = { x: space.width / space.pile.cards.length, y: space.height / space.pile.cards.length };
+
+                        for (j = 0; j < space.pile.cards.length; j++) {
+                        var card = space.pile.cards[j];
+                        var xx = Math.floor((space.x) * scale.x) + (!vertical ? j * (spaceScale.x * scale.x) : 0);
+                        var yy = Math.floor((space.y) * scale.y) + (vertical ? j * (spaceScale.x * scale.x) : 0);
+
+                        var cardImage = cardImages[drawCard(card)];
+                        gameboard.drawImage(cardImage, xx - (vertical ? (space.width / 2 - cardImage.width / 2) : 0), yy - (!vertical ? (space.height / 2 - cardImage.height / 2) : 0));
+                        }*/
+                    }
+                }
+            };
+
+
+            function drawCard(card) {
+                var src = '';
+                var domain = window.topLevel + 'client/assets';
+
+
+                src = domain + '/cards/' + (100 + (card.value + 1) + (card.type) * 13);
+
+                return src + ".gif";
+            }
+
+
+
+            var gameCanvas;
+            $('body').append(gameCanvas = document.createElement('canvas'));
+
+
+            $(gameCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: ($(window).width() * (1 - gameScale)) + 'px', 'z-index': -50 });
+
+
+            self.gameContext = gameCanvas.getContext("2d");
+            self.gameContext.canvas = gameCanvas;
+            self.gameContext.$canvas = $(gameCanvas);
+
+            self.gameContext.canvas.width = $(window).width() * gameScale;
+            self.gameContext.canvas.height = $(window).height();
+
+            this.lastMouseMove = false;
+
+            gameCanvas.addEventListener('DOMMouseScroll', self.handleScroll.bind(self), false);
+            gameCanvas.addEventListener('mousewheel', self.handleScroll.bind(self), false);
+
+            gameCanvas.addEventListener('touchmove', self.canvasMouseMove.bind(self));
+            gameCanvas.addEventListener('touchstart', self.canvasOnClick.bind(self));
+            gameCanvas.addEventListener('touchend', self.canvasMouseUp.bind(self));
+
+            gameCanvas.addEventListener('mousedown', self.canvasOnClick.bind(self));
+            gameCanvas.addEventListener('mouseup', self.canvasMouseUp.bind(self));
+            gameCanvas.addEventListener('mousemove', self.canvasMouseMove.bind(self));
+
+            gameCanvas.addEventListener('contextmenu', function (evt) {
+                evt.preventDefault();
+                //special right click menu;
+            }, false);
+
+            $(window).resize(self.resizeCanvas.bind(self));
+
+            self.resizeCanvas();
+
+            window.setInterval(self.draw.bind(self), 1000 / 60);
+
+
+            return this;
+        }
+
+        PageHandler.prototype.canvasOnClick = function (e) {
+            var scale = { x: this.gameContext.canvas.width / this.lastMainArea.size.width, y: this.gameContext.canvas.height / this.lastMainArea.size.height };
+
+
+
+
+            this.selectedSpace = {
+                x: Math.round((e.x - $(window).width() * (1 - gameScale)) / scale.x),
+                y: Math.round((e.y) / scale.y),
+                width: 0,
+                height: 0,
+                pile: {cards:[]},fake:true
+            };
+
+
+            for (var i = 0; i < this.lastMainArea.spaces.length; i++) {
+                var sp = this.lastMainArea.spaces[i];
+
+                if ((this.selectedSpace.x == sp.x && this.selectedSpace.y == sp.y)) {
+                    this.movingCorner = 0;
+                    this.selectedSpace = sp;
+                }
+                else if ((this.selectedSpace.x == sp.x && this.selectedSpace.y == sp.y + sp.height)) {
+                    this.movingCorner = 1;
+                    this.selectedSpace = sp;
+                }
+                else if ((this.selectedSpace.x == sp.x + sp.width && this.selectedSpace.y == sp.y)) {
+                    this.movingCorner = 2;
+                    this.selectedSpace = sp;
+                } else if ((this.selectedSpace.x == sp.x + sp.width && this.selectedSpace.y == sp.y + sp.height)) {
+                    this.movingCorner = 3;
+                    this.selectedSpace = sp;
+                }else {
+
+                
+                }
+
+
+            }
+
+            e.preventDefault();
+
+            return false;
+        };
+        PageHandler.prototype.canvasMouseMove = function (e) {
+            e.preventDefault();
+            document.body.style.cursor = "default";
+            this.lastMouseMove = e;
+
+            var scale = { x: this.gameContext.canvas.width / this.lastMainArea.size.width, y: this.gameContext.canvas.height / this.lastMainArea.size.height };
+            this.selectedPoint = { x: Math.round((e.x - $(window).width() * (1 - gameScale)) / scale.x), y: Math.round((e.y) / scale.y) };
+
+
+            if (this.selectedSpace) {
+                switch (this.movingCorner) {
+                    case 0:
+                        var oldX = this.selectedSpace.x;
+                        var oldY = this.selectedSpace.y;
+
+                        this.selectedSpace.x = (Math.round((e.x - $(window).width() * (1 - gameScale)) / scale.x));
+                        this.selectedSpace.y = Math.round((e.y) / scale.y);
+
+                        this.selectedSpace.width += oldX - this.selectedSpace.x;
+                        this.selectedSpace.height += oldY - this.selectedSpace.y;
+                        break;
+                    case 1:
+                        var oldX = this.selectedSpace.x;
+
+                        this.selectedSpace.x = (Math.round((e.x - $(window).width() * (1 - gameScale)) / scale.x));
+
+                        this.selectedSpace.width += oldX - this.selectedSpace.x;
+                        this.selectedSpace.height = Math.round((e.y) / scale.y) - this.selectedSpace.y;
+
+
+                        break;
+                case 2:
+                        var oldY = this.selectedSpace.y;
+                        this.selectedSpace.y = Math.round((e.y) / scale.y);
+                        this.selectedSpace.width = (Math.round((e.x - $(window).width() * (1 - gameScale)) / scale.x)) - this.selectedSpace.x;
+                        this.selectedSpace.height += oldY - this.selectedSpace.y;
+                        break;
+                  
+                    case 3:
+                        this.selectedSpace.width = (Math.round((e.x - $(window).width() * (1 - gameScale)) / scale.x)) - this.selectedSpace.x;
+                        this.selectedSpace.height = Math.round((e.y) / scale.y) - this.selectedSpace.y;
+                        break;
+                }
+
+            }
+
+            return false;
+        };
+        PageHandler.prototype.canvasMouseUp = function (e) {
+            e.preventDefault();
+
+            if (this.selectedSpace) {
+                if (this.selectedSpace.fake) {
+                    this.selectedSpace.fake = false;
+                    this.lastMainArea.spaces.push(this.selectedSpace);
+                }
+                this.selectedSpace = null;
+            }
+
+            return false;
+        };
+        PageHandler.prototype.handleScroll = function (e) {
+            e.preventDefault();
+
+            return e.preventDefault() && false;
+        };
+
+
+        PageHandler.prototype.resizeCanvas = function () {
+            if (window.PageHandler.gameContext.$canvas.attr("width") != $(window).width())
+                window.PageHandler.gameContext.$canvas.attr("width", $(window).width() * gameScale);
+            if (window.PageHandler.gameContext.$canvas.attr("height") != $(window).height())
+                window.PageHandler.gameContext.$canvas.attr("height", $(window).height());
+            if (this.drawArea && this.lastMainArea)
+                this.drawArea(this.lastMainArea);
+        };
+
+        PageHandler.prototype.draw = function () {
+            this.gameContext.canvas.width = this.gameContext.canvas.width;
+
+
+            if (this.drawArea && this.lastMainArea)
+                this.drawArea(this.lastMainArea);
+        };
+
+
+        scriptLoader.loadSync([url + 'client/lib/jquery-1.7.2.min.js'], function () {
+            var ph = new PageHandler();
+           ph.drawArea({ "users": [{ "name": "6", "playerDealingOrder": 0, "cards": { "name": "6", "cards": [{ "value": 1, "type": 2, "state": 0 }, { "value": 5, "type": 2, "state": 0 }, { "value": 6, "type": 2, "state": 0 }, { "value": 0, "type": 3, "state": 0 }, { "value": 6, "type": 3, "state": 0 }, { "value": 12, "type": 3, "state": 0 }, { "value": 4, "type": 0, "state": 0 }, { "value": 10, "type": 0, "state": 0 }, { "value": 8, "type": 1, "state": 0}]} }, { "name": "player 1", "playerDealingOrder": 0, "cards": { "name": "player 1", "cards": [{ "value": 2, "type": 2, "state": 0 }, { "value": 7, "type": 2, "state": 0 }, { "value": 10, "type": 2, "state": 0 }, { "value": 1, "type": 3, "state": 0 }, { "value": 7, "type": 3, "state": 0 }, { "value": 5, "type": 0, "state": 0 }, { "value": 11, "type": 0, "state": 0 }, { "value": 3, "type": 1, "state": 0 }, { "value": 9, "type": 1, "state": 0}]} }, { "name": "player 2", "playerDealingOrder": 0, "cards": { "name": "player 2", "cards": [{ "value": 3, "type": 2, "state": 0 }, { "value": 8, "type": 2, "state": 0 }, { "value": 2, "type": 3, "state": 0 }, { "value": 8, "type": 3, "state": 0 }, { "value": 0, "type": 0, "state": 0 }, { "value": 6, "type": 0, "state": 0 }, { "value": 12, "type": 0, "state": 0 }, { "value": 4, "type": 1, "state": 0 }, { "value": 10, "type": 1, "state": 0}]} }, { "name": "player 3", "playerDealingOrder": 0, "cards": { "name": "player 3", "cards": [{ "value": 4, "type": 2, "state": 0 }, { "value": 9, "type": 2, "state": 0 }, { "value": 3, "type": 3, "state": 0 }, { "value": 9, "type": 3, "state": 0 }, { "value": 1, "type": 0, "state": 0 }, { "value": 7, "type": 0, "state": 0 }, { "value": 0, "type": 1, "state": 0 }, { "value": 5, "type": 1, "state": 0 }, { "value": 11, "type": 1, "state": 0}]} }, { "name": "player 4", "playerDealingOrder": 0, "cards": { "name": "player 4", "cards": [{ "value": 11, "type": 2, "state": 0 }, { "value": 4, "type": 3, "state": 0 }, { "value": 10, "type": 3, "state": 0 }, { "value": 2, "type": 0, "state": 0 }, { "value": 8, "type": 0, "state": 0 }, { "value": 1, "type": 1, "state": 0 }, { "value": 6, "type": 1, "state": 0 }, { "value": 12, "type": 1, "state": 0}]} }, { "name": "player 5", "playerDealingOrder": 0, "cards": { "name": "player 5", "cards": [{ "value": 0, "type": 2, "state": 0 }, { "value": 12, "type": 2, "state": 0 }, { "value": 5, "type": 3, "state": 0 }, { "value": 11, "type": 3, "state": 0 }, { "value": 3, "type": 0, "state": 0 }, { "value": 9, "type": 0, "state": 0 }, { "value": 2, "type": 1, "state": 0 }, { "value": 7, "type": 1, "state": 0}]}}], "numberOfCards": 52, "answers": [], "deck": { "cards": [] }, "spaces": [{ "visible": true, "vertical": true, "stack": false, "name": "Clubs", "x": 4, "y": 4, "width": 1, "height": 4, "pile": { "name": "clubs", "cards": [] }, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": -1, "stackCards": false, "drawCardsBent": false, "sortOrder": 0 }, { "visible": true, "vertical": true, "stack": false, "name": "Hearts", "x": 6, "y": 4, "width": 1, "height": 4, "pile": { "name": "hearts", "cards": [] }, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": -1, "stackCards": false, "drawCardsBent": false, "sortOrder": 0 }, { "visible": true, "vertical": true, "stack": false, "name": "Diamonds", "x": 8, "y": 4, "width": 1, "height": 4, "pile": { "name": "diamonds", "cards": [] }, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": -1, "stackCards": false, "drawCardsBent": false, "sortOrder": 0 }, { "visible": true, "vertical": true, "stack": false, "name": "Spades", "x": 10, "y": 4, "width": 1, "height": 4, "pile": { "name": "spades", "cards": [] }, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": -1, "stackCards": false, "drawCardsBent": false, "sortOrder": 0 }, { "vertical": false, "visible": true, "stack": false, "name": "User0", "width": 4, "height": 1, "bend": true, "stackCards": false, "drawCardsBent": false, "pile": { "name": "6", "cards": [{ "value": 1, "type": 2, "state": 0 }, { "value": 5, "type": 2, "state": 0 }, { "value": 6, "type": 2, "state": 0 }, { "value": 0, "type": 3, "state": 0 }, { "value": 6, "type": 3, "state": 0 }, { "value": 12, "type": 3, "state": 0 }, { "value": 4, "type": 0, "state": 0 }, { "value": 10, "type": 0, "state": 0 }, { "value": 8, "type": 1, "state": 0}] }, "x": 3, "y": 1, "sortOrder": 0, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": 1 }, { "vertical": false, "visible": true, "stack": false, "name": "User1", "width": 4, "height": 1, "bend": true, "stackCards": false, "drawCardsBent": false, "pile": { "name": "player 1", "cards": [{ "value": 2, "type": 2, "state": 0 }, { "value": 7, "type": 2, "state": 0 }, { "value": 10, "type": 2, "state": 0 }, { "value": 1, "type": 3, "state": 0 }, { "value": 7, "type": 3, "state": 0 }, { "value": 5, "type": 0, "state": 0 }, { "value": 11, "type": 0, "state": 0 }, { "value": 3, "type": 1, "state": 0 }, { "value": 9, "type": 1, "state": 0}] }, "x": 9, "y": 1, "sortOrder": 0, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": 1 }, { "vertical": true, "visible": true, "stack": false, "name": "User2", "width": 1, "height": 4, "bend": true, "stackCards": false, "drawCardsBent": false, "pile": { "name": "player 2", "cards": [{ "value": 3, "type": 2, "state": 0 }, { "value": 8, "type": 2, "state": 0 }, { "value": 2, "type": 3, "state": 0 }, { "value": 8, "type": 3, "state": 0 }, { "value": 0, "type": 0, "state": 0 }, { "value": 6, "type": 0, "state": 0 }, { "value": 12, "type": 0, "state": 0 }, { "value": 4, "type": 1, "state": 0 }, { "value": 10, "type": 1, "state": 0}] }, "x": 13, "y": 4, "sortOrder": 0, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": 1 }, { "vertical": false, "visible": true, "stack": false, "name": "User3", "width": 4, "height": 1, "bend": true, "stackCards": false, "drawCardsBent": false, "pile": { "name": "player 3", "cards": [{ "value": 4, "type": 2, "state": 0 }, { "value": 9, "type": 2, "state": 0 }, { "value": 3, "type": 3, "state": 0 }, { "value": 9, "type": 3, "state": 0 }, { "value": 1, "type": 0, "state": 0 }, { "value": 7, "type": 0, "state": 0 }, { "value": 0, "type": 1, "state": 0 }, { "value": 5, "type": 1, "state": 0 }, { "value": 11, "type": 1, "state": 0}] }, "x": 9, "y": 10, "sortOrder": 0, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": 1 }, { "vertical": false, "visible": true, "stack": false, "name": "User4", "width": 4, "height": 1, "bend": true, "stackCards": false, "drawCardsBent": false, "pile": { "name": "player 4", "cards": [{ "value": 11, "type": 2, "state": 0 }, { "value": 4, "type": 3, "state": 0 }, { "value": 10, "type": 3, "state": 0 }, { "value": 2, "type": 0, "state": 0 }, { "value": 8, "type": 0, "state": 0 }, { "value": 1, "type": 1, "state": 0 }, { "value": 6, "type": 1, "state": 0 }, { "value": 12, "type": 1, "state": 0}] }, "x": 3, "y": 10, "sortOrder": 0, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": 1 }, { "vertical": true, "visible": true, "stack": false, "name": "User5", "width": 1, "height": 4, "bend": true, "stackCards": false, "drawCardsBent": false, "pile": { "name": "player 5", "cards": [{ "value": 0, "type": 2, "state": 0 }, { "value": 12, "type": 2, "state": 0 }, { "value": 5, "type": 3, "state": 0 }, { "value": 11, "type": 3, "state": 0 }, { "value": 3, "type": 0, "state": 0 }, { "value": 9, "type": 0, "state": 0 }, { "value": 2, "type": 1, "state": 0 }, { "value": 7, "type": 1, "state": 0}] }, "x": 1, "y": 4, "sortOrder": 0, "numberOfCardsHorizontal": 1, "numberOfCardsVertical": 1}], "textAreas": [{ "name": "SpadesText", "x": 4, "y": 4, "text": "Clubs" }, { "name": "HeartsText", "x": 6, "y": 4, "text": "Hearts" }, { "name": "DiamondsText", "x": 8, "y": 4, "text": "Diamonds" }, { "name": "SpadesText", "x": 10, "y": 4, "text": "Spades" }, { "name": "Text0", "text": "Text", "x": 3, "y": 0 }, { "name": "Text1", "text": "Text", "x": 9, "y": 0 }, { "name": "Text2", "text": "Text", "x": 13, "y": 3 }, { "name": "Text3", "text": "Text", "x": 9, "y": 9 }, { "name": "Text4", "text": "Text", "x": 3, "y": 9 }, { "name": "Text5", "text": "Text", "x": 1, "y": 3}], "size": { "width": 16, "height": 12 }, "emulating": false, "answerIndex": 0 });
+//            ph.drawArea({textAreas:[],spaces:[],"size": { "width": 16, "height": 12 }});
+        });
+    </script>
+    <style type="text/css">
+        body
+        {
+            background-color: cadetblue;
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>

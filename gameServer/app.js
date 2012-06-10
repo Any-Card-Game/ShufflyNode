@@ -66,7 +66,7 @@ var requiredShuff = require('./../gameFramework/shuff.js');
 io.sockets.on('connection', function (socket) {
     socket.on('Area.Game.Create', function (data) {
         var room;
-        rooms.push(room = { name: data.name, maxUsers: 6, debuggable: data.debuggable, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
+        rooms.push(room = { name: data.name, maxUsers: 6, debuggable: false, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
         room.players.push({ name: data.user.name, socket: socket }); //make a model
         var gameObject;
         //todo::: sanatize game name
@@ -88,6 +88,30 @@ io.sockets.on('connection', function (socket) {
         socket.room = room;
 
         emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
+    });
+
+    socket.on('Area.Debug.Create', function (data) {
+        var room;
+        rooms.push(room = { name: data.name, maxUsers: 6, debuggable: true, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
+        room.players.push({ name: data.user.name, socket: socket }); //make a model
+        socket.room = room;
+ 
+
+        var module = {};
+        eval(applyBreakpoints(data.source, data.breakPoints));
+        var sevens = module.exports;
+
+        room.fiber = createFiber(room, sevens, true); 
+        room.unwind = function (players) {
+            gameData.finishedGames++;
+            console.log('--game closed');
+            for (var i = 0; i < players.length; i++) {
+                players[i].socket.disconnect();
+            }
+        };
+        socket.room = room;
+        emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
+          
     });
 
 
@@ -198,7 +222,7 @@ io.sockets.on('connection', function (socket) {
         var room = socket.room;
 
         var module = {};
-        eval(data.source);
+        eval(applyBreakpoints(data.source, data.breakPoints));
         var sevens = module.exports;
 
         room.fiber = createFiber(room, sevens, true);
@@ -214,6 +238,30 @@ io.sockets.on('connection', function (socket) {
 
         socket.emit('Area.Debug.VariableLookup.Response', { value: answ.value });
 
+    });
+
+    function applyBreakpoints(source, points) {
+        source = source.split('\n');
+        points.sort(function (a, b) { return b - a; });
+        for (var i = 0; i < points.length; i++) {
+            source.splice(points[i], 0, "self.shuff.break_(" + points[i] + ",self.cardGame, function (variable) { var goodVar; eval('goodVar=' + variable); return goodVar; });");
+        }
+        return source.join('\n');
+    }
+
+    socket.on('Area.Debug.ModifyBreakpoint.Request', function (data) {
+        var room = socket.room;
+
+        var module = {};
+        eval(applyBreakpoints(data.source, data.breakPoints));
+        var sevens = module.exports;
+
+        room.fiber = createFiber(room, sevens, true);
+        var answ = room.fiber.run(room.players);
+        handleYield(room, answ);
+
+
+        socket.emit('Area.Debug.ModifyBreakpoint.Response', { value: answ.value });
     });
 
     var now;
@@ -263,7 +311,6 @@ io.sockets.on('connection', function (socket) {
                 askQuestion(answ, room);
                 console.log(gameData.toString());
 
-
                 var dt = new Date();
                 var then = dt.getMilliseconds();
                 console.log(then - now + " Milliseconds");
@@ -292,7 +339,7 @@ io.sockets.on('connection', function (socket) {
                     return;
                 }
                 if (!room.game.cardGame.emulating) {
-                    room.debuggingSocket.emit('Area.Debug.Break', { lineNumber: obj.lineNumber });
+                    room.debuggingSocket.emit('Area.Debug.Break', { lineNumber: obj.lineNumber+2 });
                 }
                 break;
         }

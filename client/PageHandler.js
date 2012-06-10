@@ -55,7 +55,9 @@ function PageHandler(siteServer, gameServer, debugServer) {
             cm.setMarker(data.lineNumber, "<span style=\"color: #059\">●</span> %N%");
 
 
-            cm.setCursor(data.lineNumber, 0);
+            cm.setCursor(data.lineNumber + 15, 0);
+            cm.setCursor(data.lineNumber - 15, 0);
+            cm.setCursor(data.lineNumber , 0);
         });
         window.PageHandler.gameSocket.on('Area.Debug.VariableLookup.Response', function (data) {
             alert(JSON.stringify(data));
@@ -69,7 +71,7 @@ function PageHandler(siteServer, gameServer, debugServer) {
             setTimeout(function () {
                 window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
                 window.shuffUIManager.questionArea.visible(false);
-            }, 1);
+            }, 500);
         });
         window.PageHandler.gameSocket.on('Area.Game.UpdateState', function (data) {
             self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
@@ -85,6 +87,9 @@ function PageHandler(siteServer, gameServer, debugServer) {
 
     window.PageHandler.debugSocket.on('Area.Debug.GetGameSource.Response', function (data) {
         window.shuffUIManager.codeArea.codeEditor.setValue(data.value);
+
+        window.shuffUIManager.codeArea.codeEditor.setMarker(0, "<span style=\"color: #900\">&nbsp;&nbsp;</span> %N%");
+        window.shuffUIManager.codeArea.codeEditor.refresh();
     });
 
     window.PageHandler.debugSocket.emit('Area.Debug.GetGameSource.Request', { gameName: 'Sevens' });
@@ -220,6 +225,9 @@ PageHandler.prototype.resizeCanvas = function () {
 };
 
 PageHandler.prototype.draw = function () {
-    // cHelp.clearCanvas(this.gameContext.canvas); 
+    this.gameContext.canvas.width = this.gameContext.canvas.width;
 
+
+    if (this.drawArea && this.lastMainArea)
+        this.drawArea(this.lastMainArea);
 };

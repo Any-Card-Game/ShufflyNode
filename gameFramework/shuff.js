@@ -1,19 +1,19 @@
 ﻿var shuff = { };
 shuff.askQuestion = function (user, question, answers, cardGame) {
     cardGame.emulating = false;
-    
-    if (cardGame.answers.length -1> cardGame.answerIndex) {
+
+    if (cardGame.answers.length - 1 > cardGame.answerIndex) {
         cardGame.emulating = true;
         return cardGame.answers[cardGame.answerIndex++].value;
     }
-    
+
     var m = { user: user, question: question, answers: answers, cardGame: cardGame };
     var answer = yield({
         type: 'askQuestion',
         question: m
     });
     cardGame.answerIndex++;
-    return answer.value;
+    return !answer ? 0 : answer.value;
 };
 shuff.declareWinner = function (user) {
     yield({
@@ -37,7 +37,7 @@ shuff.break_ = function (lineNumber,cardGame, varLookup) {
 
     var yieldObject = {
         type: 'break',
-        lineNumber: lineNumber+1
+        lineNumber: lineNumber-1
     };
     
 

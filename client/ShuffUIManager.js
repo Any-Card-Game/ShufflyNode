@@ -21,9 +21,7 @@
         outer.css('height', options.height + "px");
         outer.css('di', options.height + "px");
 
-        outer.css('display', options.visible === false ? 'none' : 'block');
-
-
+        outer.css('display', options.visible === false ? 'none' : 'block'); 
 
         var top = $("<div style='width:100%; text-align:center; font-size:25px; position:absolute; top:0px;left:-2px;  '></div>");
         outer.append(top);
@@ -90,7 +88,7 @@
                 cancel: '.window-inner, .CodeMirror, .CodeMirror-fullscreen, .CodeMirror-wrap, .CodeMirror-focused',
                 containment: "window",
                 animate: true,
-                start: function () { 
+                start: function () {
 
                 }
             });
@@ -160,12 +158,12 @@ function ShuffWindow(item) {
         but.css('height', options.height);
 
         if (options.label) {
-            var lbl = $("<span style='"+options.labelStyle+"'></span>");
+            var lbl = $("<span style='" + options.labelStyle + "'></span>");
             lbl.text(options.label);
             item.append(lbl);
 
             lbl.css('position', 'absolute');
-            lbl.css('left', options.x - lbl.width() );
+            lbl.css('left', options.x - lbl.width());
             lbl.css('top', options.y + 2);
             lbl.disableSelection();
         }
@@ -174,10 +172,8 @@ function ShuffWindow(item) {
     };
     function objMerge(obj1, obj2) {
         if (!obj2) return obj1;
-        for (var ij in obj1) {
-            if (!(obj2[ij] === undefined)) {
-                obj1[ij] = obj2[ij];
-            }
+        for (var ij in obj2) {
+            obj1[ij] = obj2[ij];
         }
         return obj1;
     }
@@ -198,10 +194,13 @@ function ShuffWindow(item) {
             matchBrackets: true,
             onGutterClick: function (cm, n) {
                 var info = cm.lineInfo(n);
-                if (info.markerText)
+                if (info.markerText) {
+                    window.shuffUIManager.codeArea.breakPoints.splice(window.shuffUIManager.codeArea.breakPoints.indexOf(n-1), 0);
                     cm.clearMarker(n);
-                else
+                } else {
+                    window.shuffUIManager.codeArea.breakPoints.push(n-1);
                     cm.setMarker(n, "<span style=\"color: #900\">●</span> %N%");
+                }
             },
             extraKeys: {
                 "Ctrl-Space": function (cm) {
@@ -233,18 +232,18 @@ function ShuffWindow(item) {
         scroller.style.width = divs[0].offsetWidth + "px";
         editor.refresh();
         editor.setOption("theme", "night");
-        (function(divs) {
+        (function (divs) {
 
             $(".window-outer").resizable({
                 handles: "n, e, s, w, ne, se, sw, nw",
-                resize: function() {
+                resize: function () {
                     scroller.style.height = divs[0].offsetHeight + "px";
                     scroller.style.width = divs[0].offsetWidth + "px";
 
                 }
             });
         })(divs);
-        
+
         editor.codeElement = codeMirror;
         return editor;
 

@@ -10,15 +10,83 @@ module.exports = Sevens = function () {
 
     self.constructor = function () {
 
-        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Clubs', x: 4, y: 4, width: 1, height: 4, pile: self.clubs, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
-        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Hearts', x: 6, y: 4, width: 1, height: 4, pile: self.hearts, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
-        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Diamonds', x: 8, y: 4, width: 1, height: 4, pile: self.diamonds, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
-        self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Spades', x: 10, y: 4, width: 1, height: 4, pile: self.spades, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
+        self.cardGame.spaces.push(new TableSpace({
+            visible: true,
+            vertical: true,
+            stack: false,
+            name: 'Clubs',
+            x: 3,
+            y: 4,
+            width: 2,
+            height: 5,
+            pile: self.clubs,
+            numberOfCardsHorizontal: 1,
+            numberOfCardsVertical: -1
+        }));
+        self.cardGame.spaces.push(new TableSpace({
+            visible: true,
+            vertical: true,
+            stack: false,
+            name: 'Hearts',
+            x: 6,
+            y: 4,
+            width: 2,
+            height: 5,
+            pile: self.hearts,
+            numberOfCardsHorizontal: 1,
+            numberOfCardsVertical: -1
+        }));
+        self.cardGame.spaces.push(new TableSpace({
+            visible: true,
+            vertical: true,
+            stack: false,
+            name: 'Diamonds',
+            x: 9,
+            y: 4,
+            width: 2,
+            height: 5,
+            pile: self.diamonds,
+            numberOfCardsHorizontal: 1,
+            numberOfCardsVertical: -1
+        }));
+        self.cardGame.spaces.push(new TableSpace({
+            visible: true,
+            vertical: true,
+            stack: false,
+            name: 'Spades',
+            x: 12,
+            y: 4,
+            width: 2,
+            height: 5,
+            pile: self.spades,
+            numberOfCardsHorizontal: 1,
+            numberOfCardsVertical: -1
+        }));
 
-        self.cardGame.textAreas.push(new TableTextArea({ name: 'SpadesText', x: 4, y: 4, text: 'Clubs' }));
-        self.cardGame.textAreas.push(new TableTextArea({ name: 'HeartsText', x: 6, y: 4, text: 'Hearts' }));
-        self.cardGame.textAreas.push(new TableTextArea({ name: 'DiamondsText', x: 8, y: 4, text: 'Diamonds' }));
-        self.cardGame.textAreas.push(new TableTextArea({ name: 'SpadesText', x: 10, y: 4, text: 'Spades' }));
+        self.cardGame.textAreas.push(new TableTextArea({
+            name: 'SpadesText',
+            x: 5,
+            y: 4,
+            text: 'Clubs'
+        }));
+        self.cardGame.textAreas.push(new TableTextArea({
+            name: 'HeartsText',
+            x: 7,
+            y: 4,
+            text: 'Hearts'
+        }));
+        self.cardGame.textAreas.push(new TableTextArea({
+            name: 'DiamondsText',
+            x: 9,
+            y: 4,
+            text: 'Diamonds'
+        }));
+        self.cardGame.textAreas.push(new TableTextArea({
+            name: 'SpadesText',
+            x: 11,
+            y: 4,
+            text: 'Spades'
+        }));
     };
     self.createUser = function (userIndex, text) {
         var sp;
@@ -29,8 +97,19 @@ module.exports = Sevens = function () {
             case 1:
             case 3:
             case 4:
-                self.cardGame.spaces.push(sp = new TableSpace({ vertical: false, visible: true, stack: false, name: 'User' + userIndex, width: 4, height: 1, bend: true }));
-                self.cardGame.textAreas.push(tta = new TableTextArea({ name: 'Text' + userIndex, text: text }));
+                self.cardGame.spaces.push(sp = new TableSpace({
+                    vertical: false,
+                    visible: true,
+                    stack: false,
+                    name: 'User' + userIndex,
+                    width: 5,
+                    height: 1,
+                    bend: true
+                }));
+                self.cardGame.textAreas.push(tta = new TableTextArea({
+                    name: 'Text' + userIndex,
+                    text: text
+                }));
                 break;
             case 2:
             case 5:
@@ -40,30 +119,38 @@ module.exports = Sevens = function () {
                 } else {
                     rotate = -90;
                 }
-                self.cardGame.spaces.push(sp = new TableSpace({ vertical: true, visible: true, stack: false, name: 'User' + userIndex, width: 1, height: 4, bend: true }));
+                self.cardGame.spaces.push(sp = new TableSpace({
+                    vertical: true,
+                    visible: true,
+                    stack: false,
+                    name: 'User' + userIndex,
+                    width: 1,
+                    height: 5,
+                    bend: true
+                }));
                 self.cardGame.textAreas.push(tta = new TableTextArea({ name: 'Text' + userIndex, text: text }));
                 break;
         }
         var space = sp;
         switch (userIndex) {
             case 0:
-                space.x = 3;
+                space.x = 2;
                 space.y = 1;
                 break;
             case 1:
-                space.x = 9;
+                space.x = 8;
                 space.y = 1;
                 break;
             case 2:
-                space.x = 13;
+                space.x = 15;
                 space.y = 4;
                 break;
             case 3:
-                space.x = 9;
+                space.x = 8;
                 space.y = 10;
                 break;
             case 4:
-                space.x = 3;
+                space.x = 2;
                 space.y = 10;
                 break;
             case 5:
@@ -90,7 +177,6 @@ module.exports = Sevens = function () {
             var sp = self.createUser(ind, u.Name);
             sp.pile = u.cards;
         });
-        self.shuff.break_(93,self.cardGame, function (variable) { var goodVar; eval('goodVar=' + variable); return goodVar; });
 
 
         while (self.cardGame.deck.cards.length > 0) {
@@ -111,7 +197,7 @@ module.exports = Sevens = function () {
         var CardNames = ['Ace', 'Deuce', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King'];
 
         while (true) {
-            var result = self.cardGame.users.foreach(function (u) { 
+            var result = self.cardGame.users.foreach(function (u) {
 
                 var usable = u.cards.cards.where(function (c) {
                     return (c.type == 3 && (c.value == 6 || self.spades.cards.any(function (_c) {
@@ -133,13 +219,12 @@ module.exports = Sevens = function () {
                     answers.push(CardNames[card.value] + ' Of ' + CardTypes[card.type]);
                 });
 
-                self.shuff.break_(137, self.cardGame, function (variable) { var goodVar; eval('goodVar=' + variable); return goodVar; });
 
-                
+
                 self.shuff.log('asking question');
-                
+
                 var de = self.shuff.askQuestion(u, 'Which card would you like to play?', answers, self.cardGame);
-                self.shuff.log('asked question: '+de);
+                self.shuff.log('asked question: ' + de);
 
                 if (de > 0 && usable.length >= de) {
                     var rm = usable[de - 1];
@@ -166,8 +251,7 @@ module.exports = Sevens = function () {
                             self.diamonds.cards.sortCards();
                             break;
                     }
-                    self.shuff.break_(168, self.cardGame, function (variable) { var goodVar; eval('goodVar=' + variable); return goodVar; });
-                    
+
                     if (u.cards.cards.length == 0) {
                         self.shuff.declareWinner(u);
 

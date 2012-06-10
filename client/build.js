@@ -58,6 +58,7 @@
 
     //var url = 'https://s3.amazonaws.com/anycardgame/';
     var url = 'http://50.116.22.241:8881/';
+    window.topLevel = url;
 
     loadCss(url + 'client/lib/jquery-ui-1.8.20.custom.css');
     loadCss(url + 'client/lib/codemirror/codemirror.css');
@@ -65,7 +66,6 @@
     loadCss(url + 'client/lib/codemirror/theme/night.css');
     loadCss(url + 'client/lib/jqwidgets/styles/jqx.base.css');
 
-    window.topLevel = url;
 
     scriptLoader.loadSync([url + 'client/lib/jquery-1.7.2.min.js',
                 url + 'client/lib/jquery-ui-1.8.20.custom.min.js',
@@ -274,7 +274,13 @@
                 devArea.created = false;
                 devArea.joined = 0;
                 window.PageHandler.startGameServer();
-                window.PageHandler.gameSocket.emit('Area.Game.Create', { debuggable: true, user: { name: devArea.txtNumOfPlayers.val() }, name: 'main room', gameName: 'Sevens' }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gameSocket.emit('Area.Debug.Create', {
+                    user: { name: devArea.txtNumOfPlayers.val() },
+                    name: 'main room',
+                    source: window.shuffUIManager.codeArea.codeEditor.getValue(),
+                    breakPoints: window.shuffUIManager.codeArea.breakPoints
+                });
+                
 
             }
         });
@@ -315,11 +321,10 @@
             height: 25,
             text: 'Push New Source',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Debug.PushNewSource', { source: window.shuffUIManager.codeArea.codeEditor.getValue() }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gameSocket.emit('Area.Debug.PushNewSource', { source: window.shuffUIManager.codeArea.codeEditor.getValue(), breakPoints: window.shuffUIManager.codeArea.breakPoints }); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
-
-
+        
 
         devArea.loadRoomInfo = function (room) {
             var count = parseInt(devArea.txtNumOfPlayers.val());
@@ -363,9 +368,10 @@
 
 
         window.shuffUIManager.codeArea = codeArea;
-        window.shuffUIManager.codeArea.console = codeArea.addCodeEditor({ height: '30%' ,lineNumbes:false});
+        window.shuffUIManager.codeArea.breakPoints = [];
+        window.shuffUIManager.codeArea.console = codeArea.addCodeEditor({ height: '20%', lineNumbes: false });
 
-        window.shuffUIManager.codeArea.codeEditor = codeArea.addCodeEditor({ height: '70%', lineNumbers: true });
+        window.shuffUIManager.codeArea.codeEditor = codeArea.addCodeEditor({ height: '80%', lineNumbers: true });
 
 
         /*

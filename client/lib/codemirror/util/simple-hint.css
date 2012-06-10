@@ -14,15 +14,3 @@
   margin: 0;
   font-family: monospace;
 }
-                                                
-                                                
-                                                
-canvas {                                        
-    image-rendering: optimizeSpeed;             
-    image-rendering: -moz-crisp-edges;          
-                                                
-    image-rendering: optimize-contrast; 
-    image-rendering: -webkit-optimize-contrast; 
-            
-    -ms-interpolation-mode: nearest-neighbor;   
-}
