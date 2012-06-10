@@ -302,6 +302,7 @@ List to demo
 			* needs research
 
 * **Thoughts**
+	* complicated dockable window system
 	* game config items
 		* players can drop
 		* join in the middle

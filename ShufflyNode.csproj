@@ -41,6 +41,7 @@
     <None Include="mockups\acg.vsd" />
     <None Include="mockups\acg.xls" />
     <None Include="README.md" />
+    <Content Include="chatServer\app.js" />
     <Content Include="client\assets\cards\101.gif" />
     <Content Include="client\assets\cards\102.gif" />
     <Content Include="client\assets\cards\103.gif" />
@@ -96,6 +97,7 @@
     <Content Include="client\assets\cards\153.gif" />
     <Content Include="client\assets\cards\154.gif" />
     <Content Include="client\assets\cards\155.gif" />
+    <Content Include="client\build.js" />
     <Content Include="client\lib\codemirror\codemirror.css" />
     <Content Include="client\lib\codemirror\codemirror.js" />
     <Content Include="client\lib\codemirror\mode\javascript\javascript.js" />
@@ -570,6 +572,8 @@
     <None Include="upload\client.bat" />
     <None Include="upload\all.bat" />
     <None Include="upload\clientDeep.bat" />
+    <None Include="upload\chatServer.bat" />
+    <None Include="upload\debugServer.bat" />
     <None Include="upload\start.bat" />
     <None Include="upload\gameServer.bat" />
     <None Include="upload\headServer.bat" />
@@ -592,10 +596,10 @@
     <Content Include="client\uis\genericArea.js" />
     <Content Include="common\ArrayUtils.js" />
     <Content Include="gameServer\app.js" />
-    <Content Include="gameServer\GameAPI.js" />
-    <Content Include="gameServer\Sevens.js" />
-    <Content Include="gameServer\gameUtils.js" />
-    <Content Include="gameServer\shuff.js" />
+    <Content Include="gameFramework\GameAPI.js" />
+    <Content Include="games\Sevens\app.js" />
+    <Content Include="gameFramework\gameUtils.js" />
+    <Content Include="gameFramework\shuff.js" />
     <Content Include="common\Help.js" />
     <Content Include="implementation\rooms.js" />
     <Content Include="models\Card.js" />

@@ -14,7 +14,7 @@ var indexPageData;
 function(err, data) {
 
 });*/
-var head, sites, games, nodeInspector;
+var head, sites, games,debugs, nodeInspector;
 
 var debug = false;
 
@@ -47,13 +47,18 @@ function onAsk(data) {
         case 's':
             sites = [];
             games = [];
+            debugs = [];
 
             head = runProcess('node', [__dirname + 'headServer/app.js'], 4100);
-            console.log('Head Started');
+            console.log('Head Server Started');
+            
             sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4101));
-            console.log(sites.length + ' Sites Started');
+            console.log(sites.length + ' Sites Servers Started');
             games.push(runProcess('node', [__dirname + 'gameServer/app.js'], 4102));
-            console.log(games.length + ' Games Started');
+            console.log(games.length + ' Games Servers Started');
+
+            debugs.push(runProcess('node', [__dirname + 'debugServer/app.js'], 4103));
+            console.log(debugs.length + ' Debug Servers Started');
 
             break;
         case 'q':
@@ -80,6 +85,10 @@ function onAsk(data) {
                 }
                 for (var i = 0; i < sites.length; i++) {
                     sites[i].kill();
+                }
+
+                for (var i = 0; i < debugs.length; i++) {
+                    debugs[i].kill();
                 }
                 if (!nodeInspector.killed)
                     nodeInspector.kill();
@@ -125,6 +134,16 @@ function restartProcs(letter) {
             sites = [];
 
             sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4102));
+            break;
+        case 'd':
+            console.log('Restarting debugs');
+            for (var i = 0; i < debugs.length; i++) {
+                debugs[i].kill();
+            }
+
+            debugs = [];
+
+            debugs.push(runProcess('node', [__dirname + 'debugServer/app.js'], 4103));
             break;
     }
 

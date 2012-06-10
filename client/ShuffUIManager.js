@@ -1,4 +1,5 @@
 ﻿function ShuffUIManager() {
+    var self = this;
     this.UIAreas = [];
     window.$ui = this;
     this.draw = function () {
@@ -24,7 +25,6 @@
 
 
 
-
         var top = $("<div style='width:100%; text-align:center; font-size:25px; position:absolute; top:0px;left:-2px;  '></div>");
         outer.append(top);
 
@@ -35,7 +35,7 @@
         left.append(leftInner);
         leftInner.button();*/
 
-        var title = $("<div class='rounded' style='margin:auto; background-color:white; width:40%; text-align:center;opacity:0.4;'>"+options.title+"</div>");
+        var title = $("<div class='rounded' style='margin:auto; background-color:white; width:40%; text-align:center;opacity:0.4;'>" + options.title + "</div>");
         top.append(title);
 
         var rightSideBar = $("<div style='width:100%; text-align:center; font-size:25px; position:absolute; top:0px;left:-2px;'></div>");
@@ -52,24 +52,57 @@
         var inner = $("<div class='window-inner' id='window" + windowID + "' style='background-color: #FDFEFE;width:100%; height:100%; '> </div> ");
         outer.append(inner);
 
+        this.UIAreas.push({ element: outer, inner: inner });
 
 
 
-        $('.window-close').click(function () { alert('1'); });
-        $('.window-maximize').click(function () { alert('2'); });
+        x.click(function () {
+            outer.css('display', 'none');
+        });
+        var toggleSize = false;
+        max.click(function () {
+            toggleSize = !toggleSize;
+            if (toggleSize) {
+                outer.css('width', '100%');
+                outer.css('height', '100%');
+                outer.css('left', '0px');
+                outer.css('top', '0px');
+            }
+            else {
+                outer.css('width', '100%');
+                outer.css('height', '100%');
+            }
+        });
         $('.window-minimize').click(function () { alert('3'); });
 
 
+        outer.mousedown(function () {
+            for (var i = 0; i < self.UIAreas.length; i++) {
+                self.UIAreas[i].element.css('z-index', 1800);
+            }
+            outer.css('z-index', 1900);
+        });
+
         $('.window-header-button').button();
 
-        outer.draggable({
-            cancel: '.window-inner',
-            containment: "window", animate: true
-        });
-        outer.resizable({ handles: "n, e, s, w, ne, se, sw, nw" });
+        if (!options.static) {
+            outer.draggable({
+                cancel: '.window-inner, .CodeMirror, .CodeMirror-fullscreen, .CodeMirror-wrap, .CodeMirror-focused',
+                containment: "window",
+                animate: true,
+                start: function () { 
+
+                }
+            });
+            outer.resizable({
+                handles: "n, e, s, w, ne, se, sw, nw",
+                resize: function () {
+                }
+            });
+        }
         $(document.body).append(outer);
         var shuf = new ShuffWindow($("#window" + windowID));
-        
+
         shuf.visible = function (val) {
             outer.css('display', val ? 'block' : 'none');
         };
@@ -92,12 +125,12 @@ function ShuffWindow(item) {
         but.css('top', options.y + "px");
         but.css('width', options.width + "px");
         but.css('height', options.height + "px");
-        
-        but.button(); 
+
+        but.button();
         but.click(options.click);
         but.disableSelection();
         but.css('display', options.visible === false ? 'none' : 'block');
-        
+
         but.visible = function (val) {
             but.css('display', val ? 'block' : none);
         };
@@ -127,20 +160,95 @@ function ShuffWindow(item) {
         but.css('height', options.height);
 
         if (options.label) {
-            var lbl = $("<span></span>");
+            var lbl = $("<span style='"+options.labelStyle+"'></span>");
             lbl.text(options.label);
             item.append(lbl);
 
             lbl.css('position', 'absolute');
-            lbl.css('left', options.x - lbl.width() - 35);
-            lbl.css('font-size', 22);
+            lbl.css('left', options.x - lbl.width() );
             lbl.css('top', options.y + 2);
             lbl.disableSelection();
         }
 
         return but;
     };
+    function objMerge(obj1, obj2) {
+        if (!obj2) return obj1;
+        for (var ij in obj1) {
+            if (!(obj2[ij] === undefined)) {
+                obj1[ij] = obj2[ij];
+            }
+        }
+        return obj1;
+    }
+    self.addCodeEditor = function (options) {
 
+        options = objMerge({ width: '100%', height: '100%' }, options);
+        var divs = $('<div style="width:' + options.width + '; height:' + options.height + ';"> </div>');
+        self.element.append(divs);
+
+        divs.append('<textarea id="code" name="code" class="CodeMirror-fullscreen " style=""></textarea>');
+
+
+        var codeMirror = document.getElementById("code");
+        codeMirror.value = '';
+        var editor = CodeMirror.fromTextArea(codeMirror, {
+            lineNumbers: options.lineNumbers,
+            lineWrapping: true,
+            matchBrackets: true,
+            onGutterClick: function (cm, n) {
+                var info = cm.lineInfo(n);
+                if (info.markerText)
+                    cm.clearMarker(n);
+                else
+                    cm.setMarker(n, "<span style=\"color: #900\">●</span> %N%");
+            },
+            extraKeys: {
+                "Ctrl-Space": function (cm) {
+                    CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+                },
+                "Ctrl-I": function (cm) {
+                    var pos = cm.getCursor();
+                    cm.setValue(window.fjs.format(cm.getValue()));
+                    cm.setCursor(pos);
+
+                }
+            },
+
+            onCursorActivity: function () {
+                editor.setLineClass(hlLine, null);
+                hlLine = editor.setLineClass(editor.getCursor().line, "activeline");
+            },
+            onFocus: function (editor) {
+
+            },
+            onBlur: function (editor) {
+            }
+        });
+
+        var hlLine = editor.setLineClass(0, "activeline");
+
+        var scroller = editor.getScrollerElement();
+        scroller.style.height = divs[0].offsetHeight + "px";
+        scroller.style.width = divs[0].offsetWidth + "px";
+        editor.refresh();
+        editor.setOption("theme", "night");
+        (function(divs) {
+
+            $(".window-outer").resizable({
+                handles: "n, e, s, w, ne, se, sw, nw",
+                resize: function() {
+                    scroller.style.height = divs[0].offsetHeight + "px";
+                    scroller.style.width = divs[0].offsetWidth + "px";
+
+                }
+            });
+        })(divs);
+        
+        editor.codeElement = codeMirror;
+        return editor;
+
+    };
     self.addListBox = function (options) {
 
         var but = $("<div></div>");

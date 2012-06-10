@@ -5,6 +5,7 @@ CardGame = function (setter) {
         this[j] = setter[j];
     }
 
+    this.answers = [];
     var numberOfCards = setter["numberOfCards"] === undefined ? 52 : setter["numberOfCards"];
     var numberOfJokers = setter["numberOfJokers"] === undefined ? 0 : setter["numberOfJokers"];
     this.deck = new Pile();
@@ -28,7 +29,7 @@ CardGame = function (setter) {
     this.dealCards = function (numberOfCards, state) {
 
     };
-
+      
     this.setPlayers = function (players) {
         this.users = [];
         if (!players || !players.length) {
@@ -40,6 +41,10 @@ CardGame = function (setter) {
         for (var j = 0; j < players.length; j++) {
             this.users.push(new User(players[j].name));
         }
+    };
+
+    this.setAnswers = function (answers) {
+        this.answers = answers;
     };
 
 

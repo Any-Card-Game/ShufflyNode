@@ -6,6 +6,7 @@ var indexPageData;
 
 var siteServer = ['http://li428-241.members.linode.com:82'];
 var gameServer = 'http://li428-241.members.linode.com:81';
+var debugServer = 'http://li428-241.members.linode.com:83';
 
 
 var indexForSites = [];
@@ -15,7 +16,7 @@ fs.readFile(__dirname + '/index.html',
         indexPageData = data;
 
         for (var i = 0; i < siteServer.length; i++) {
-            indexForSites.push(indexPageData.toString().replace('{{siteServer}}', siteServer[i]).replace('{{gameServer}}', gameServer));
+            indexForSites.push(indexPageData.toString().replace('{{siteServer}}', siteServer[i]).replace('{{gameServer}}', gameServer).replace('{{debugServer}}', debugServer));
         }
 
         require('http').createServer(handler).listen(80);

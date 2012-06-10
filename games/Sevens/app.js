@@ -1,5 +1,4 @@
-﻿var shuff = require('./shuff.js');
-
+﻿
 module.exports = Sevens = function () {
     var self = this;
     self.spades = new Pile('spades');
@@ -10,8 +9,6 @@ module.exports = Sevens = function () {
     self.cardGame = new CardGame({ numberOfCards: 52 });
 
     self.constructor = function () {
-
-        shuff.fiber = self.fiber;
 
         self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Clubs', x: 4, y: 4, width: 1, height: 4, pile: self.clubs, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
         self.cardGame.spaces.push(new TableSpace({ visible: true, vertical: true, stack: false, name: 'Hearts', x: 6, y: 4, width: 1, height: 4, pile: self.hearts, numberOfCardsHorizontal: 1, numberOfCardsVertical: -1 }));
@@ -85,7 +82,6 @@ module.exports = Sevens = function () {
             console.log("baaad");
             return true;
         }
-
         _.numbers(1, 20).foreach(function () {
             self.cardGame.deck.cards = self.shuffle(self.cardGame.deck.cards);
         });
@@ -94,6 +90,7 @@ module.exports = Sevens = function () {
             var sp = self.createUser(ind, u.Name);
             sp.pile = u.cards;
         });
+        self.shuff.break_(93,self.cardGame, function (variable) { var goodVar; eval('goodVar=' + variable); return goodVar; });
 
 
         while (self.cardGame.deck.cards.length > 0) {
@@ -114,7 +111,8 @@ module.exports = Sevens = function () {
         var CardNames = ['Ace', 'Deuce', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King'];
 
         while (true) {
-            var result = self.cardGame.users.foreach(function (u) {
+            var result = self.cardGame.users.foreach(function (u) { 
+
                 var usable = u.cards.cards.where(function (c) {
                     return (c.type == 3 && (c.value == 6 || self.spades.cards.any(function (_c) {
                         return _c.value == c.value + 1 || _c.value == c.value - 1;
@@ -134,7 +132,14 @@ module.exports = Sevens = function () {
                 usable.sortCards().foreach(function (card) {
                     answers.push(CardNames[card.value] + ' Of ' + CardTypes[card.type]);
                 });
-                var de = shuff.askQuestion(u, 'Which card would you like to play?', answers, self.cardGame);
+
+                self.shuff.break_(137, self.cardGame, function (variable) { var goodVar; eval('goodVar=' + variable); return goodVar; });
+
+                
+                self.shuff.log('asking question');
+                
+                var de = self.shuff.askQuestion(u, 'Which card would you like to play?', answers, self.cardGame);
+                self.shuff.log('asked question: '+de);
 
                 if (de > 0 && usable.length >= de) {
                     var rm = usable[de - 1];
@@ -161,10 +166,11 @@ module.exports = Sevens = function () {
                             self.diamonds.cards.sortCards();
                             break;
                     }
+                    self.shuff.break_(168, self.cardGame, function (variable) { var goodVar; eval('goodVar=' + variable); return goodVar; });
+                    
                     if (u.cards.cards.length == 0) {
-                        shuff.declareWinner(u);
-                        self.fiber = shuff.fiber = null;
-                        
+                        self.shuff.declareWinner(u);
+
                         return true;
                     }
                 }

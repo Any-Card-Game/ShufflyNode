@@ -1,7 +1,7 @@
 ﻿window.DEBUGs = true;
 window.DEBUGLABELS = [];
 
-function PageHandler(siteServer, gameServer) {
+function PageHandler(siteServer, gameServer, debugServer) {
 
     var self = this;
     window.PageHandler = this;
@@ -10,7 +10,8 @@ function PageHandler(siteServer, gameServer) {
 
 
     window.PageHandler.siteSocket = io.connect(siteServer);
-    window.PageHandler.gameSocket = io.connect(gameServer);
+    window.PageHandler.debugSocket = io.connect(debugServer);
+
     self.gameStuff = {
         roomID: -1
     };
@@ -27,30 +28,66 @@ function PageHandler(siteServer, gameServer) {
     });
 
     //window.PageHandler.siteSocket.emit('Area.Main.Login.Request', { user: 'dested' });
+    window.PageHandler.startGameServer = function () {
+        window.PageHandler.gameSocket = null;
+        window.PageHandler.gameSocket = io.connect(gameServer, { 'force new connection': true });
+        window.PageHandler.gameSocket.on('Area.Game.RoomInfo', function (data) {
+            self.gameStuff.roomID = data.roomID;
+
+            window.shuffUIManager.genericArea.loadRoomInfo(data);
+            window.shuffUIManager.devArea.loadRoomInfo(data);
+        });
+        window.PageHandler.gameSocket.on('Area.Game.RoomInfos', function (data) {
+            window.shuffUIManager.genericArea.loadRoomInfos(data);
+        });
+
+        window.PageHandler.gameSocket.on('Area.Debug.Log', function (data) {
+            window.shuffUIManager.codeArea.console.setValue(window.shuffUIManager.codeArea.console.getValue() + "\n" + data.value);
+            window.shuffUIManager.codeArea.console.setCursor(window.shuffUIManager.codeArea.console.lineCount(), 0);
+        });
+
+        window.PageHandler.gameSocket.on('Area.Debug.Break', function (data) {
+
+            var cm = window.shuffUIManager.codeArea.codeEditor;
+
+            cm.clearMarker(data.lineNumber);
+
+            cm.setMarker(data.lineNumber, "<span style=\"color: #059\">●</span> %N%");
 
 
-    window.PageHandler.gameSocket.on('Area.Game.RoomInfo', function (data) {
-        self.gameStuff.roomID = data.roomID;
+            cm.setCursor(data.lineNumber, 0);
+        });
+        window.PageHandler.gameSocket.on('Area.Debug.VariableLookup.Response', function (data) {
+            alert(JSON.stringify(data));
+        });
 
-        window.shuffUIManager.genericArea.loadRoomInfo(data);
+        
+        window.PageHandler.gameSocket.on('Area.Game.AskQuestion', function (data) {
+            window.shuffUIManager.questionArea.load(data);
+            //alert(JSON.stringify(data));
+
+            setTimeout(function () {
+                window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
+                window.shuffUIManager.questionArea.visible(false);
+            }, 1);
+        });
+        window.PageHandler.gameSocket.on('Area.Game.UpdateState', function (data) {
+            self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
+            self.drawArea(data);
+        });
+        window.PageHandler.gameSocket.on('Area.Game.Started', function (data) {
+            //alert(JSON.stringify(data));
+        });
+        window.PageHandler.gameSocket.on('Area.Game.GameOver', function (data) {
+
+        });
+    };
+
+    window.PageHandler.debugSocket.on('Area.Debug.GetGameSource.Response', function (data) {
+        window.shuffUIManager.codeArea.codeEditor.setValue(data.value);
     });
-    window.PageHandler.gameSocket.on('Area.Game.RoomInfos', function (data) {
-        window.shuffUIManager.genericArea.loadRoomInfos(data);
-    });
 
-    window.PageHandler.gameSocket.on('Area.Game.AskQuestion', function (data) {
-        window.shuffUIManager.questionArea.load(data);
-        //alert(JSON.stringify(data));
-
-        setTimeout(function () {
-            window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
-        }, 1);
-    });
-    window.PageHandler.gameSocket.on('Area.Game.UpdateState', function (data) {
-        self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
-        self.drawArea(data);
-    });
-
+    window.PageHandler.debugSocket.emit('Area.Debug.GetGameSource.Request', { gameName: 'Sevens' });
 
     var cardImages = {};
     for (var i = 101; i < 153; i++) {
@@ -92,7 +129,7 @@ function PageHandler(siteServer, gameServer) {
             gameboard.fillStyle = "rgba(200, 0, 200, 0.5)";
             gameboard.fillText(ta.text, ta.x * scale.x, ta.y * scale.y);
         }
-    }
+    };
 
 
     function drawCard(card) {
@@ -104,29 +141,21 @@ function PageHandler(siteServer, gameServer) {
 
         return src + ".gif";
     }
-    window.PageHandler.gameSocket.on('Area.Game.Started', function (data) {
-        //alert(JSON.stringify(data));
-    });
-    window.PageHandler.gameSocket.on('Area.Game.GameOver', function (data) {
-        setTimeout(function () {
-            window.PageHandler.gameSocket.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
 
-        }, 1)
-    });
 
 
     var gameCanvas;
     $('body').append(gameCanvas = document.createElement('canvas'));
 
 
-    $(gameCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: '0px', 'z-index': -50 });
+    $(gameCanvas).css({ margin: '0px', position: 'absolute', top: '0px', left: ($(window).width() * .5) + 'px', 'z-index': -50 });
 
 
     self.gameContext = gameCanvas.getContext("2d");
     self.gameContext.canvas = gameCanvas;
     self.gameContext.$canvas = $(gameCanvas);
 
-    self.gameContext.canvas.width = $(window).width();
+    self.gameContext.canvas.width = $(window).width() * .5;
     self.gameContext.canvas.height = $(window).height();
 
     this.lastMouseMove = false;
@@ -177,15 +206,13 @@ PageHandler.prototype.canvasMouseUp = function (e) {
 PageHandler.prototype.handleScroll = function (e) {
     e.preventDefault();
 
-
-
     return e.preventDefault() && false;
 };
 
 
 PageHandler.prototype.resizeCanvas = function () {
     if (window.PageHandler.gameContext.$canvas.attr("width") != $(window).width())
-        window.PageHandler.gameContext.$canvas.attr("width", $(window).width());
+        window.PageHandler.gameContext.$canvas.attr("width", $(window).width() * .5);
     if (window.PageHandler.gameContext.$canvas.attr("height") != $(window).height())
         window.PageHandler.gameContext.$canvas.attr("height", $(window).height());
     if (this.drawArea && this.lastMainArea)
