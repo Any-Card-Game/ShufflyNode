@@ -267,6 +267,26 @@ function ShuffWindow(item) {
         return but;
     };
 
+    self.addPropertyBox = function (options) {
+
+        var but = $("<div></div>");
+        item.append(but);
+        but.css('position', 'absolute');
+        but.css('left', options.x);
+        but.css('top', options.y);
+        but.css('width', options.width);
+        but.css('height', options.height);
+        but.css('overflow', 'scroll');
+
+
+        but.items = [];
+        but.addItem = function (ij) {
+            but.append(options.itemCreation(ij, but.items.length));
+            but.items.push(ij);
+        };
+        return but;
+    };
+
     return self;
 }
    

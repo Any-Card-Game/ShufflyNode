@@ -24,7 +24,7 @@ global._ = {
         return ~ ~j;
     },
     random: function () {
-        return .7;
+        return Math.random();
     }
 };
 

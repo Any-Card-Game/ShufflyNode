@@ -296,6 +296,41 @@
 
             }
         });
+       devArea.propBox= devArea.addPropertyBox({
+            x: 25,
+            y: 200,
+            width: 250,
+            height: 250,
+            itemCreation: function (item,index) {
+                var ik = $("<div style='width:100%;height:25px; background-color:" + (index%2==0?'red':'green') + ";'></div>");
+                var ikc = $("<div style='width:50%;height:25px; float:left;'>" + item.key + "</div>");
+                ik.append(ikc);
+                var ikd = $("<input type='text' style='width:48%;height:25px' value='" + item.value + "' />");
+                ik.append(ikd);
+                
+                
+                return ik;
+            }
+        });
+
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+        devArea.propBox.addItem({ key: 'Foos', value: '99' });
+
         devArea.varText = devArea.addTextbox({
             x: 150,
             y: 134,

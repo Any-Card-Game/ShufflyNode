@@ -122,10 +122,10 @@ function PageHandler(siteServer, gameServer, debugServer) {
             for (j = 0; j < space.pile.cards.length; j++) {
                 var card = space.pile.cards[j];
                 var xx = Math.floor((space.x) * scale.x) + (!vertical ? j * (spaceScale.x * scale.x) : 0);
-                var yy = Math.floor((space.y) * scale.y) + (vertical ? j * (spaceScale.x * scale.x) : 0);
+                var yy = Math.floor((space.y) * scale.y) + (vertical ? j * (spaceScale.y * scale.y) : 0);
 
                 var cardImage = cardImages[drawCard(card)];
-                gameboard.drawImage(cardImage, xx - (vertical ? (space.width / 2 - cardImage.width / 2) : 0), yy - (!vertical ? (space.height / 2 - cardImage.height / 2) : 0));
+                gameboard.drawImage(cardImage, xx + (vertical ? (space.width * scale.x / 2 - cardImage.width / 2) : 0), yy + (!vertical ? (space.height * scale.y / 2 - cardImage.height / 2) : 0));
 
             }
         }
