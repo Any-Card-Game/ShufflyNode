@@ -99,7 +99,7 @@
             });
         }
         $(document.body).append(outer);
-        var shuf = new ShuffWindow($("#window" + windowID));
+        var shuf = new ShuffWindow($("#window" + windowID), outer);
 
         shuf.visible = function (val) {
             outer.css('display', val ? 'block' : 'none');
@@ -109,9 +109,20 @@
     };
 }
 
-function ShuffWindow(item) {
+function ShuffWindow(item,outer) {
     var self = this;
     self.element = item;
+    self.outer = outer;
+
+
+    outer.resizable({
+        handles: "n, e, s, w, ne, se, sw, nw",
+        resize: function() {
+            
+
+        }
+    });
+                
 
     self.addButton = function (options) {
         var but = $("<div></div>");
@@ -232,9 +243,9 @@ function ShuffWindow(item) {
         scroller.style.width = divs[0].offsetWidth + "px";
         editor.refresh();
         editor.setOption("theme", "night");
-        (function (divs) {
+        /*(function (outer, scroller) {
 
-            $(".window-outer").resizable({
+            outer.resizable({
                 handles: "n, e, s, w, ne, se, sw, nw",
                 resize: function () {
                     scroller.style.height = divs[0].offsetHeight + "px";
@@ -242,7 +253,7 @@ function ShuffWindow(item) {
 
                 }
             });
-        })(divs);
+        })(self.outer,scroller);*/
 
         editor.codeElement = codeMirror;
         return editor;

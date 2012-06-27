@@ -18,6 +18,13 @@ ar.where = Array.prototype.where = (function (does) {
     }
     return jf;
 });
+ar.aggregate = Array.prototype.aggregate = (function (start, does) {
+    var jf = [];
+    for (var i = 0; i < this.length; i++) {
+        start = does(start, this[i]);
+    }
+    return start;
+});
 
 ar.first = Array.prototype.first = (function (does) {
     for (var i = 0; i < this.length; i++) {

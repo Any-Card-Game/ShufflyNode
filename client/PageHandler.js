@@ -71,7 +71,7 @@ function PageHandler(siteServer, gameServer, debugServer) {
             setTimeout(function () {
                 window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
                 window.shuffUIManager.questionArea.visible(false);
-            }, 500);
+            }, 2);
         });
         window.PageHandler.gameSocket.on('Area.Game.UpdateState', function (data) {
             self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);

@@ -90,18 +90,25 @@ io.sockets.on('connection', function (socket) {
         emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
     });
 
+    socket.on('Server.Head.Connect', function (data) {
+        setInterval(function () {
+            socket.emit('Server.Head.Ping', { rooms: rooms.length });
+
+        }, 5000);
+    });
+
     socket.on('Area.Debug.Create', function (data) {
         var room;
         rooms.push(room = { name: data.name, maxUsers: 6, debuggable: true, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
         room.players.push({ name: data.user.name, socket: socket }); //make a model
         socket.room = room;
- 
+
 
         var module = {};
         eval(applyBreakpoints(data.source, data.breakPoints));
         var sevens = module.exports;
 
-        room.fiber = createFiber(room, sevens, true); 
+        room.fiber = createFiber(room, sevens, true);
         room.unwind = function (players) {
             gameData.finishedGames++;
             console.log('--game closed');
@@ -111,7 +118,7 @@ io.sockets.on('connection', function (socket) {
         };
         socket.room = room;
         emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
-          
+
     });
 
 
@@ -339,7 +346,7 @@ io.sockets.on('connection', function (socket) {
                     return;
                 }
                 if (!room.game.cardGame.emulating) {
-                    room.debuggingSocket.emit('Area.Debug.Break', { lineNumber: obj.lineNumber+2 });
+                    room.debuggingSocket.emit('Area.Debug.Break', { lineNumber: obj.lineNumber + 2 });
                 }
                 break;
         }

@@ -20,6 +20,9 @@ Google Document
 --------------- 
 * https://docs.google.com/document/d/1awwLCyOkEkVUFXiO8jueHF6jiD1iQatxTnlLi_FXkbM/edit
 
+ 
+
+Author : Salvatore Aiello (dested) Licence : LGPL V2
 
 
 
@@ -373,10 +376,10 @@ List to demo
 	* Area.Game.AnswerQuestion
 	* Area.Game.UpdateLayout
 * **Main protocol** 
-	Area.Main.Login.Request
-	Area.Main.Login.Response
+	* Area.Main.Login.Request
+	* Area.Main.Login.Response
 * **Ad protocol** 
-	Area.Ad.Fresh
+	* Area.Ad.Fresh
 * **Site protocol** 
 	* Area.Site.ListCardGames.Request
 	* Area.Site.ListCardGames.Response

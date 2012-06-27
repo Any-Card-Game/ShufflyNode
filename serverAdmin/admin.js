@@ -49,15 +49,18 @@ function onAsk(data) {
             games = [];
             debugs = [];
 
-            head = runProcess('node', [__dirname + 'headServer/app.js'], 4100);
+            head = runProcess('node', [__dirname + 'headServer/app.js'], 4000, 'port=85');
             console.log('Head Server Started');
-            
-            sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4101));
+
+            sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4100, 'port=85'));
             console.log(sites.length + ' Sites Servers Started');
-            games.push(runProcess('node', [__dirname + 'gameServer/app.js'], 4102));
+            sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4101, 'port=86'));
+            console.log(sites.length + ' Sites Servers Started');
+
+            games.push(runProcess('node', [__dirname + 'gameServer/app.js'], 4200));
             console.log(games.length + ' Games Servers Started');
 
-            debugs.push(runProcess('node', [__dirname + 'debugServer/app.js'], 4103));
+            debugs.push(runProcess('node', [__dirname + 'debugServer/app.js'], 4300));
             console.log(debugs.length + ' Debug Servers Started');
 
             break;
@@ -164,11 +167,11 @@ function ask(question, format, callback) {
 }
 
 
-function runProcess(process, args, debugPort) {
+function runProcess(process, args, debugPort, appArgs) {
     if (nonDebuggable.indexOf(process) == -1 && debug) {
         args[0] = ' --debug=' + debugPort + " " + args[0];
     }
-    var dummy = exec(process + " " + args.join());
+    var dummy = exec(process + " " + args.join() + " " + (appArgs?appArgs:''));
 
     if (nonDebuggable.indexOf(process) == -1) {
         dummy.stdout.on('data', function (data) {
