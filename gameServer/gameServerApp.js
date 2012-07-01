@@ -1,10 +1,27 @@
-﻿var app = require('http').createServer(handler);
-var io = require('socket.io').listen(app);
-var fs = require('fs');
+﻿var fs = require('fs');
 var child_process = require('child_process');
 var cJSON = require("./cJSON.js");
 var guid = require("./guid.js");
-var arrayUtils = require('../common/ArrayUtils.js');
+var arrayUtils = require('../common/arrayUtils.js');
+
+var qItemCollection = require('../common/queueItemCollection.js'), qPusher = require('../common/queuePusher.js'), qWatcher = require('../common/queueWatcher.js');
+
+var qpCollection = new qItemCollection(new qPusher("GatewayServer"));
+var qwCollection = new qItemCollection(new qWatcher("GameServer", messageReceived));
+
+
+function messageReceived(message) { 
+    if (channels[message.channel]) {
+        channels[message.channel](message.content);
+    } 
+}
+
+var channels = {};
+function addChannel(channel, callback) {
+    channels[channel] = callback;
+}
+
+
 
 //var agent = require('webkit-devtools-agent');
 
@@ -14,24 +31,9 @@ var ajj = 0;
 require('fibers');
 
 
-app.listen(81);
-io.set('log level', 1);
+
 
 var verbose = false;
-function handler(req, res) {
-    /*fs.readFile(__dirname + '/index.html',
-    function (err, data) {
-    if (err) {
-    res.writeHead(500);
-    return res.end('Error loading index.html');
-    }
-
-    //res.writeHead(200);
-    res.writeHead(200, { 'Content-Type': "text/html" });
-    res.end(data);
-    });*/
-    res.end();
-}
 
 var gameData = {
     totalGames: 0,
@@ -63,16 +65,15 @@ require('./../gameFramework/gameUtils.js');
 require('./../gameFramework/GameAPI.js');
 var requiredShuff = require('./../gameFramework/shuff.js');
 
-io.sockets.on('connection', function (socket) {
-    socket.on('Area.Game.Create', function (data) {
+
+addChannel('Area.Game.Create', function (data) {
         var room;
         rooms.push(room = { name: data.name, maxUsers: 6, debuggable: false, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
         room.players.push({ name: data.user.name, socket: socket }); //make a model
         var gameObject;
         //todo::: sanatize game name
         if (cachedGames[room.gameName]) {
-            gameObject = cachedGames[room.gameName];
-
+            gameObject = cachedGames[room.gameName]; 
         } else {
             gameObject = require('./../games/' + room.gameName + '/app.js');
         }
@@ -90,14 +91,14 @@ io.sockets.on('connection', function (socket) {
         emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
     });
 
-    socket.on('Server.Head.Connect', function (data) {
+    addChannel('Server.Head.Connect', function (data) {
         setInterval(function () {
             socket.emit('Server.Head.Ping', { rooms: rooms.length });
 
         }, 5000);
     });
 
-    socket.on('Area.Debug.Create', function (data) {
+    addChannel('Area.Debug.Create', function (data) {
         var room;
         rooms.push(room = { name: data.name, maxUsers: 6, debuggable: true, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
         room.players.push({ name: data.user.name, socket: socket }); //make a model
@@ -147,7 +148,7 @@ io.sockets.on('connection', function (socket) {
 
 
 
-    socket.on('Area.Game.Join', function (data) {
+    addChannel('Area.Game.Join', function (data) {
 
         var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
         if (!room) {
@@ -159,7 +160,7 @@ io.sockets.on('connection', function (socket) {
 
     });
 
-    socket.on('disconnect', function (data) {
+    addChannel('disconnect', function (data) {
         if (socket.room == null)
             return;
         socket.room.players.splice(socket.room.players.indexOf(socket.player), 1);
@@ -174,11 +175,11 @@ io.sockets.on('connection', function (socket) {
 
     });
 
-    socket.on('Area.Game.GetGames', function (data) {
+    addChannel('Area.Game.GetGames', function (data) {
         socket.emit('Area.Game.RoomInfos', JSON.parse(JSON.stringify(rooms, sanitize)));
     });
 
-    socket.on('Area.Game.DebuggerJoin', function (data) {
+    addChannel('Area.Game.DebuggerJoin', function (data) {
         var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
         if (!room) {
             return;
@@ -193,7 +194,7 @@ io.sockets.on('connection', function (socket) {
     });
 
 
-    socket.on('Area.Game.Start', function (data) {
+    addChannel('Area.Game.Start', function (data) {
         var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
 
         if (!room) {
@@ -215,17 +216,17 @@ io.sockets.on('connection', function (socket) {
 
 
 
-    socket.on('Area.Game.GetRooms', function (data) {
+    addChannel('Area.Game.GetRooms', function (data) {
         socket.emit('Area.Game.GetRoomsResponse', JSON.parse(JSON.stringify(rooms, sanitize)));
     });
-    socket.on('Area.Debug.Continue', function (data) {
+    addChannel('Area.Debug.Continue', function (data) {
         var room = socket.room;
         var answ = room.fiber.run(null);
         handleYield(room, answ);
     });
 
 
-    socket.on('Area.Debug.PushNewSource', function (data) {
+    addChannel('Area.Debug.PushNewSource', function (data) {
         var room = socket.room;
 
         var module = {};
@@ -237,7 +238,7 @@ io.sockets.on('connection', function (socket) {
         handleYield(room, answ);
 
     });
-    socket.on('Area.Debug.VariableLookup.Request', function (data) {
+    addChannel('Area.Debug.VariableLookup.Request', function (data) {
         var room = socket.room;
         var answ = room.fiber.run({ variableLookup: data.variableName });
         if (!answ.type == 'variableLookup')
@@ -256,7 +257,7 @@ io.sockets.on('connection', function (socket) {
         return source.join('\n');
     }
 
-    socket.on('Area.Debug.ModifyBreakpoint.Request', function (data) {
+    addChannel('Area.Debug.ModifyBreakpoint.Request', function (data) {
         var room = socket.room;
 
         var module = {};
@@ -273,7 +274,7 @@ io.sockets.on('connection', function (socket) {
 
     var now;
 
-    socket.on('Area.Game.AnswerQuestion', function (data) {
+    addChannel('Area.Game.AnswerQuestion', function (data) {
         now = new Date().getMilliseconds();
 
         var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
@@ -353,7 +354,6 @@ io.sockets.on('connection', function (socket) {
     }
 
 
-});
 
 
 function deflate(str) {

@@ -2,6 +2,11 @@
 Thoughts
 ------------
  
+		* asp.net admin app
+			* deploy all or some
+			* ssh to start and stop servers
+			* maybe get rid of rusty old serveradmin
+		* upload to one location, have it send to the apporpriate servers 
 		* complicated dockable window system
 		* game config items
 			* players can drop

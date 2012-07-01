@@ -1,4 +1,4 @@
-﻿function buildSite(siteServerAddress, gameServerAddress, debugServerAddress) {
+﻿function buildSite(gatewayServerAddress) {
 
     /**
     *  Chainable external javascript file loading
@@ -57,7 +57,7 @@
 
 
     //var url = 'https://s3.amazonaws.com/anycardgame/';
-    var url = 'http://50.116.22.241:8881/';
+    var url = 'http://50.116.28.16:8881/';
     window.topLevel = url;
 
     loadCss(url + 'client/lib/jquery-ui-1.8.20.custom.css');
@@ -83,6 +83,7 @@
                                         url + 'common/Help.js',
                                         url + 'client/lib/codemirror/mode/javascript/javascript.js',
                                         url + 'client/lib/WorkerConsole.js',
+                                        url + 'client/Gateway.js',
                                         url + 'client/lib/FunctionWorker.js',
                                         url + 'client/lib/Stats.js',
                                         url + 'client/lib/keyboardjs.js',
@@ -104,7 +105,7 @@
 
         var stats = new xStats;
         document.body.appendChild(stats.element);
-        var pageHandler = new PageHandler(siteServerAddress, gameServerAddress, debugServerAddress);
+        var pageHandler = new PageHandler(gatewayServerAddress);
 
 
         var shuffUIManager = new ShuffUIManager();
@@ -133,7 +134,7 @@
             height: 25,
             text: 'Update Game List',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -145,10 +146,12 @@
             height: 25,
             text: 'Create Game',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Game.Create', { user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Create', { user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
+
+
         genericArea.btnStartGame = home.addButton({
             x: 280,
             y: 164,
@@ -156,7 +159,7 @@
             height: 25,
             text: 'Start Game',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
             },
             visible: false
         });
@@ -168,19 +171,29 @@
             height: 25,
             text: 'Start Game',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
+
+
+        var randomName = '';
+        var ra = Math.random() * 10;
+        for (var i = 0; i < ra; i++) {
+            randomName += String.fromCharCode(65 + (Math.random() * 26));
+        }
 
         genericArea.txtUserName = home.addTextbox({
             x: 130,
             y: 43,
             width: 130,
             height: 20,
-            text: 'dested',
+            text: randomName,
             label: 'Username:'
         });
+
+
+
         genericArea.gameList = home.addListBox({
             x: 30,
             y: 85,
@@ -188,7 +201,7 @@
             height: 25 * 6,
             label: 'Rooms',
             click: function () {
-                window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: id, user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
         genericArea.userList = home.addListBox({
@@ -245,7 +258,7 @@
                 label: 'Rooms',
                 items: rooms,
                 click: function (item) {
-                    window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: item.value, user: { name: genericArea.txtUserName.val()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: item.value, user: { name: genericArea.txtUserName.val()} }); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
             });
         };
@@ -274,16 +287,25 @@
                 devArea.created = false;
                 devArea.joined = 0;
                 window.PageHandler.startGameServer();
-                window.PageHandler.gameSocket.emit('Area.Debug.Create', {
+                window.PageHandler.gateway.emit('Area.Debug.Create', {
                     user: { name: devArea.txtNumOfPlayers.val() },
                     name: 'main room',
                     source: window.shuffUIManager.codeArea.codeEditor.getValue(),
                     breakPoints: window.shuffUIManager.codeArea.breakPoints
                 });
-                
+
 
             }
         });
+
+        devArea.lblHowFast = devArea.addLabel({
+            x: 280 - 150,
+            y: 94,
+            width: 150,
+            height: 25,
+            text: 'How Many: '
+        });
+
 
         devArea.addButton({
             x: 280,
@@ -292,23 +314,23 @@
             height: 25,
             text: 'Continue',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Debug.Continue', {}); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Debug.Continue', {}); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
-       devArea.propBox= devArea.addPropertyBox({
+        devArea.propBox = devArea.addPropertyBox({
             x: 25,
             y: 200,
             width: 250,
             height: 250,
-            itemCreation: function (item,index) {
-                var ik = $("<div style='width:100%;height:25px; background-color:" + (index%2==0?'red':'green') + ";'></div>");
+            itemCreation: function (item, index) {
+                var ik = $("<div style='width:100%;height:25px; background-color:" + (index % 2 == 0 ? 'red' : 'green') + ";'></div>");
                 var ikc = $("<div style='width:50%;height:25px; float:left;'>" + item.key + "</div>");
                 ik.append(ikc);
                 var ikd = $("<input type='text' style='width:48%;height:25px' value='" + item.value + "' />");
                 ik.append(ikd);
-                
-                
+
+
                 return ik;
             }
         });
@@ -345,7 +367,7 @@
             height: 25,
             text: 'Lookup',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Debug.VariableLookup.Request', { variableName: devArea.varText.val() }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Debug.VariableLookup.Request', { variableName: devArea.varText.val() }); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
 
@@ -356,24 +378,24 @@
             height: 25,
             text: 'Push New Source',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Debug.PushNewSource', { source: window.shuffUIManager.codeArea.codeEditor.getValue(), breakPoints: window.shuffUIManager.codeArea.breakPoints }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Debug.PushNewSource', { source: window.shuffUIManager.codeArea.codeEditor.getValue(), breakPoints: window.shuffUIManager.codeArea.breakPoints }); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
-        
+
 
         devArea.loadRoomInfo = function (room) {
             var count = parseInt(devArea.txtNumOfPlayers.val());
             if (!devArea.created) {
-                window.PageHandler.gameSocket.emit('Area.Game.DebuggerJoin', { roomID: room.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.DebuggerJoin', { roomID: room.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
 
                 for (var i = 0; i < count; i++) {
-                    window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: room.roomID, user: { name: "player " + (i + 1)} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: room.roomID, user: { name: "player " + (i + 1)} }); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
                 devArea.created = true;
             }
             else {
                 if ((++devArea.joined) == count) {
-                    window.PageHandler.gameSocket.emit('Area.Game.Start', { roomID: room.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Start', { roomID: room.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
             }
         };
@@ -457,7 +479,7 @@
             height: 25,
             text: '',
             click: function (e) {
-                window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -480,7 +502,7 @@
                 label: 'Answers',
                 items: answers,
                 click: function (item) {
-                    window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: item.value, roomID: window.PageHandler.gameStuff.roomID });
+                    window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: item.value, roomID: window.PageHandler.gameStuff.roomID });
                     window.shuffUIManager.questionArea.visible(false);
 
                 }
@@ -495,7 +517,7 @@
             height: 25 * 5,
             label: 'Answers',
             click: function (item) {
-                window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: item.index, roomID: window.PageHandler.gameStuff.roomID });
+                window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: item.index, roomID: window.PageHandler.gameStuff.roomID });
                 window.shuffUIManager.questionArea.visible = false;
 
             }
@@ -519,7 +541,7 @@
 
 
 
-        // window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+        // window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
 
 
 

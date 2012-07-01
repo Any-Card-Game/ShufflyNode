@@ -22,7 +22,7 @@ echo mput B:\code\Shuffle\ShufflyNode\client/lib/*.js>> ftpcmdclient.dat
 
 
 echo quit>> ftpcmdclient.dat
-b:\psftp.exe -pw %1 -b ftpcmdclient.dat root@50.116.22.241
+b:\psftp.exe -pw %1 -b ftpcmdclient.dat root@%2
 del ftpcmdclient.dat
 
 exit

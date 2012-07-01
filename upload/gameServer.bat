@@ -14,6 +14,6 @@ echo cd /usr/local/src/games/Sevens/>>ftpcmdgame.dat
 echo mput B:\code\Shuffle\ShufflyNode\games\Sevens\*.js>> ftpcmdgame.dat
 
 echo quit>> ftpcmdgame.dat
-b:\psftp.exe -pw %1 -b ftpcmdgame.dat root@50.116.22.241
+b:\psftp.exe -pw %1 -b ftpcmdgame.dat root@%2
 del ftpcmdgame.dat
 exit

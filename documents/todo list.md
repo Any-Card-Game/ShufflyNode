@@ -1,6 +1,4 @@
 ﻿
-
-
 Todo List
 ------------
 
@@ -356,6 +354,22 @@ Current list
 
 
 
-
-
-/usr/bin/node-inspector
+* sprint 
+	* head connect to gateway
+		* blpop for new gateway
+		* socket after that
+	* group the redis functionality
+		* queuemanager
+		* sync user 
+		* cuncurrent hashing
+	* page gateway stuff
+	* finish playing games
+	* mongo 
+		* insert game stuff
+	* memcached
+	
+	
+* sprint scaling
+	* traditoinal load balance	
+	* redis scaling
+	* mongo scaling

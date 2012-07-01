@@ -48,19 +48,21 @@ function onAsk(data) {
             sites = [];
             games = [];
             debugs = [];
+            gateways = [];
 
-            head = runProcess('node', [__dirname + 'headServer/app.js'], 4000, 'port=85');
+            head = runProcess('node', [__dirname + 'headServer/headApp.js'], 4000);
             console.log('Head Server Started');
 
-            sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4100, 'port=85'));
-            console.log(sites.length + ' Sites Servers Started');
-            sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4101, 'port=86'));
+            sites.push(runProcess('node', [__dirname + 'siteServer/siteApp.js'], 4101));
             console.log(sites.length + ' Sites Servers Started');
 
-            games.push(runProcess('node', [__dirname + 'gameServer/app.js'], 4200));
+//            gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4400));
+            console.log(gateways.length + ' Gateway Servers Started');
+
+            games.push(runProcess('node', [__dirname + 'gameServer/gameServerApp.js'], 4200));
             console.log(games.length + ' Games Servers Started');
 
-            debugs.push(runProcess('node', [__dirname + 'debugServer/app.js'], 4300));
+            debugs.push(runProcess('node', [__dirname + 'debugServer/debugServerApp.js'], 4300));
             console.log(debugs.length + ' Debug Servers Started');
 
             break;
@@ -116,7 +118,7 @@ function restartProcs(letter) {
                 head.kill();
             }
 
-            head = runProcess('node', [__dirname + 'headServer/app.js'], 4100);
+            head = runProcess('node', [__dirname + 'headServer/headApp.js'], 4100);
             break;
         case 'g':
             console.log('Restarting games');
@@ -126,7 +128,7 @@ function restartProcs(letter) {
 
             games = [];
 
-            games.push(runProcess('node', [__dirname + 'gameServer/app.js'], 4101));
+            games.push(runProcess('node', [__dirname + 'gameServer/gameServerApp.js'], 4101));
             break;
         case 's':
             console.log('Restarting sites');
@@ -136,7 +138,7 @@ function restartProcs(letter) {
 
             sites = [];
 
-            sites.push(runProcess('node', [__dirname + 'siteServer/app.js'], 4102));
+            sites.push(runProcess('node', [__dirname + 'siteServer/siteServerApp.js'], 4102));
             break;
         case 'd':
             console.log('Restarting debugs');
@@ -146,7 +148,7 @@ function restartProcs(letter) {
 
             debugs = [];
 
-            debugs.push(runProcess('node', [__dirname + 'debugServer/app.js'], 4103));
+            debugs.push(runProcess('node', [__dirname + 'debugServer/debugServerApp.js'], 4103));
             break;
     }
 

@@ -12,7 +12,7 @@ window.genericArea = function () {
         font: uiManager.buttonFont,
         color: "red",
         click: function (e) {
-            window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+            window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
 
         }
     })); uiManager.genericArea.addControl(new Button(280, 84, {
@@ -23,7 +23,7 @@ window.genericArea = function () {
         color: "red",
         click: function (e) {
             //propUtils.animateTo(uiManager.genericArea, 'height', uiManager.genericArea.height + 200, 200);
-            window.PageHandler.gameSocket.emit('Area.Game.Create', { user: { name: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
+            window.PageHandler.gateway.emit('Area.Game.Create', { user: { name: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
         }
     }));
 
@@ -46,7 +46,7 @@ window.genericArea = function () {
                 text: room[i].name,
                 click: (function (id) {
                     return function () {
-                        window.PageHandler.gameSocket.emit('Area.Game.Join', { roomID: id, user: { name: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                        window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { name: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
                     };
                 })(room[i].roomID)
             }));
@@ -62,7 +62,7 @@ window.genericArea = function () {
         font: uiManager.buttonFont,
         color: "red",
         click: function (e) {
-            window.PageHandler.gameSocket.emit('Area.Game.Start',
+            window.PageHandler.gateway.emit('Area.Game.Start',
                 { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
         }
     }));
@@ -86,7 +86,7 @@ window.genericArea = function () {
         backColor: "rgb(50,60,127)"
     }));
 
-    window.PageHandler.gameSocket.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+    window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
 
 
 
@@ -119,7 +119,7 @@ window.genericArea = function () {
                 text: question.answers[i],
                 click: (function (index) {
                     return function (e) {
-                        window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: index, roomID: window.PageHandler.gameStuff.roomID });
+                        window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: index, roomID: window.PageHandler.gameStuff.roomID });
                         uiManager.questionArea.visible = false;
                     };
                 })(i)

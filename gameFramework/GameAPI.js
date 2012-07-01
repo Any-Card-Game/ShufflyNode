@@ -63,8 +63,6 @@ Pile = function (name) {
         for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         console.log(o[0].value);
         console.log(o[0].value);
-        console.log(o[0].value);
-        console.log(o[0].value);
         console.log('---');
         this.cards = o;
     };

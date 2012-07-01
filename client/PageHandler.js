@@ -1,7 +1,7 @@
 ﻿window.DEBUGs = true;
 window.DEBUGLABELS = [];
 
-function PageHandler(siteServer, gameServer, debugServer) {
+function PageHandler(gatewayServer) {
 
     var self = this;
     window.PageHandler = this;
@@ -9,44 +9,49 @@ function PageHandler(siteServer, gameServer, debugServer) {
 
 
 
-    window.PageHandler.siteSocket = io.connect(siteServer);
-    window.PageHandler.debugSocket = io.connect(debugServer);
+    window.PageHandler.gateway = new Gateway(gatewayServer);
+    
 
     self.gameStuff = {
         roomID: -1
     };
 
 
-    window.PageHandler.siteSocket.on('Area.Main.Login.Response', function (data) {
+    window.PageHandler.gateway.on('Area.Main.Login.Response', function (data) {
         alert(JSON.stringify(data));
-
     });
-    window.PageHandler.siteSocket.on('Area.Lobby.ListCardGames.Response', function (question) {
+    window.PageHandler.gateway.on('Area.Lobby.ListCardGames.Response', function (question) {
     });
-    window.PageHandler.siteSocket.on('Area.Lobby.ListRooms.Response', function (data) {
+    window.PageHandler.gateway.on('Area.Lobby.ListRooms.Response', function (data) {
         console.log(data);
     });
+    
+    var randomName = '';
+    var ra = Math.random() * 10;
+    for (var i = 0; i < ra; i++) {
+        randomName += String.fromCharCode(65 + (Math.random() * 26));
+    }
+     
+    window.PageHandler.gateway.login(randomName);
 
-    //window.PageHandler.siteSocket.emit('Area.Main.Login.Request', { user: 'dested' });
+    //window.PageHandler.gateway.emit('Area.Main.Login.Request', { user: 'dested' });
     window.PageHandler.startGameServer = function () {
-        window.PageHandler.gameSocket = null;
-        window.PageHandler.gameSocket = io.connect(gameServer, { 'force new connection': true });
-        window.PageHandler.gameSocket.on('Area.Game.RoomInfo', function (data) {
+        window.PageHandler.gateway.on('Area.Game.RoomInfo', function (data) {
             self.gameStuff.roomID = data.roomID;
 
             window.shuffUIManager.genericArea.loadRoomInfo(data);
             window.shuffUIManager.devArea.loadRoomInfo(data);
         });
-        window.PageHandler.gameSocket.on('Area.Game.RoomInfos', function (data) {
+        window.PageHandler.gateway.on('Area.Game.RoomInfos', function (data) {
             window.shuffUIManager.genericArea.loadRoomInfos(data);
         });
 
-        window.PageHandler.gameSocket.on('Area.Debug.Log', function (data) {
+        window.PageHandler.gateway.on('Area.Debug.Log', function (data) {
             window.shuffUIManager.codeArea.console.setValue(window.shuffUIManager.codeArea.console.getValue() + "\n" + data.value);
             window.shuffUIManager.codeArea.console.setCursor(window.shuffUIManager.codeArea.console.lineCount(), 0);
         });
 
-        window.PageHandler.gameSocket.on('Area.Debug.Break', function (data) {
+        window.PageHandler.gateway.on('Area.Debug.Break', function (data) {
 
             var cm = window.shuffUIManager.codeArea.codeEditor;
 
@@ -59,40 +64,60 @@ function PageHandler(siteServer, gameServer, debugServer) {
             cm.setCursor(data.lineNumber - 15, 0);
             cm.setCursor(data.lineNumber , 0);
         });
-        window.PageHandler.gameSocket.on('Area.Debug.VariableLookup.Response', function (data) {
+        window.PageHandler.gateway.on('Area.Debug.VariableLookup.Response', function (data) {
             alert(JSON.stringify(data));
         });
 
-        
-        window.PageHandler.gameSocket.on('Area.Game.AskQuestion', function (data) {
+
+        window.PageHandler.gateway.on('Area.Game.AskQuestion', function (data) {
             window.shuffUIManager.questionArea.load(data);
             //alert(JSON.stringify(data));
 
             setTimeout(function () {
-                window.PageHandler.gameSocket.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
+                window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
                 window.shuffUIManager.questionArea.visible(false);
             }, 2);
         });
-        window.PageHandler.gameSocket.on('Area.Game.UpdateState', function (data) {
+        window.PageHandler.gateway.on('Area.Game.UpdateState', function (data) {
             self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
             self.drawArea(data);
         });
-        window.PageHandler.gameSocket.on('Area.Game.Started', function (data) {
+        window.PageHandler.gateway.on('Area.Game.Started', function (data) {
             //alert(JSON.stringify(data));
         });
-        window.PageHandler.gameSocket.on('Area.Game.GameOver', function (data) {
+        window.PageHandler.gateway.on('Area.Game.GameOver', function (data) {
 
         });
     };
+    var timevalue = 0;
+    var numOfTimes = 0;
 
-    window.PageHandler.debugSocket.on('Area.Debug.GetGameSource.Response', function (data) {
+
+    window.PageHandler.gateway.on('Area.Debug.GetGameSource.Response', function (data) {
+        var endTime = new Date();
+
+        var time = (endTime - startTime);
+
+
+
+        numOfTimes++;
+        timevalue += time;
+        window.shuffUIManager.devArea.lblHowFast.text('How Many: '+(timevalue / numOfTimes));
+
+        setTimeout(function () {
+            startTime = new Date();
+            window.PageHandler.gateway.emit('Area.Debug2.GetGameSource.Request', { gameName: 'Sevens' });
+        }, 10);
+
         window.shuffUIManager.codeArea.codeEditor.setValue(data.value);
 
         window.shuffUIManager.codeArea.codeEditor.setMarker(0, "<span style=\"color: #900\">&nbsp;&nbsp;</span> %N%");
         window.shuffUIManager.codeArea.codeEditor.refresh();
     });
 
-    window.PageHandler.debugSocket.emit('Area.Debug.GetGameSource.Request', { gameName: 'Sevens' });
+    var startTime;
+    startTime = new Date();
+    window.PageHandler.gateway.emit('Area.Debug2.GetGameSource.Request', { gameName: 'Sevens' });
 
     var cardImages = {};
     for (var i = 101; i < 153; i++) {

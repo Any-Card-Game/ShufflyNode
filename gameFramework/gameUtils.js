@@ -1,4 +1,4 @@
-﻿require('../common/ArrayUtils.js');
+﻿require('../common/arrayUtils.js');
 
 global._ = {
     numbers: function (start, finish) {
