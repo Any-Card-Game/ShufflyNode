@@ -108,8 +108,11 @@
     <Content Include="client\editorTest.htm" />
     <Content Include="client\ShuffUIArea.js" />
     <Content Include="client\ShuffUIManager.js" />
+    <Content Include="common\dataManager.js" />
     <Content Include="common\queueItemCollection.js" />
+    <Content Include="common\queueManager.js" />
     <Content Include="common\queuePusher.js" />
+    <Content Include="gatewayServer\gateway2App.js" />
     <Content Include="gatewayServer\gatewayApp.js" />
     <Content Include="headServer\headApp.js" />
     <Content Include="debugServer\debugServerApp.js" />
@@ -144,7 +147,7 @@
     <Content Include="client\UIManager.js" />
     <Content Include="client\uis\genericArea.js" />
     <Content Include="common\arrayUtils.js" />
-    <Content Include="gameServer\gameServerApp.js" />
+    <Content Include="gameServer\gameApp.js" />
     <Content Include="gameFramework\GameAPI.js" />
     <Content Include="games\Sevens\app.js" />
     <Content Include="gameFramework\gameUtils.js" />

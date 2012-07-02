@@ -36,7 +36,7 @@ io.sockets.on('connection', function (socket) {
         if (data.user == "dested" || data.user == "kenny") {
             verified = true;
 
-            me.name = data.user;
+            me.userName = data.user;
             me._socket = socket;
             socket.player = me;
         }
@@ -47,7 +47,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('Area.Lobby.ListCardGames.Request', function (data) {
         socket.emit('Area.Lobby.ListCardGames.Response', cardGames.arrayExceptPrivate());
     });
-    socket.on('Area.Lobby.ListRooms.Request', function (data) {
+    socket.on('Area.Lobby.ListRooms.Request', function (data) {sec
         var cardGame = cardGames.where(function (J) { return J.name == data.name; });
         socket.emit('Area.Lobby.ListRooms.Response', cardGame.rooms.arrayExceptPrivate());
     });

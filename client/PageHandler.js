@@ -33,7 +33,8 @@ function PageHandler(gatewayServer) {
     }
      
     window.PageHandler.gateway.login(randomName);
-
+    var startTime = new Date();
+    var endTime;
     //window.PageHandler.gateway.emit('Area.Main.Login.Request', { user: 'dested' });
     window.PageHandler.startGameServer = function () {
         window.PageHandler.gateway.on('Area.Game.RoomInfo', function (data) {
@@ -62,7 +63,7 @@ function PageHandler(gatewayServer) {
 
             cm.setCursor(data.lineNumber + 15, 0);
             cm.setCursor(data.lineNumber - 15, 0);
-            cm.setCursor(data.lineNumber , 0);
+            cm.setCursor(data.lineNumber, 0);
         });
         window.PageHandler.gateway.on('Area.Debug.VariableLookup.Response', function (data) {
             alert(JSON.stringify(data));
@@ -72,10 +73,14 @@ function PageHandler(gatewayServer) {
         window.PageHandler.gateway.on('Area.Game.AskQuestion', function (data) {
             window.shuffUIManager.questionArea.load(data);
             //alert(JSON.stringify(data));
-
+            endTime = new Date();
+            var time = endTime - startTime;
+            window.shuffUIManager.devArea.lblHowFast.text("how long: " + time);
             setTimeout(function () {
+
                 window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
                 window.shuffUIManager.questionArea.visible(false);
+                startTime = new Date();
             }, 2);
         });
         window.PageHandler.gateway.on('Area.Game.UpdateState', function (data) {
@@ -104,12 +109,12 @@ function PageHandler(gatewayServer) {
         timevalue += time;
         window.shuffUIManager.devArea.lblHowFast.text('How Many: '+(timevalue / numOfTimes));
 
-        setTimeout(function () {
+        false && setTimeout(function () {
             startTime = new Date();
             window.PageHandler.gateway.emit('Area.Debug2.GetGameSource.Request', { gameName: 'Sevens' });
         }, 10);
 
-        window.shuffUIManager.codeArea.codeEditor.setValue(data.value);
+        window.shuffUIManager.codeArea.codeEditor.setValue(data);
 
         window.shuffUIManager.codeArea.codeEditor.setMarker(0, "<span style=\"color: #900\">&nbsp;&nbsp;</span> %N%");
         window.shuffUIManager.codeArea.codeEditor.refresh();

@@ -146,7 +146,7 @@
             height: 25,
             text: 'Create Game',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Game.Create', { user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Create', { user: { userName: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -201,7 +201,7 @@
             height: 25 * 6,
             label: 'Rooms',
             click: function () {
-                window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { name: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { userName: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
         genericArea.userList = home.addListBox({
@@ -224,7 +224,7 @@
 
             for (var i = 0; i < room.players.length; i++) {
 
-                users.push(room.players[i].name);
+                users.push(room.players[i]);
 
             }
 
@@ -258,7 +258,7 @@
                 label: 'Rooms',
                 items: rooms,
                 click: function (item) {
-                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: item.value, user: { name: genericArea.txtUserName.val()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: item.value, user: { userName: genericArea.txtUserName.val()} }); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
             });
         };
@@ -288,7 +288,7 @@
                 devArea.joined = 0;
                 window.PageHandler.startGameServer();
                 window.PageHandler.gateway.emit('Area.Debug.Create', {
-                    user: { name: devArea.txtNumOfPlayers.val() },
+                    user: { userName: devArea.txtNumOfPlayers.val() },
                     name: 'main room',
                     source: window.shuffUIManager.codeArea.codeEditor.getValue(),
                     breakPoints: window.shuffUIManager.codeArea.breakPoints
@@ -389,7 +389,7 @@
                 window.PageHandler.gateway.emit('Area.Game.DebuggerJoin', { roomID: room.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
 
                 for (var i = 0; i < count; i++) {
-                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: room.roomID, user: { name: "player " + (i + 1)} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: room.roomID, user: { userName: "player " + (i + 1)} }); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
                 devArea.created = true;
             }

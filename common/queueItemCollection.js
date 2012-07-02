@@ -1,6 +1,6 @@
 ﻿
  //generic for pushers and watchers
-var queueItemCollection = function (queueItems) {
+var queueItemCollection = function(queueItems) {
 
     if (!(queueItems instanceof Array)) {
         this.queueItems = queueItems ? [queueItems] : [];
@@ -9,8 +9,7 @@ var queueItemCollection = function (queueItems) {
     }
 
 
-
-    this.getByChannel = function (channel) {
+    this.getByChannel = function(channel) {
         for (var i = 0; i < this.queueItems.length; i++) {
             if (this.queueItems[i].channel == channel) {
                 return this.queueItems[i];
@@ -19,6 +18,6 @@ var queueItemCollection = function (queueItems) {
 
     };
 
-}
+};
 
 module.exports = queueItemCollection;

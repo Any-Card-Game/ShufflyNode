@@ -39,7 +39,7 @@ CardGame = function (setter) {
         if (players.length > 6)
             players.length = 6;
         for (var j = 0; j < players.length; j++) {
-            this.users.push(new User(players[j].name));
+            this.users.push(new User(players[j].userName));
         }
     };
 
@@ -50,7 +50,7 @@ CardGame = function (setter) {
 
 };
 User = function (name) {
-    this.name = name;
+    this.userName = name;
     this.playerDealingOrder = 0;
     this.cards = new Pile(name);
 };

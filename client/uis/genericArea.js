@@ -23,7 +23,7 @@ window.genericArea = function () {
         color: "red",
         click: function (e) {
             //propUtils.animateTo(uiManager.genericArea, 'height', uiManager.genericArea.height + 200, 200);
-            window.PageHandler.gateway.emit('Area.Game.Create', { user: { name: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
+            window.PageHandler.gateway.emit('Area.Game.Create', { user: { userName: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
         }
     }));
 
@@ -33,7 +33,7 @@ window.genericArea = function () {
         uiManager.genericArea.btnStartGame.visible = true;
         for (var i = 0; i < room.players.length; i++) {
             uiManager.genericArea.userList.addControl(new Button(0, 0, {
-                text: room.players[i].name
+                text: room.players[i].userName
             }));
         }
 
@@ -46,7 +46,7 @@ window.genericArea = function () {
                 text: room[i].name,
                 click: (function (id) {
                     return function () {
-                        window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { name: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                        window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { userName: uiManager.genericArea.txtUserName.text} }); //NO EMIT'ING OUTSIDE OF PageHandler
                     };
                 })(room[i].roomID)
             }));

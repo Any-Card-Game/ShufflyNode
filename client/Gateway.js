@@ -2,9 +2,8 @@
     var self = this;
     self.gatewaySocket = io.connect(gatewayServer);
 
-    self.gatewaySocket.on("Client.Message", function (data, user) {
-        data = data.content;
-         self.channels[data.channel](data.content, user);
+    self.gatewaySocket.on("Client.Message", function (data) {
+         self.channels[data.channel](data.content);
     });
 
     self.channels = {};

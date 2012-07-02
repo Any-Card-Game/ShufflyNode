@@ -2,7 +2,7 @@
 
 var queueManager = require('../common/queueManager.js');
 
-app.listen(1887);
+app.listen(1888);
 io.set("log level", 1);
 function handler(req, res) {
     res.end();
@@ -18,7 +18,7 @@ function messageReceived(gateway, user, eventChannel, content) {
     if (eventChannel == "Gateway.HeadUpdate") {
         console.log('head   ' );
         
-        qManager.sendMessage('', "HeadServer", "Head.GatewayUpdate", "http://50.116.28.16:1887");
+        qManager.sendMessage('', "HeadServer", "Head.GatewayUpdate", "http://50.116.28.16:1888");
 
         return;
     }

@@ -6,8 +6,8 @@ var redis = require("redis");
     var queueWatcher = function (channel, callback) {
         var client1 = redis.createClient(6379, '50.116.22.241');
 
-        function cycle() {
-            client1.blpop([channel, 10], function (caller, data) {
+        function cycle(chnl) {
+            client1.blpop([chnl, 10], function (caller, data) {
                 if (data) {
                     var dt=null;
                     try {
@@ -16,13 +16,13 @@ var redis = require("redis");
                         
                     }
 
-                    callback(dt);
+                    callback(dt.name, dt.user, dt.eventChannel, dt.content);
                 }
-                cycle();
+                cycle(chnl);
             });
         }
 
-        cycle();
+        cycle(channel);
     };
 module.exports = queueWatcher;
 

@@ -174,7 +174,7 @@ module.exports = Sevens = function () {
         });
 
         self.cardGame.users.foreach(function (u, ind) {
-            var sp = self.createUser(ind, u.Name);
+            var sp = self.createUser(ind, u.userName);
             sp.pile = u.cards;
         });
 

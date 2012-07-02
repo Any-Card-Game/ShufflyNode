@@ -352,8 +352,6 @@ Current list
 
 
 
-
-
 * sprint 
 	* head connect to gateway
 		* blpop for new gateway
@@ -361,15 +359,17 @@ Current list
 	* group the redis functionality
 		* queuemanager
 		* sync user 
-		* cuncurrent hashing
-	* page gateway stuff
+	* page socket to gateway stuffs
 	* finish playing games
 	* mongo 
 		* insert game stuff
-	* memcached
+	
 	
 	
 * sprint scaling
+	* send all message at channel (instead of fastest), with expire
+	* cuncurrent hashing
 	* traditoinal load balance	
 	* redis scaling
 	* mongo scaling
+	* memcached

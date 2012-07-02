@@ -59,7 +59,7 @@ function onAsk(data) {
 //            gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4400));
             console.log(gateways.length + ' Gateway Servers Started');
 
-            games.push(runProcess('node', [__dirname + 'gameServer/gameServerApp.js'], 4200));
+            games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4200));
             console.log(games.length + ' Games Servers Started');
 
             debugs.push(runProcess('node', [__dirname + 'debugServer/debugServerApp.js'], 4300));
@@ -128,7 +128,7 @@ function restartProcs(letter) {
 
             games = [];
 
-            games.push(runProcess('node', [__dirname + 'gameServer/gameServerApp.js'], 4101));
+            games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4101));
             break;
         case 's':
             console.log('Restarting sites');

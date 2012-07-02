@@ -3,26 +3,53 @@ var arrayUtils = require('./../common/arrayUtils.js');
 
 var __dirname = '/usr/local/src/headServer';
 
+var queueManager = require('../common/queueManager.js');
+ 
+var indexPageData;
 
-var gatewayServer = ['http://50.116.28.16:1887']; 
-  
-var indexForSites = []; 
+var qManager = new queueManager('Head1', {
+    watchers: ["HeadServer", "Head1"],
+    pushers: ["GatewayServer"]
+});
+
+var indexForSites = [];
 fs.readFile(__dirname + '/index.html', ready);
 
 function ready(err, content) {
     indexPageData = content;
-     
-     
-    for (var i = 0; i < gatewayServer.length; i++) {
-        indexForSites.push(indexPageData.toString().replace('{{gateway}}', gatewayServer[i])); 
-    }
 
-  
     require('http').createServer(handler).listen(80);
 }
 
+qManager.addChannel("Head.GatewayUpdate", function (user, data) {
+    console.log('dadada   '+  data);
+    indexForSites.push(indexPageData.toString().replace('{{gateway}}', data));
+
+});
+var oldIndex = [];
+setInterval(function () {
+    qManager.sendMessage('', 'GatewayServer', "Gateway.HeadUpdate", 1);
+    oldIndex = indexForSites;
+    indexForSites = [];
+
+}, 5000); 
+
 function handler(req, res) {
-    res.writeHead(200, { 'Content-Type': "text/html" });
-    res.end(indexForSites[0]);
+
+    if (oldIndex.length > 0) {
+        res.writeHead(200, { 'Content-Type': "text/html" });
+        res.end(oldIndex[0]);
+        return;
+    }
+    setTimeout(function () {
+
+        if (oldIndex.length > 0) {
+            res.writeHead(200, { 'Content-Type': "text/html" });
+            res.end(oldIndex[0]);
+        } else {
+            res.writeHead(200, { 'Content-Type': "text/html" });
+            res.end();
+        }
+    }, 1000);
 }
 
