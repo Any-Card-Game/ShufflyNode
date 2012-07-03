@@ -4,7 +4,7 @@ var arrayUtils = require('./../common/arrayUtils.js');
 var __dirname = '/usr/local/src/headServer';
 
 var queueManager = require('../common/queueManager.js');
- 
+
 var indexPageData;
 
 var qManager = new queueManager('Head1', {
@@ -22,17 +22,18 @@ function ready(err, content) {
 }
 
 qManager.addChannel("Head.GatewayUpdate", function (user, data) {
-    console.log('dadada   '+  data);
+    console.log('dadada   ' + data);
     indexForSites.push(indexPageData.toString().replace('{{gateway}}', data));
 
 });
 var oldIndex = [];
 setInterval(function () {
     qManager.sendMessage('', 'GatewayServer', "Gateway.HeadUpdate", 1);
-    oldIndex = indexForSites;
+    if (indexForSites.length > 0)
+        oldIndex = indexForSites;
     indexForSites = [];
 
-}, 5000); 
+}, 5000);
 
 function handler(req, res) {
 
