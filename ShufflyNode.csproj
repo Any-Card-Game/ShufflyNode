@@ -117,7 +117,6 @@
     <Content Include="headServer\headApp.js" />
     <Content Include="debugServer\debugServerApp.js" />
     <Content Include="headServer\index.html" />
-    <Content Include="gameServer\cJSON.js" />
     <Content Include="common\guid.js" />
     <Content Include="License.txt" />
     <Content Include="mockups\better.png" />
@@ -128,7 +127,6 @@
     <Content Include="serverAdmin\memcachedtest.js" />
     <Content Include="serverAdmin\mongotest.js" />
     <Content Include="common\queueWatcher.js" />
-    <Content Include="siteServer\cJSON.js" />
     <None Include="upload\client.bat" />
     <None Include="upload\all.bat" />
     <None Include="upload\clientDeep.bat" />

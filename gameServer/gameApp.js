@@ -1,8 +1,7 @@
 ﻿
 require('../common/Help.js');
 var fs = require('fs');
-var child_process = require('child_process');
-var cJSON = require("./cJSON.js");
+var child_process = require('child_process'); 
 var guid = require("../common/guid.js");
 var arrayUtils = require('../common/arrayUtils.js');
 
@@ -355,13 +354,16 @@ function handleYield(room, obj) {
 
             break;
         case 'log':
+
             var answ = room.fiber.run();
             handleYield(room, answ);
+            
+
             if (!room.game.cardGame.emulating && room.debuggable) {
-                //console.log(gameData.toString());
+                console.log(gameData.toString());
                 qManager.sendMessage(room.debuggingSender.user, room.debuggingSender.gateway, 'Area.Debug.Log', { value: obj.contents });
             }
-
+            
 
             break;
 

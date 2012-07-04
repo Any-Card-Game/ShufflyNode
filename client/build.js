@@ -497,7 +497,7 @@
             }
         });
 
-
+        
         window.shuffUIManager.questionArea.load = function (question) {
             window.shuffUIManager.questionArea.visible(true);
             window.shuffUIManager.questionArea.question.text = question.question;

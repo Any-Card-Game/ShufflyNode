@@ -51,7 +51,11 @@ function PageHandler(gatewayServer) {
         });
 
         window.PageHandler.gateway.on('Area.Debug.Log', function (data) {
-            window.shuffUIManager.codeArea.console.setValue(window.shuffUIManager.codeArea.console.getValue() + "\n" + data.value);
+
+            var lines = window.shuffUIManager.codeArea.console.getValue().split('\n');
+            lines=lines.slice(lines.length - 40, lines.length);
+
+            window.shuffUIManager.codeArea.console.setValue(lines.join('\n') + "\n" + data.value);
             window.shuffUIManager.codeArea.console.setCursor(window.shuffUIManager.codeArea.console.lineCount(), 0);
         });
 
@@ -84,7 +88,7 @@ function PageHandler(gatewayServer) {
                 window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID }, window.shuffUIManager.devArea.gameServer);
                 window.shuffUIManager.questionArea.visible(false);
                 startTime = new Date();
-            }, 20);
+            }, 50);
         });
         window.PageHandler.gateway.on('Area.Game.UpdateState', function (data) {
             self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
@@ -96,7 +100,7 @@ function PageHandler(gatewayServer) {
         window.PageHandler.gateway.on('Area.Game.GameOver', function (data) {
 
         });
-        window.PageHandler.gateway.on('Area.Debug.GameOver', function (data) { 
+        window.PageHandler.gateway.on('Area.Debug.GameOver', function (data) {
             setTimeout(function () {
 
                 window.shuffUIManager.devArea.beginGame();
