@@ -134,7 +134,7 @@
             height: 25,
             text: 'Update Game List',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.GetGames', devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -146,7 +146,7 @@
             height: 25,
             text: 'Create Game',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Game.Create', { user: { userName: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Create', { user: { userName: genericArea.txtUserName[0].value} }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -159,7 +159,7 @@
             height: 25,
             text: 'Start Game',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
             },
             visible: false
         });
@@ -171,7 +171,7 @@
             height: 25,
             text: 'Start Game',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Start', { roomID: window.PageHandler.gameStuff.roomID }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -201,7 +201,7 @@
             height: 25 * 6,
             label: 'Rooms',
             click: function () {
-                window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { userName: genericArea.txtUserName[0].value} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.Join', { roomID: id, user: { userName: genericArea.txtUserName[0].value} }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
         genericArea.userList = home.addListBox({
@@ -258,7 +258,7 @@
                 label: 'Rooms',
                 items: rooms,
                 click: function (item) {
-                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: item.value, user: { userName: genericArea.txtUserName.val()} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: item.value, user: { userName: genericArea.txtUserName.val()} }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
             });
         };
@@ -299,11 +299,18 @@
         });
 
         devArea.lblHowFast = devArea.addLabel({
-            x: 280 - 150,
-            y: 94,
-            width: 150,
+            x: 280 - 200,
+            y: 80,
+            width: 250,
             height: 25,
             text: 'How Many: '
+        });
+        devArea.lblAnother = devArea.addLabel({
+            x: 280 - 200,
+            y: 100,
+            width: 250,
+            height: 25,
+            text: 'Another:  '
         });
 
 
@@ -314,7 +321,7 @@
             height: 25,
             text: 'Continue',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Debug.Continue', {}); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Debug.Continue', {}, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -367,7 +374,7 @@
             height: 25,
             text: 'Lookup',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Debug.VariableLookup.Request', { variableName: devArea.varText.val() }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Debug.VariableLookup.Request', { variableName: devArea.varText.val() }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
 
@@ -378,24 +385,28 @@
             height: 25,
             text: 'Push New Source',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Debug.PushNewSource', { source: window.shuffUIManager.codeArea.codeEditor.getValue(), breakPoints: window.shuffUIManager.codeArea.breakPoints }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Debug.PushNewSource', { source: window.shuffUIManager.codeArea.codeEditor.getValue(), breakPoints: window.shuffUIManager.codeArea.breakPoints },
+                    devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
             }
         });
 
 
         devArea.loadRoomInfo = function (room) {
+            devArea.gameServer = room.gameServer;
+            devArea.lblAnother.text(room.gameServer);
+            
             var count = parseInt(devArea.txtNumOfPlayers.val());
             if (!devArea.created) {
-                window.PageHandler.gateway.emit('Area.Game.DebuggerJoin', { roomID: room.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.DebuggerJoin', { roomID: room.roomID }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
 
                 for (var i = 0; i < count; i++) {
-                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: room.roomID, user: { userName: "player " + (i + 1)} }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Join', { roomID: room.roomID, user: { userName: "player " + (i + 1)} }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
                 devArea.created = true;
             }
             else {
                 if ((++devArea.joined) == count) {
-                    window.PageHandler.gateway.emit('Area.Game.Start', { roomID: room.roomID }); //NO EMIT'ING OUTSIDE OF PageHandler
+                    window.PageHandler.gateway.emit('Area.Game.Start', { roomID: room.roomID }, devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
                 }
             }
         };
@@ -479,7 +490,7 @@
             height: 25,
             text: '',
             click: function (e) {
-                window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+                window.PageHandler.gateway.emit('Area.Game.GetGames', devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
 
             }
         });
@@ -494,6 +505,7 @@
             for (var i = 0; i < question.answers.length; i++) {
                 answers.push({ label: question.answers[i], value: i });
             }
+
             window.shuffUIManager.questionArea.answerBox = questionArea.addListBox({
                 x: 30,
                 y: 65,
@@ -502,7 +514,7 @@
                 label: 'Answers',
                 items: answers,
                 click: function (item) {
-                    window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: item.value, roomID: window.PageHandler.gameStuff.roomID });
+                    window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: item.value, roomID: window.PageHandler.gameStuff.roomID }, devArea.gameServer);
                     window.shuffUIManager.questionArea.visible(false);
 
                 }
@@ -517,7 +529,7 @@
             height: 25 * 5,
             label: 'Answers',
             click: function (item) {
-                window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: item.index, roomID: window.PageHandler.gameStuff.roomID });
+                window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: item.index, roomID: window.PageHandler.gameStuff.roomID }, devArea.gameServer);
                 window.shuffUIManager.questionArea.visible = false;
 
             }
@@ -541,7 +553,7 @@
 
 
 
-        // window.PageHandler.gateway.emit('Area.Game.GetGames'); //NO EMIT'ING OUTSIDE OF PageHandler
+        // window.PageHandler.gateway.emit('Area.Game.GetGames', devArea.gameServer); //NO EMIT'ING OUTSIDE OF PageHandler
 
 
 

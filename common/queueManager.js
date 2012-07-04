@@ -9,7 +9,12 @@ var queueManager = function (name, options) {
         channels[channel] = callback;
     };
     this.sendMessage = function (user, channel, eventChannel, data) {
-        this.qpCollection.getByChannel(channel).message(this.name, user, eventChannel, data);
+
+        if (!this.qpCollection.getByChannel(channel)) {
+            console.log(channel +" No existy");
+        }
+
+        this.qpCollection.getByChannel(channel).message(channel, this.name, user, eventChannel, data);
     };
 
 

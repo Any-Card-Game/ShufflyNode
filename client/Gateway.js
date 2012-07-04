@@ -10,8 +10,8 @@
     self.on = function (channel, callback) {
         self.channels[channel] = callback;
     };
-    self.emit = function (channel, content) {
-        self.gatewaySocket.emit("Gateway.Message", { channel: channel, content: content });
+    self.emit = function (channel, content,gameServer) {
+        self.gatewaySocket.emit("Gateway.Message", { channel: channel, content: content, gameServer: gameServer });
     };
     self.login = function(uname) {
         self.gatewaySocket.emit('Gateway.Login', { userName: uname });

@@ -78,7 +78,7 @@ function PageHandler(gatewayServer) {
             window.shuffUIManager.devArea.lblHowFast.text("how long: " + time);
             setTimeout(function () {
 
-                window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID });
+                window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID }, window.shuffUIManager.devArea.gameServer);
                 window.shuffUIManager.questionArea.visible(false);
                 startTime = new Date();
             }, 2);

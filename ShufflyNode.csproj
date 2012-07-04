@@ -112,13 +112,12 @@
     <Content Include="common\queueItemCollection.js" />
     <Content Include="common\queueManager.js" />
     <Content Include="common\queuePusher.js" />
-    <Content Include="gatewayServer\gateway2App.js" />
     <Content Include="gatewayServer\gatewayApp.js" />
     <Content Include="headServer\headApp.js" />
     <Content Include="debugServer\debugServerApp.js" />
     <Content Include="headServer\index.html" />
     <Content Include="gameServer\cJSON.js" />
-    <Content Include="gameServer\guid.js" />
+    <Content Include="common\guid.js" />
     <Content Include="License.txt" />
     <Content Include="mockups\better.png" />
     <Content Include="mockups\finally.png" />

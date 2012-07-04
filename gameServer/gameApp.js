@@ -1,7 +1,9 @@
-﻿var fs = require('fs');
+﻿
+require('../common/Help.js');
+var fs = require('fs');
 var child_process = require('child_process');
 var cJSON = require("./cJSON.js");
-var guid = require("./guid.js");
+var guid = require("../common/guid.js");
 var arrayUtils = require('../common/arrayUtils.js');
 
 
@@ -9,10 +11,13 @@ var queueManager = require('../common/queueManager.js');
 var dataManager = require('../common/dataManager.js');
 dataManager = new dataManager();
 
-var qManager = new queueManager('Game1', {
-    watchers: ["GameServer"],
-    pushers: ["GatewayServer", "Gateway1"]
+var gameServerIndex = "GameServer"+ guid();
+var qManager = new queueManager(gameServerIndex, {
+    watchers: ["GameServer", gameServerIndex],
+    pushers: ["GameServer","GatewayServer", "Gateway*"]
 });
+
+
 
 //var agent = require('webkit-devtools-agent');
 
@@ -57,8 +62,8 @@ var requiredShuff = require('./../gameFramework/shuff.js');
 
 qManager.addChannel('Area.Game.Create', function (sender, data) {
     var room;
-    rooms.push(room = { name: data.name, maxUsers: 6, debuggable: false, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
-    room.players.push({ userName: sender.user.userName, gateway: "GatewayServer" }); //make a model
+    rooms.push(room = { gameServer:gameServerIndex, name: data.name, maxUsers: 6, debuggable: false, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
+    room.players.push({ userName: sender.user.userName, gateway: sender.gateway }); //make a model
     var gameObject;
     //todo::: sanatize game name
     if (cachedGames[room.gameName]) {
@@ -74,25 +79,35 @@ qManager.addChannel('Area.Game.Create', function (sender, data) {
         for (var i = 0; i < players.length; i++) {
             //players[i].socket.disconnect();
         }
-    }; 
+    };
 
     emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
 });
 
 /*
 qManager.addChannel('Server.Head.Connect', function (sender, data) {
-    setInterval(function () {
-        socket.emit('Server.Head.Ping', { rooms: rooms.length });
+setInterval(function () {
+socket.emit('Server.Head.Ping', { rooms: rooms.length });
 
-    }, 5000);
+}, 5000);
 });
 */
 
 qManager.addChannel('Area.Debug.Create', function (sender, data) {
     var room;
-    rooms.push(room = { name: data.name, maxUsers: 6, debuggable: true, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
-    room.players.push({ userName: sender.user.userName, gateway:"GatewayServer" }); //make a model
-    
+    rooms.push(room = {
+        name: data.name,
+        maxUsers: 6,
+        debuggable: true,
+        gameName: data.gameName,
+        roomID: guid(),
+        answers: [],
+        players: [],
+        started: false,
+        gameServer: gameServerIndex
+    }); //make a model 
+    room.players.push({ userName: sender.user.userName, gateway: sender.gateway }); //make a model
+
 
 
 
@@ -108,7 +123,7 @@ qManager.addChannel('Area.Debug.Create', function (sender, data) {
             //players[i].socket.disconnect();
         }
     };
-    
+
     emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
 
 });
@@ -145,32 +160,17 @@ qManager.addChannel('Area.Game.Join', function (sender, data) {
     if (!room) {
         return;
     }
-    room.players.push(  { userName: sender.user.userName, gateway: "GatewayServer" }); //make a model
-    
+    room.players.push({ userName: sender.user.userName, gateway: sender.gateway }); //make a model
+
     emitAll(room, 'Area.Game.RoomInfo', JSON.parse(JSON.stringify(room, sanitize)));
 
 });
 
-qManager.addChannel('disconnect', function (sender, data) {
-    console.log('THIS IS ALL BAD');
-    if (socket.room == null)
-        return;
-    socket.room.players.splice(socket.room.players.indexOf(socket.player), 1);
-
-    if (socket.room.players.length) {
-        rooms.splice(rooms.indexOf(socket.room), 1);
-
-    }
-    socket.room.unwind(socket.room.players);
-
-    socket.room = null;
-
-});
 
 qManager.addChannel('Area.Game.GetGames', function (sender, data) {
 
-    qManager.sendMessage(sender.user, "GatewayServer", 'Area.Game.RoomInfos', JSON.parse(JSON.stringify(rooms, sanitize)));
-    
+    qManager.sendMessage(sender.user, sender.gateway, 'Area.Game.RoomInfos', JSON.parse(JSON.stringify(rooms, sanitize)));
+
 });
 
 qManager.addChannel('Area.Game.DebuggerJoin', function (sender, data) {
@@ -209,18 +209,18 @@ qManager.addChannel('Area.Game.Start', function (sender, data) {
 
 
 
-qManager.addChannel('Area.Game.GetRooms', function (sender,data) {
+qManager.addChannel('Area.Game.GetRooms', function (sender, data) {
     socket.emit('Area.Game.GetRoomsResponse', JSON.parse(JSON.stringify(rooms, sanitize)));
 });
 
-qManager.addChannel('Area.Debug.Continue', function (sender,data) {
+qManager.addChannel('Area.Debug.Continue', function (sender, data) {
     var room = socket.room;
     var answ = room.fiber.run(null);
     handleYield(room, answ);
 });
 
 
-qManager.addChannel('Area.Debug.PushNewSource', function (sender,data) {
+qManager.addChannel('Area.Debug.PushNewSource', function (sender, data) {
     var room = socket.room;
 
     var module = {};
@@ -232,7 +232,7 @@ qManager.addChannel('Area.Debug.PushNewSource', function (sender,data) {
     handleYield(room, answ);
 
 });
-qManager.addChannel('Area.Debug.VariableLookup.Request', function (sender,data) {
+qManager.addChannel('Area.Debug.VariableLookup.Request', function (sender, data) {
     var room = socket.room;
     var answ = room.fiber.run({ variableLookup: data.variableName });
     if (!answ.type == 'variableLookup')
@@ -251,7 +251,7 @@ function applyBreakpoints(source, points) {
     return source.join('\n');
 }
 
-qManager.addChannel('Area.Debug.ModifyBreakpoint.Request', function (sender,data) {
+qManager.addChannel('Area.Debug.ModifyBreakpoint.Request', function (sender, data) {
     var room = socket.room;
 
     var module = {};
@@ -268,37 +268,53 @@ qManager.addChannel('Area.Debug.ModifyBreakpoint.Request', function (sender,data
 
 var now;
 
+var queueue = [];
+
 qManager.addChannel('Area.Game.AnswerQuestion', function (sender, data) {
-    now = new Date().getMilliseconds();
-
-    var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
-
-    if (!room) {
-        return;
-    }
-
-    room.answers.push({ value: data.answer });
-    //        console.log('----game question asked');
-    var answ = room.fiber.run({ value: data.answer });
-    //        console.log('----game question answered');
-
-
-    gameData.totalQuestionsAnswered++;
-        dataManager.gameData.insert(room.name, answ);
-    if (!answ) {
-        emitAll(room, 'Area.Game.GameOver', '');
-        room.fiber.run();
-        //var snapshot = profiler.takeSnapshot('vava' + (ajj++));
-        //     profiler.takeSnapshot('game over ' + room.roomID);
-        return;
-    }
-    handleYield(room, answ);
-
-    //        console.log('----game question before sent');
-
-    //        console.log('----game question sent');
-
+    queueue.push(data);
 });
+
+
+var QUEUEPERTICK = 1;
+var total__ = 0;
+var skipped__ = 0;
+setInterval(flushQueue, 50);
+function flushQueue() {
+    var ind;
+    for (ind = 0; ind < QUEUEPERTICK; ind++) {
+
+        var data = queueue.shift();
+
+        if (!data) break;
+
+        now = new Date().getMilliseconds();
+        var room = arrayUtils.first.call(rooms, (function (j, ind) { return j.roomID == data.roomID; }));
+        if (!room) {
+            return;
+        }
+        room.answers.push({ value: data.answer });
+        var answ = room.fiber.run({ value: data.answer });
+        gameData.totalQuestionsAnswered++;
+        dataManager.gameData.insert(room.name, answ);
+        if (!answ) {
+            emitAll(room, 'Area.Game.GameOver', '');
+            room.fiber.run();
+
+            rooms.splice(rooms.indexOf(room), 1);
+
+            room.unwind(room.players);
+
+            continue;
+        }
+        handleYield(room, answ);
+    }
+    if (ind == 0) {
+        skipped__++;
+    } else {
+        total__ += ind;
+        console.log("shift: " + ind + " + T: " + total__ + " + skip: " + skipped__ + " + QSize: " + queueue.length + " + T Rooms: " + rooms.length);
+    }
+}
 
 function handleYield(room, obj) {
     switch (obj.type) {
@@ -312,12 +328,12 @@ function handleYield(room, obj) {
                 return;
             }
             askQuestion(answ, room);
-            console.log(gameData.toString());
+            //console.log(gameData.toString());
 
             var dt = new Date();
             var then = dt.getMilliseconds();
-            console.log(then - now + " Milliseconds");
-            console.log(gameData.totalQuestionsAnswered / ((dt.getTime() - startTime) / 1000) + " Answers per seconds");
+            //console.log(then - now + " Milliseconds");
+            //console.log(gameData.totalQuestionsAnswered / ((dt.getTime() - startTime) / 1000) + " Answers per seconds");
 
             break;
         case 'gameOver':
@@ -326,8 +342,8 @@ function handleYield(room, obj) {
             break;
         case 'log':
             if (!room.game.cardGame.emulating && room.debuggable) {
-                console.log(gameData.toString());
-                qManager.sendMessage(room.debuggingSender, "GatewayServer", 'Area.Debug.Log', { value: obj.contents });
+                //console.log(gameData.toString());
+                qManager.sendMessage(room.debuggingSender, room.debuggingSender.gateway, 'Area.Debug.Log', { value: obj.contents });
             }
             var answ = room.fiber.run();
             handleYield(room, answ);
@@ -342,7 +358,7 @@ function handleYield(room, obj) {
                 return;
             }
             if (!room.game.cardGame.emulating) {
-                qManager.sendMessage(room.debuggingSender, "GatewayServer", 'Area.Debug.Break', { lineNumber: obj.lineNumber + 2 });
+                qManager.sendMessage(room.debuggingSender, sender.gateway, 'Area.Debug.Break', { lineNumber: obj.lineNumber + 2 });
             }
             break;
     }
@@ -373,7 +389,7 @@ function askQuestion(answ, room) {
 
 
 
-    qManager.sendMessage(user, "GatewayServer", 'Area.Game.AskQuestion', JSON.parse(JSON.stringify({ question: answ.question, answers: answ.answers }, sanitize)));
+    qManager.sendMessage(user, user.gateway, 'Area.Game.AskQuestion', JSON.parse(JSON.stringify({ question: answ.question, answers: answ.answers }, sanitize)));
 
     emitAll(room, 'Area.Game.UpdateState', JSON.parse(JSON.stringify(answ.cardGame, sanitize)));
 
@@ -388,8 +404,8 @@ function askQuestion(answ, room) {
 
 function emitAll(room, message, value) {
     for (var j = 0; j < room.players.length; j++) {
-        qManager.sendMessage(room.players[j], "GatewayServer", message, value);
-//        room.players[j].socket.emit(message, value);
+        qManager.sendMessage(room.players[j], room.players[j].gateway, message, value);
+        //        room.players[j].socket.emit(message, value);
     }
 
 }

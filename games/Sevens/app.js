@@ -91,7 +91,7 @@ module.exports = Sevens = function () {
     self.createUser = function (userIndex, text) {
         var sp;
         var tta;
-        console.log("Create User " + userIndex);
+        //console.log("Create User " + userIndex);
         switch (userIndex) {
             case 0:
             case 1:

@@ -1,5 +1,9 @@
-﻿var fs = require('fs');
+﻿require('../common/Help.js');
 
+
+var fs = require('fs');
+
+console.log("Shuffly Admin V0.27"); 
 var nonDebuggable = ['node-inspector', 'pkill'];
 
 var util = require('util'),
@@ -12,13 +16,13 @@ var indexPageData;
 
 /*fs.readFile(__dirname + '/index.html',
 function(err, data) {
-
+   
 });*/
 var head, sites, games,debugs, nodeInspector;
 
 var debug = false;
 
-function loop() {
+function loop() {               
     ask('?: ', '', onAsk);
 }
 
@@ -37,7 +41,7 @@ process.on('exit', function () {
 });
 
 
-function onAsk(data) {
+function onAsk(data, ignore) {
     var rest = data.substring(2);
     switch (data[0]) {
         case 'd':
@@ -56,10 +60,12 @@ function onAsk(data) {
             sites.push(runProcess('node', [__dirname + 'siteServer/siteApp.js'], 4101));
             console.log(sites.length + ' Sites Servers Started');
 
-//            gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4400));
-            console.log(gateways.length + ' Gateway Servers Started');
+            gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4400));
+            gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4401));
+            console.log(gateways.length + ' Gateway Servers Starte  d');
 
             games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4200));
+            games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4201));
             console.log(games.length + ' Games Servers Started');
 
             debugs.push(runProcess('node', [__dirname + 'debugServer/debugServerApp.js'], 4300));
@@ -96,7 +102,7 @@ function onAsk(data) {
                     debugs[i].kill();
                 }
                 if (!nodeInspector.killed)
-                    nodeInspector.kill();
+                    nodeInspector.kill();      
                 console.log('All killed');
             } else {
                 restartProcs(rest[0]);
@@ -104,10 +110,13 @@ function onAsk(data) {
             }
             break;
     }
+    if(!ignore)
     loop();
 }
 
-loop();
+onAsk('d', true);
+onAsk('s');
+//loop();  
 
 
 function restartProcs(letter) {

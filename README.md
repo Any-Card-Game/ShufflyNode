@@ -12,7 +12,7 @@ Changed Concepts
 Dependencies
 ------------
 
-* Nodejs v0.6.18+
+* Nodejs v0.8.0+
 * Fibers 
 * socket.io
 

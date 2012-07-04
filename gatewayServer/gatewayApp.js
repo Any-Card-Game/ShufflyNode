@@ -1,24 +1,30 @@
-﻿var app = require('http').createServer(handler), io = require('socket.io').listen(app), fs = require('fs');
+﻿require('../common/Help.js');
+
+var app = require('http').createServer(handler), io = require('socket.io').listen(app), fs = require('fs');
+var guid = require("../common/guid.js");
 
 var queueManager = require('../common/queueManager.js');
 
-app.listen(1887);
+
+var port = 1880 + (Math.random() * 4000 | 0);
+
+app.listen(port);
 io.set("log level", 1);
 function handler(req, res) {
     res.end();
 }
 
-var qManager = new queueManager('Gateway1', {
-    watchers: [["GatewayServer", messageReceived], ["Gateway1", messageReceived],"HeadServer"],
-    pushers: ["SiteServer", "GameServer", "DebugServer", "ChatServer", "HeadServer"]
+var gatewayIndex = 'Gateway ' + guid();
+
+var qManager = new queueManager(gatewayIndex, {
+    watchers: [["GatewayServer", messageReceived], [gatewayIndex, messageReceived], "HeadServer"],
+    pushers: ["SiteServer", "GameServer", "GameServer*", "DebugServer", "ChatServer", "HeadServer"]
 });
 
 function messageReceived(gateway, user, eventChannel, content) {
 
     if (eventChannel == "Gateway.HeadUpdate") {
-        console.log('head   ' );
-        
-        qManager.sendMessage('', "HeadServer", "Head.GatewayUpdate", "http://50.116.28.16:1887");
+        qManager.sendMessage('', "HeadServer", "Head.GatewayUpdate", "http://"+Common.IP+":" + port);
 
         return;
     }
@@ -55,8 +61,9 @@ io.sockets.on('connection', function (socket) {
                 channel = 'ChatServer';
                 break;
         }
+         
 
-        qManager.sendMessage(socket.user, channel, data.channel, data.content);
+        qManager.sendMessage(socket.user, data.gameServer || channel, data.channel, data.content);
         //console.log('afters message');
 
     });
