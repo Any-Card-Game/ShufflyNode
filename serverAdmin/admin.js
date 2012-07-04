@@ -3,7 +3,7 @@
 
 var fs = require('fs');
 
-console.log("Shuffly Admin V0.29");
+console.log("Shuffly Admin V0.30");
 var nonDebuggable = ['node-inspector', 'pkill'];
 
 var util = require('util'),
@@ -41,6 +41,10 @@ process.on('exit', function () {
 });
 
 
+var numOfGameServers = 6;
+var numOfGateways = 6;
+
+
 function onAsk(data, ignore) {
     var rest = data.substring(2);
     switch (data[0]) {
@@ -53,6 +57,7 @@ function onAsk(data, ignore) {
             games = [];
             debugs = [];
             gateways = [];
+            
 
             head = runProcess('node', [__dirname + 'headServer/headApp.js'], 4000);
             console.log('Head Server Started');
@@ -60,14 +65,14 @@ function onAsk(data, ignore) {
             sites.push(runProcess('node', [__dirname + 'siteServer/siteApp.js'], 4100));
             console.log(sites.length + ' Sites Servers Started');
             var j;
-            for (j = 0; j < 4; j++) {
+            for (j = 0; j < numOfGateways; j++) {
                 gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4400 + j));
             }
 
             console.log(gateways.length + ' Gateway Servers Starte  d');
 
-            for (j = 0; j < 6; j++) {
-                games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4200 + j));
+            for (j = 0; j < numOfGameServers; j++) {
+                games.push(runProcess('node_modules/fibers/bin/node-fibers', [__dirname + 'gameServer/gameApp.js'], 4200 + j));
             }
             console.log(games.length + ' Games Servers Started');
 

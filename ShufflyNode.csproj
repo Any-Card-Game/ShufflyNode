@@ -108,6 +108,7 @@
     <Content Include="client\editorTest.htm" />
     <Content Include="client\ShuffUIArea.js" />
     <Content Include="client\ShuffUIManager.js" />
+    <Content Include="common\pubsub.js" />
     <Content Include="common\dataManager.js" />
     <Content Include="common\queueItemCollection.js" />
     <Content Include="common\queueManager.js" />
