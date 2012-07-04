@@ -3,11 +3,11 @@
 
 var fs = require('fs');
 
-console.log("Shuffly Admin V0.27"); 
+console.log("Shuffly Admin V0.29");
 var nonDebuggable = ['node-inspector', 'pkill'];
 
 var util = require('util'),
-    exec = require('child_process').exec; 
+    exec = require('child_process').exec;
 
 var __dirname = '/usr/local/src/';
 var indexPageData;
@@ -18,18 +18,18 @@ var indexPageData;
 function(err, data) {
    
 });*/
-var head, sites, games,debugs, nodeInspector;
+var head, sites, games, debugs, nodeInspector;
 
 var debug = false;
 
-function loop() {               
+function loop() {
     ask('?: ', '', onAsk);
 }
 
-setInterval(function() {
-    console.log('keep alive ' + new Date().toString().substring(17, 24) );
+setInterval(function () {
+    console.log('keep alive ' + new Date().toString().substring(17, 24));
 
-},10*1000);
+}, 10 * 1000);
 
 nodeInspector = runProcess('node-inspector', []);
 console.log('node-inspector Started');
@@ -57,15 +57,18 @@ function onAsk(data, ignore) {
             head = runProcess('node', [__dirname + 'headServer/headApp.js'], 4000);
             console.log('Head Server Started');
 
-            sites.push(runProcess('node', [__dirname + 'siteServer/siteApp.js'], 4101));
+            sites.push(runProcess('node', [__dirname + 'siteServer/siteApp.js'], 4100));
             console.log(sites.length + ' Sites Servers Started');
+            var j;
+            for (j = 0; j < 4; j++) {
+                gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4400 + j));
+            }
 
-            gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4400));
-            gateways.push(runProcess('node', [__dirname + 'gatewayServer/gatewayApp.js'], 4401));
             console.log(gateways.length + ' Gateway Servers Starte  d');
 
-            games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4200));
-            games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4201));
+            for (j = 0; j < 6; j++) {
+                games.push(runProcess('node', [__dirname + 'gameServer/gameApp.js'], 4200 + j));
+            }
             console.log(games.length + ' Games Servers Started');
 
             debugs.push(runProcess('node', [__dirname + 'debugServer/debugServerApp.js'], 4300));
@@ -102,7 +105,7 @@ function onAsk(data, ignore) {
                     debugs[i].kill();
                 }
                 if (!nodeInspector.killed)
-                    nodeInspector.kill();      
+                    nodeInspector.kill();
                 console.log('All killed');
             } else {
                 restartProcs(rest[0]);
@@ -110,8 +113,8 @@ function onAsk(data, ignore) {
             }
             break;
     }
-    if(!ignore)
-    loop();
+    if (!ignore)
+        loop();
 }
 
 onAsk('d', true);
@@ -182,18 +185,18 @@ function runProcess(process, args, debugPort, appArgs) {
     if (nonDebuggable.indexOf(process) == -1 && debug) {
         args[0] = ' --debug=' + debugPort + " " + args[0];
     }
-    var dummy = exec(process + " " + args.join() + " " + (appArgs?appArgs:''));
+    var dummy = exec(process + " " + args.join() + " " + (appArgs ? appArgs : ''));
 
     if (nonDebuggable.indexOf(process) == -1) {
         dummy.stdout.on('data', function (data) {
             if (data.indexOf('debug: ') == -1) {
-                util.print("    " + new Date().toString().substring(17,24) + "     " + data);
- 
+                util.print("    " + new Date().toString().substring(17, 24) + "     " + data);
+
                 util.print("?: ");
             }
         });
         dummy.stderr.on('data', function (data) {
-            util.print("    " +   new Date().toString().substring(17, 24) + "     " + data);
+            util.print("    " + new Date().toString().substring(17, 24) + "     " + data);
             util.print("?: ");
         });
 

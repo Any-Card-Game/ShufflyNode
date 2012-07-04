@@ -277,26 +277,28 @@
         window.shuffUIManager.devArea = devArea;
 
 
+        devArea.beginGame = function( ) {
+            devArea.created = false;
+            devArea.joined = 0;
+            window.PageHandler.startGameServer();
+            window.PageHandler.gateway.emit('Area.Debug.Create', {
+                user: { userName: devArea.txtNumOfPlayers.val() },
+                name: 'main room',
+                source: window.shuffUIManager.codeArea.codeEditor.getValue(),
+                breakPoints: window.shuffUIManager.codeArea.breakPoints
+            }); 
+        };
+        
+        
         devArea.addButton({
             x: 280,
             y: 54,
             width: 150,
             height: 25,
             text: 'Begin Game',
-            click: function (e) {
-                devArea.created = false;
-                devArea.joined = 0;
-                window.PageHandler.startGameServer();
-                window.PageHandler.gateway.emit('Area.Debug.Create', {
-                    user: { userName: devArea.txtNumOfPlayers.val() },
-                    name: 'main room',
-                    source: window.shuffUIManager.codeArea.codeEditor.getValue(),
-                    breakPoints: window.shuffUIManager.codeArea.breakPoints
-                });
-
-
-            }
+            click: devArea.beginGame
         });
+        
 
         devArea.lblHowFast = devArea.addLabel({
             x: 280 - 200,

@@ -7,7 +7,10 @@ function PageHandler(gatewayServer) {
     window.PageHandler = this;
 
 
+    setTimeout(function () {
 
+        window.shuffUIManager.devArea.beginGame()
+    }, 2000);
 
     window.PageHandler.gateway = new Gateway(gatewayServer);
     
@@ -91,6 +94,10 @@ function PageHandler(gatewayServer) {
             //alert(JSON.stringify(data));
         });
         window.PageHandler.gateway.on('Area.Game.GameOver', function (data) {
+            setTimeout(function () {
+
+                window.shuffUIManager.devArea.beginGame();
+            }, Math.random() * 5000 + 1000);
 
         });
     };
@@ -216,7 +223,6 @@ function PageHandler(gatewayServer) {
     self.resizeCanvas();
 
     window.setInterval(self.draw.bind(self), 1000 / 60);
-
 
     return this;
 }

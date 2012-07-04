@@ -36,7 +36,7 @@ var queueManager = function (name, options) {
     for (var i = 0; i < options.pushers.length; i++) {
         qp.push(new qPusher(options.pushers[i]));
     }
-
+     
     this.qwCollection = new qItemCollection(qw);
     this.qpCollection = new qItemCollection(qp);
     return this;

@@ -11,10 +11,10 @@ var queueManager = require('../common/queueManager.js');
 var dataManager = require('../common/dataManager.js');
 dataManager = new dataManager();
 
-var gameServerIndex = "GameServer"+ guid();
+var gameServerIndex = "GameServer" + guid();
 var qManager = new queueManager(gameServerIndex, {
     watchers: ["GameServer", gameServerIndex],
-    pushers: ["GameServer","GatewayServer", "Gateway*"]
+    pushers: ["GameServer", "GatewayServer", "Gateway*"]
 });
 
 
@@ -62,14 +62,14 @@ var requiredShuff = require('./../gameFramework/shuff.js');
 
 qManager.addChannel('Area.Game.Create', function (sender, data) {
     var room;
-    rooms.push(room = { gameServer:gameServerIndex, name: data.name, maxUsers: 6, debuggable: false, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
+    rooms.push(room = { gameServer: gameServerIndex, name: data.name, maxUsers: 6, debuggable: false, gameName: data.gameName, roomID: guid(), answers: [], players: [], started: false }); //make a model 
     room.players.push({ userName: sender.user.userName, gateway: sender.gateway }); //make a model
     var gameObject;
     //todo::: sanatize game name
     if (cachedGames[room.gameName]) {
         gameObject = cachedGames[room.gameName];
     } else {
-        gameObject = require('./../games/' + room.gameName + '/app.js');
+        gameObject = cachedGames[data.gameName]=require('./../games/' + room.gameName + '/app.js');
     }
     room.fiber = createFiber(room, gameObject, false);
 
@@ -95,6 +95,7 @@ socket.emit('Server.Head.Ping', { rooms: rooms.length });
 
 qManager.addChannel('Area.Debug.Create', function (sender, data) {
     var room;
+    data.gameName = 'Sevens';
     rooms.push(room = {
         name: data.name,
         maxUsers: 6,
@@ -108,14 +109,19 @@ qManager.addChannel('Area.Debug.Create', function (sender, data) {
     }); //make a model 
     room.players.push({ userName: sender.user.userName, gateway: sender.gateway }); //make a model
 
-
-
-
+    var gameObject;
+    if (cachedGames[data.gameName]) {
+        gameObject = cachedGames[data.gameName];
+    } else {
+        gameObject = cachedGames[data.gameName] = require('./../games/' + data.gameName + '/app.js');
+    }
+    /*
     var module = {};
     eval(applyBreakpoints(data.source, data.breakPoints));
     var sevens = module.exports;
+    */
 
-    room.fiber = createFiber(room, sevens, true);
+    room.fiber = createFiber(room, gameObject, true);
     room.unwind = function (players) {
         gameData.finishedGames++;
         console.log('--game closed');
@@ -130,26 +136,29 @@ qManager.addChannel('Area.Debug.Create', function (sender, data) {
 
 
 function createFiber(room, gameObject, emulating) {
-    return Fiber(function (players) {
-        if (!players || !players.length) return true;
-        room.players = players;
-        console.log('game started');
-        var sev = new gameObject();
-        sev.cardGame.emulating = emulating;
-        room.game = sev;
-        sev.shuff = requiredShuff;
+    return (function (go) {
+        return Fiber(function (players) {
+            if (!players || !players.length) return true;
+            room.players = players;
+            console.log('game started');
+            var sev = new go();
+            sev.cardGame.emulating = emulating;
+            room.game = sev;
+            sev.shuff = requiredShuff;
 
-        sev.cardGame.setAnswers(room.answers);
-        sev.cardGame.setPlayers(players);
-        gameData.totalGames++;
-        gameData.totalPlayers += players.length;
-        sev.cardGame.answerIndex = 0;
-        sev.constructor();
-        sev.runGame();
+            sev.cardGame.setAnswers(room.answers);
+            sev.cardGame.setPlayers(players);
+            gameData.totalGames++;
+            gameData.totalPlayers += players.length;
+            sev.cardGame.answerIndex = 0;
+            sev.constructor();
+            sev.runGame();
 
-        room.unwind(players);
-        //gameData.totalPlayers -= players.length;
-    });
+            room.unwind(players);
+            //gameData.totalPlayers -= players.length;
+        });
+
+    })(gameObject);
 }
 
 
@@ -297,7 +306,7 @@ function flushQueue() {
         gameData.totalQuestionsAnswered++;
         dataManager.gameData.insert(room.name, answ);
         if (!answ) {
-            emitAll(room, 'Area.Game.GameOver', '');
+            emitAll(room, 'Area.Game.GameOver', 'a');
             room.fiber.run();
 
             rooms.splice(rooms.indexOf(room), 1);
@@ -338,6 +347,8 @@ function handleYield(room, obj) {
             break;
         case 'gameOver':
 
+
+            emitAll(room, 'Area.Game.GameOver', '');
 
             break;
         case 'log':
