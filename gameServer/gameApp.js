@@ -347,17 +347,20 @@ function handleYield(room, obj) {
             break;
         case 'gameOver':
 
-
             emitAll(room, 'Area.Game.GameOver', '');
+
+            if (room.debuggingSender) {
+                qManager.sendMessage(room.debuggingSender.user, room.debuggingSender.gateway, 'Area.Debug.GameOver', {});
+            }
 
             break;
         case 'log':
-            if (!room.game.cardGame.emulating && room.debuggable) {
-                //console.log(gameData.toString());
-                qManager.sendMessage(room.debuggingSender, room.debuggingSender.gateway, 'Area.Debug.Log', { value: obj.contents });
-            }
             var answ = room.fiber.run();
             handleYield(room, answ);
+            if (!room.game.cardGame.emulating && room.debuggable) {
+                //console.log(gameData.toString());
+                qManager.sendMessage(room.debuggingSender.user, room.debuggingSender.gateway, 'Area.Debug.Log', { value: obj.contents });
+            }
 
 
             break;
@@ -369,7 +372,7 @@ function handleYield(room, obj) {
                 return;
             }
             if (!room.game.cardGame.emulating) {
-                qManager.sendMessage(room.debuggingSender, sender.gateway, 'Area.Debug.Break', { lineNumber: obj.lineNumber + 2 });
+                qManager.sendMessage(room.debuggingSender.user, sender.gateway, 'Area.Debug.Break', { lineNumber: obj.lineNumber + 2 });
             }
             break;
     }

@@ -57,7 +57,7 @@
 
 
     //var url = 'https://s3.amazonaws.com/anycardgame/';
-    var url = 'http://50.116.28.16:8881/';
+    var url = 'http://50.116.22.241:8881/';
     window.topLevel = url;
 
     loadCss(url + 'client/lib/jquery-ui-1.8.20.custom.css');
