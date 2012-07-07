@@ -72,7 +72,7 @@ function handler(req, res) {
         res.writeHead(200, { 'Content-Type': "text/html" });
         var inj = (siteIndex++) % oldIndex.length;
         res.end(oldIndex[inj]);
-        console.log('serving' + oldGateways[inj]);
+        //console.log('serving' + oldGateways[inj]);
         return;
     }
     setTimeout(function () {

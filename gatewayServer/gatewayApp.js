@@ -25,9 +25,9 @@ var gatewayIndex = 'Gateway ' + guid();
 var ps = new pubsub(function () {
     ps.subscribe("PUBSUB.GatewayServers.Ping", function (message) {
         //console.log('polled');
-        ps.publish("PUBSUB.GatewayServers", "http://" + Common.IP + ":" + port);
+        ps.publish("PUBSUB.GatewayServers", "http://" + Common.GatewayIP + ":" + port);
     });
-    ps.publish("PUBSUB.GatewayServers", "http://" + Common.IP + ":" + port);
+    ps.publish("PUBSUB.GatewayServers", "http://" + Common.GatewayIP + ":" + port);
 
 });
 

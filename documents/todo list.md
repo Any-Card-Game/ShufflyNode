@@ -373,3 +373,31 @@ Current list
 	* redis scaling
 	* mongo scaling
 	* memcached
+
+
+
+
+
+
+
+
+
+
+* todoes
+	* server stuff
+		* server stats
+			* redis pubsub to some admin that socketios to the client
+		* proper testing
+		* rackspace
+		* ec2
+	* front end
+		* site stuff
+			* rooms games chat
+			* mongo
+		* game stuff
+			* html css
+			* api
+				* effects 
+					* highlight
+				* actions
+					card drag

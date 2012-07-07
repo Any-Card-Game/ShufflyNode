@@ -5,7 +5,7 @@ var Db = require('mongodb').Db,
     Server = require('mongodb').Server;
 
 
-var client = new Db('test', new Server("127.0.0.1", 27017, {}));
+var client = new Db('test', new Server("50.116.28.16", 27017, {}));
 
 client.open(function (err, p_client) {
     //client.collection('test_insert', test);

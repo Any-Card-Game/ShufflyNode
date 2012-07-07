@@ -5,7 +5,7 @@ redis.debug_mode = false;
 
 var queuePusher = function (channel) {
     this.channel = channel;
-    var client1 = redis.createClient(6379, Common.IP);
+    var client1 = redis.createClient(6379, Common.RedisIP);
 
     this.message =
     (function (chnl) {

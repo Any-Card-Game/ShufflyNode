@@ -14,8 +14,8 @@ var indexPageData;
 
 
 
-var numOfGameServers = 3;
-var numOfGateways = 3;
+var numOfGameServers = 6;
+var numOfGateways = 6;
 
 
 

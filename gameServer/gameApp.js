@@ -320,7 +320,8 @@ function flushQueue() {
         skipped__++;
     } else {
         total__ += ind;
-        console.log("shift: " + ind + " + T: " + total__ + " + skip: " + skipped__ + " + QSize: " + queueue.length + " + T Rooms: " + rooms.length);
+        if ((total__ + skipped__) % 20 == 0)
+            console.log(gameServerIndex.substring(0,19)+"=  tot: __" + (total__ + skipped__) + "__ + shift: " + ind + " + T: " + total__ + " + skip: " + skipped__ + " + QSize: " + queueue.length + " + T Rooms: " + rooms.length);
     }
 }
 
@@ -360,7 +361,7 @@ function handleYield(room, obj) {
             
 
             if (!room.game.cardGame.emulating && room.debuggable) {
-                console.log(gameData.toString());
+                //console.log(gameData.toString());
                 qManager.sendMessage(room.debuggingSender.user, room.debuggingSender.gateway, 'Area.Debug.Log', { value: obj.contents });
             }
             

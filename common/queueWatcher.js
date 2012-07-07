@@ -4,10 +4,10 @@ redis.debug_mode = false;
 
 
 var queueWatcher = function (channel, callback) {
-    var client1 = redis.createClient(6379, Common.IP);
+    var client1 = redis.createClient(6379, Common.RedisIP);
 
     var cycle = function (chnl) {
-        client1.blpop([chnl, 10], function (caller, data) {
+        client1.blpop([chnl, 0], function (caller, data) {
             if (data) {
                 var dt = null;
                 try {

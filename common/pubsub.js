@@ -5,8 +5,8 @@ redis.debug_mode = false;
 
 var pubsub = function (ready) {
     var self = this;
-    var subclient = redis.createClient(6379, Common.IP);
-    var pubclient = redis.createClient(6379, Common.IP);
+    var subclient = redis.createClient(6379, Common.RedisIP);
+    var pubclient = redis.createClient(6379, Common.RedisIP);
     self.subbed = {};
 
     subclient.on("subscribe", function (channel, count) {

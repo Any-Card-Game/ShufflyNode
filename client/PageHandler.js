@@ -88,7 +88,7 @@ function PageHandler(gatewayServer) {
                 window.PageHandler.gateway.emit("Area.Game.AnswerQuestion", { answer: 1, roomID: self.gameStuff.roomID }, window.shuffUIManager.devArea.gameServer);
                 window.shuffUIManager.questionArea.visible(false);
                 startTime = new Date();
-            }, 50);
+            }, 200);
         });
         window.PageHandler.gateway.on('Area.Game.UpdateState', function (data) {
             self.gameContext.clearRect(0, 0, self.gameContext.canvas.width, self.gameContext.canvas.height);
@@ -104,7 +104,7 @@ function PageHandler(gatewayServer) {
             setTimeout(function () {
 
                 window.shuffUIManager.devArea.beginGame();
-            }, Math.random() * 5000 + 1000);
+            },  1000);
 
         });
     };
